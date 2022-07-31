@@ -17,10 +17,10 @@ module AlbumsTable = {
   }
   
   type selectables = {
-    id: Column.t<int>,
-    name: Column.t<string>,
-    artistId: Column.t<int>,
-    genreId: Column.t<int>,
+    id: Schema.column<int>,
+    name: Schema.column<string>,
+    artistId: Schema.column<int>,
+    genreId: Schema.column<int>,
   }
 }
 
@@ -39,8 +39,8 @@ module GenresTable = {
   }
   
   type selectables = {
-    id: Column.t<int>,
-    name: Column.t<string>,
+    id: Schema.column<int>,
+    name: Schema.column<string>,
   }
 }
 
@@ -59,7 +59,7 @@ module ArtistsTable = {
   }
   
   type selectables = {
-    id: Column.t<int>,
-    name: Column.t<string>,
+    id: Schema.column<int>,
+    name: Schema.column<string>,
   }
 }

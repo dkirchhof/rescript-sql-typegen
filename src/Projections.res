@@ -1,8 +1,8 @@
-type t = option<array<Column.u>>
+type t = option<array<ColumnRef.t>>
 
-let toSQL = projections => {
+let toSQL = (projections, withAlias) =>
   switch projections {
-  | Some(projections') => `SELECT ${projections'->Belt.Array.joinWith(", ", p => Column.toSQL(p))}`
+  | Some(projections') =>
+    `SELECT ${projections'->Belt.Array.joinWith(", ", ColumnRef.toSQL(_, withAlias))}`
   | None => `SELECT *`
   }
-}

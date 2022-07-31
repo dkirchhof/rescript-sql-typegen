@@ -1,6 +1,3 @@
-type t = {
-  tableName: string,
-  alias: string,
-}
+type t = string
 
-let toSQL = from => `FROM ${from.tableName} AS ${from.alias}`
+let toSQL = from => `FROM ${from}`

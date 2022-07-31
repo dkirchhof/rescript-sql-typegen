@@ -1,17 +1,7 @@
-type t<'projections> = {
-  projections: Projections.t,
+type query1<'projectables, 'selectables, 'projections> = {
   from: From.t,
-  joins: array<Join.t>,
-  selection: Selection.t,
+  projections: Projections.t,
+  selections: Selections.t,
 }
-
-let toSQL = query => {
-  [
-    [Projections.toSQL(query.projections)],
-    [From.toSQL(query.from)],
-    Js.Array2.map(query.joins, Join.toSQL),
-    [Selection.toSQL(query.selection->Obj.magic)]
-  ]->Js.Array2.joinWith("\n")
-}
-
-let asSubQuery: t<'projections> => 'projections = query => toSQL(query)->Obj.magic
+type query2<'projectables, 'selectables, 'projections> = {from: string, joins: array<string>}
+type query3<'projectables, 'selectables, 'projections> = {from: string, joins: array<string>}
