@@ -1,6 +1,6 @@
 type t = array<string>
 
-let toSQL = joins =>
+let toSQL = (joins, withAlias) =>
   /* let result = `JOIN ${join.table.name} AS ${join.table.alias}` */
 
   /* switch join.on { */
@@ -8,6 +8,10 @@ let toSQL = joins =>
   /* | None => result */
   /* } */
 
-  joins
-  ->Js.Array2.mapi((join, i) => `JOIN ${join} AS ${Belt.Int.toString(i + 1)}`)
-  ->Js.Array2.joinWith("\n")
+  joins->Js.Array2.mapi((join, i) =>
+    if withAlias {
+      `JOIN ${join} AS ${Utils.createAlias(i + 1)}`
+    } else {
+      `JOIN ${join}`
+    }
+  )

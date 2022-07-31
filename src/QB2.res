@@ -1,3 +1,12 @@
+let toSQL = (query: Query.t2<_, _, _>) => {
+  [
+    Projections.toSQL(query.projections, true),
+    From.toSQL(query.from, true),
+    Joins.toSQL(query.joins, true),
+    Selections.toSQL(query.selections, true),
+  ]->Js.Array2.joinWith("\n")
+}
+
 let innerJoin = (
   type p s,
   query: Query.t2<('p1, 'p2), ('s1, 's2), 'projections>,
@@ -56,13 +65,4 @@ let where = (
   }
 
   query
-}
-
-let toSQL = (query: Query.t2<_, _, _>) => {
-  [
-    Projections.toSQL(query.projections, true),
-    From.toSQL(query.from, true),
-    Joins.toSQL(query.joins),
-    Selections.toSQL(query.selections, true),
-  ]
 }

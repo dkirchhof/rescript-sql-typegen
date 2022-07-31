@@ -1,3 +1,12 @@
+let toSQL = (query: Query.t3<_, _, _>) => {
+  [
+    Projections.toSQL(query.projections, true),
+    From.toSQL(query.from, true),
+    Joins.toSQL(query.joins, true),
+    Selections.toSQL(query.selections, true),
+  ]->Js.Array2.joinWith("\n")
+}
+
 let select = (
   query: Query.t3<'projectables, 'selectables, _>,
   getColumns: 'projectables => 'projections,
@@ -26,13 +35,4 @@ let where = (
   }
 
   query
-}
-
-let toSQL = (query: Query.t3<_, _, _>) => {
-  [
-    Projections.toSQL(query.projections, true),
-    From.toSQL(query.from, true),
-    Joins.toSQL(query.joins),
-    Selections.toSQL(query.selections, true),
-  ]
 }

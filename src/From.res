@@ -2,7 +2,7 @@ type t = string
 
 let toSQL = (from, withAlias) =>
   if withAlias {
-    `FROM ${from} AS 0`
+    [`FROM ${from} AS a`]
   } else {
-    `FROM ${from}`
+    [`FROM ${from}`]
   }

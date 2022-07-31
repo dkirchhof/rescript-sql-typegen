@@ -7,7 +7,7 @@ external make: Schema.column<'a> => t = "%identity"
 
 let toSQL = (ref, withAlias) =>
   if withAlias {
-    `${Belt.Int.toString(ref.tableIndex)}.${ref.columnName}`
+    `${Utils.createAlias(ref.tableIndex)}.${ref.columnName}`
   } else {
     ref.columnName
   }

@@ -31,3 +31,5 @@ let createColumnAccessorWithJoins = () => {
     })
   `)
 }
+
+let createAlias = index => Js.String.fromCharCode(index + 97)
