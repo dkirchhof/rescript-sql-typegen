@@ -1,9 +1,9 @@
 module Ref = {
   type t = ColumnRef(ColumnRef.t) | ValueRef(ValueRef.t)
 
-  let toSQL = ref => {
+  let toSQL = (ref, withAlias) => {
     switch ref {
-    | ColumnRef(column) => ColumnRef.toSQL(column, false)
+    | ColumnRef(column) => ColumnRef.toSQL(column, withAlias)
     | ValueRef(value) => ValueRef.toSQL(value)
     /* | SubQuery(query) => `(${query})` */
     }
@@ -35,11 +35,11 @@ let eqC = (column: Schema.column<'a>, value: Schema.column<'a>) => Eq(
   ColumnRef(ColumnRef.make(value)),
 )
 
-let rec toSQL = expr => {
+let rec toSQL = (expr, withAlias: bool) => {
   switch expr {
-  | And(ands) => `(${Belt.Array.joinWith(ands, " AND ", toSQL)})`
-  | Or(ors) => `(${Belt.Array.joinWith(ors, " OR ", toSQL)})`
-  | Eq(left, right) => `${Ref.toSQL(left)} = ${Ref.toSQL(right)}`
+  | And(ands) => `(${Belt.Array.joinWith(ands, " AND ", toSQL(_, withAlias))})`
+  | Or(ors) => `(${Belt.Array.joinWith(ors, " OR ", toSQL(_, withAlias))})`
+  | Eq(left, right) => `${Ref.toSQL(left, withAlias)} = ${Ref.toSQL(right, withAlias)}`
   /* | Neq(left, right) => */
   /* `${Ref.toSQL(left)} != ${Ref.toSQL(right)}` */
   /* | Gt(left, right) => */
