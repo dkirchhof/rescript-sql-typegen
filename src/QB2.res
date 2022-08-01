@@ -8,30 +8,24 @@ let toSQL = (query: Query.t2<_, _, _>) => {
 }
 
 let innerJoin = (
-  type p s,
   query: Query.t2<('p1, 'p2), ('s1, 's2), 'projections>,
-  f: module(Table.T with type projectables = p and type selectables = s),
+  table: Schema.table<'p, 'op, 's>,
 ) => {
-  let module(T) = f
-
-  let query: Query.t3<('p1, 'p2, p), ('s1, 's2, s), 'projections> = {
+  let query: Query.t3<('p1, 'p2, 'p), ('s1, 's2, 's), 'projections> = {
     ...query->Obj.magic,
-    joins: query.joins->Js.Array2.concat([T.tableName]),
+    joins: query.joins->Js.Array2.concat([table.name]),
   }
 
   query
 }
 
 let leftJoin = (
-  type p s,
   query: Query.t2<('p1, 'p2), ('s1, 's2), 'projections>,
-  f: module(Table.T with type optionalProjectables = p and type selectables = s),
+  table: Schema.table<'p, 'op, 's>,
 ) => {
-  let module(T) = f
-
-  let query: Query.t3<('p1, 'p2, p), ('s1, 's2, s), 'projections> = {
+  let query: Query.t3<('p1, 'p2, 'p), ('s1, 's2, 's), 'projections> = {
     ...query->Obj.magic,
-    joins: query.joins->Js.Array2.concat([T.tableName]),
+    joins: query.joins->Js.Array2.concat([table.name]),
   }
 
   query

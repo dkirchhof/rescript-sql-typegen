@@ -7,30 +7,24 @@ let toSQL = (query: Query.t1<_, _, _>) => {
 }
 
 let innerJoin = (
-  type p s,
   query: Query.t1<'projectables, 'selectables, 'projections>,
-  f: module(Table.T with type projectables = p and type selectables = s),
+  table: Schema.table<'p, 'op, 's>,
 ) => {
-  let module(T) = f
-
-  let query: Query.t2<('projectables, p), ('selectables, s), 'projections> = {
+  let query: Query.t2<('projectables, 'p), ('selectables, 's), 'projections> = {
     ...query->Obj.magic,
-    joins: [T.tableName],
+    joins: [table.name],
   }
 
   query
 }
 
 let leftJoin = (
-  type p s,
   query: Query.t1<'p1, 's1, 'projections>,
-  f: module(Table.T with type optionalProjectables = p and type selectables = s),
+  table: Schema.table<'p, 'op, 's>,
 ) => {
-  let module(T) = f
-
-  let query: Query.t2<('p1, p), ('s1, s), 'projections> = {
+  let query: Query.t2<('p1, 'p), ('s1, 's), 'projections> = {
     ...query->Obj.magic,
-    joins: [T.tableName],
+    joins: [table.name],
   }
 
   query
