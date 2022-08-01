@@ -54,7 +54,7 @@ let toSQL = (query: Query.t1<_, _, _>) => {
     Projections.toSQL(query.projections, false),
     From.toSQL(query.from, false),
     Selections.toSQL(query.selections, false),
-  ]->Js.Array2.joinWith("\n")
+  ]->Js.Array2.joinWith(" ")
 }
 
 let asSubQuery: Query.t1<_, _, 'projections> => SubQuery.t<'projections> = query => {

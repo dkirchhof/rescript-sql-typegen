@@ -14,4 +14,4 @@ let toSQL = (joins, withAlias) =>
     } else {
       `JOIN ${join}`
     }
-  )
+  )->Js.Array2.joinWith(" ")
