@@ -33,3 +33,11 @@ let createColumnAccessorWithJoins = () => {
 }
 
 let createAlias = index => Js.String.fromCharCode(index + 97)
+
+let ensureArray: 'a => array<'a> = input => {
+  %raw(`
+    function(input) {
+      return Array.isArray(input) ? input : [input];
+    }
+  `)(input)
+}

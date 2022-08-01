@@ -26,3 +26,14 @@ let r3 =
   ->QB3.select(((ar, al, g)) => (ar.name, al.name, g.name))
 
 r3->QB3.toSQL->Js.log
+
+
+
+
+
+
+
+let s1 = QB.from(Db.ArtistsTable.t)->QB1.where(t => Expr.eqV(t.name, "test"))->QB1.select(t => t.id)
+let s2 = QB.from(Db.AlbumsTable.t)->QB1.where(t => Expr.eqS(t.id, QB1.asSubQuery(s1)))
+
+s2->QB1.toSQL->Js.log

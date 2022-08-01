@@ -1,12 +1,3 @@
-let toSQL = (query: Query.t2<_, _, _>) => {
-  [
-    Projections.toSQL(query.projections, true),
-    From.toSQL(query.from, true),
-    Joins.toSQL(query.joins, true),
-    Selections.toSQL(query.selections, true),
-  ]->Js.Array2.joinWith("\n")
-}
-
 let innerJoin = (
   query: Query.t2<('p1, 'p2), ('s1, 's2), 'projections>,
   table: Schema.table<'p, 'op, 's>,
@@ -40,7 +31,7 @@ let select = (
 
   let query: Query.t2<'projectables, 'selectables, 'projections> = {
     ...query,
-    projections: Some(projections),
+    projections: projections->Utils.ensureArray->Some,
   }
 
   query
@@ -59,4 +50,18 @@ let where = (
   }
 
   query
+}
+
+let toSQL = (query: Query.t2<_, _, _>) => {
+  [
+    Projections.toSQL(query.projections, true),
+    From.toSQL(query.from, true),
+    Joins.toSQL(query.joins, true),
+    Selections.toSQL(query.selections, true),
+  ]->Js.Array2.joinWith("\n")
+}
+
+let asSubQuery: Query.t2<_, _, 'projections> => SubQuery.t<'projections> = query => {
+  query: query->Obj.magic,
+  toSQL: toSQL->Obj.magic,
 }

@@ -1,11 +1,11 @@
 module Ref = {
-  type t = ColumnRef(ColumnRef.t) | ValueRef(ValueRef.t)
+  type t = ColumnRef(ColumnRef.t) | ValueRef(ValueRef.t) | QueryRef(QueryRef.t)
 
   let toSQL = (ref, withAlias) => {
     switch ref {
     | ColumnRef(column) => ColumnRef.toSQL(column, withAlias)
     | ValueRef(value) => ValueRef.toSQL(value)
-    /* | SubQuery(query) => `(${query})` */
+    | QueryRef(query) => QueryRef.toSQL(query)
     }
   }
 }
@@ -33,6 +33,11 @@ let eqV = (column: Schema.column<'a>, value: 'a) => Eq(
 let eqC = (column: Schema.column<'a>, value: Schema.column<'a>) => Eq(
   ColumnRef(ColumnRef.make(column)),
   ColumnRef(ColumnRef.make(value)),
+)
+
+let eqS = (column: Schema.column<'a>, value: SubQuery.t<'a>) => Eq(
+  ColumnRef(ColumnRef.make(column)),
+  QueryRef(QueryRef.make(value)),
 )
 
 let rec toSQL = (expr, withAlias: bool) => {
