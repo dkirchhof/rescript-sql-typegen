@@ -1,8 +1,5 @@
-let innerJoin = (
-  query: Query.t1<'projectables, 'selectables, 'projections>,
-  table: Schema.table<'p, 'op, 's>,
-) => {
-  let query: Query.t2<('projectables, 'p), ('selectables, 's), 'projections> = {
+let innerJoin = (query: Query.t1<'p1, 's1, 'projections>, table: Schema.table<'p2, 'op2, 's2>) => {
+  let query: Query.t2<'p1, 'p2, 's1, 's2, 'projections> = {
     ...query->Obj.magic,
     joins: [table.name],
   }
@@ -11,7 +8,7 @@ let innerJoin = (
 }
 
 let leftJoin = (query: Query.t1<'p1, 's1, 'projections>, table: Schema.table<'p, 'op, 's>) => {
-  let query: Query.t2<('p1, 'p), ('s1, 's), 'projections> = {
+  let query: Query.t2<'p1, 'p, 's1, 's, 'projections> = {
     ...query->Obj.magic,
     joins: [table.name],
   }
@@ -19,14 +16,10 @@ let leftJoin = (query: Query.t1<'p1, 's1, 'projections>, table: Schema.table<'p,
   query
 }
 
-let select = (
-  query: Query.t1<'projectables, 'selectables, _>,
-  getColumns: 'projectables => 'projections,
-) => {
-  let columnAccessor = Utils.createColumnAccessorWithoutJoins()
-  let projections = getColumns(columnAccessor)->Obj.magic
+let select = (query: Query.t1<'p1, 's1, _>, getColumns: 'p1 => 'projections) => {
+  let projections = getColumns(Utils.createColumnAccessor(0))->Obj.magic
 
-  let query: Query.t1<'projectables, 'selectables, 'projections> = {
+  let query: Query.t1<'p1, 's1, 'projections> = {
     ...query,
     projections: projections->Utils.ensureArray->Some,
   }
@@ -34,14 +27,10 @@ let select = (
   query
 }
 
-let where = (
-  query: Query.t1<'projectables, 'selectables, 'projections>,
-  getSelections: 'selectables => Expr.t,
-) => {
-  let columnAccessor = Utils.createColumnAccessorWithoutJoins()
-  let selections = getSelections(columnAccessor)
+let where = (query: Query.t1<'p1, 's1, 'projections>, getSelections: 's1 => Expr.t) => {
+  let selections = getSelections(Utils.createColumnAccessor(0))
 
-  let query: Query.t1<'projectables, 'selectables, 'projections> = {
+  let query: Query.t1<'p1, 's1, 'projections> = {
     ...query,
     selections: Some(selections),
   }

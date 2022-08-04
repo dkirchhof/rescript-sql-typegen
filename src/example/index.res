@@ -45,7 +45,7 @@ QB.from(Db.ArtistsTable.t)->QB1.toSQL->Js.log
 
 // get album names and years of year 1982 or 1992
 QB.from(Db.AlbumsTable.t)
-  ->QB1.where(a => Expr.or_([Expr.eqV(a.id, 1982), Expr.eqV(a.id, 1992)]))
+  ->QB1.where(a => Expr.or_([Expr.eqV(a.year, 1982), Expr.eqV(a.year, 1992)]))
   ->QB1.select(a => (a.name, a.year))
   ->QB1.toSQL
   ->Js.log
@@ -59,7 +59,7 @@ QB.from(Db.AlbumsTable.t)
 // get all album names with song names (exclude empty albums) 
 QB.from(Db.AlbumsTable.t)
   ->QB1.innerJoin(Db.SongsTable.t)
-  ->QB2.select(((a, s)) => (a.name, s.name))
+  ->QB2.select((a, s) => (a.name, s.name))
   ->QB2.toSQL
   ->Js.log
 

@@ -18,6 +18,18 @@ let createColumnAccessorWithoutJoins = () => {
   `)
 }
 
+let createColumnAccessor = (tableIndex: int) => {
+  %raw(`
+    function(tableIndex) {
+      return new Proxy({}, {
+        get(_, columnName) {
+          return { tableIndex, columnName };
+        },
+      });
+    }
+  `)(tableIndex)
+}
+
 let createColumnAccessorWithJoins = () => {
   %raw(`
     new Proxy({}, {
