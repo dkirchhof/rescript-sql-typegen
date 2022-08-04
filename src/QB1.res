@@ -42,7 +42,7 @@ let leftJoin = (
     rightColumn,
   }
 
-  let query: Query.t2<'p1, 'p, 's1, 's, 'projections> = {
+  let query: Query.t2<'p1, 'p2, 's1, 's2, 'projections> = {
     ...query->Obj.magic,
     joins: [join],
   }
