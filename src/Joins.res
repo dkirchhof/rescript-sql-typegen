@@ -1,17 +1,31 @@
-type t = array<string>
+type joinType = Inner | Left
+
+type join = {
+  joinType: joinType,
+  tableName: string,
+  leftColumn: ColumnRef.t,
+  rightColumn: ColumnRef.t,
+}
+
+type t = array<join>
 
 let toSQL = (joins, withAlias) =>
-  /* let result = `JOIN ${join.table.name} AS ${join.table.alias}` */
-
-  /* switch join.on { */
-  /* | Some(on) => result ++ ` ON ${on->fst->Column.toSQL} = ${on->snd->Column.toSQL}` */
-  /* | None => result */
-  /* } */
-
-  joins->Js.Array2.mapi((join, i) =>
-    if withAlias {
-      `JOIN ${join} AS ${Utils.createAlias(i + 1)}`
-    } else {
-      `JOIN ${join}`
+  joins
+  ->Js.Array2.mapi((join, i) => {
+    let joinTypeString = switch join.joinType {
+    | Inner => "INNER"
+    | Left => "LEFT"
     }
-  )->Js.Array2.joinWith(" ")
+    
+    let left = ColumnRef.toSQL(join.leftColumn, true);
+    let right = ColumnRef.toSQL(join.rightColumn, true);
+
+    let selectionString = `ON ${left} = ${right}`
+
+    if withAlias {
+      `${joinTypeString} JOIN ${join.tableName} AS ${Utils.createAlias(i + 1)} ${selectionString}`
+    } else {
+      `${joinTypeString} JOIN ${join.tableName} ${selectionString}`
+    }
+  })
+  ->Js.Array2.joinWith(" ")
