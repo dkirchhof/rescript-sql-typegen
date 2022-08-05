@@ -1,19 +1,16 @@
 let innerJoin = (
   query: Query.t2<'p1, 'p2, 's1, 's2, 'projections>,
   table: Schema.table<'p3, 'op3, 's3>,
-  getLeftColumn: 's3 => Schema.column<'a>,
-  getRightColumn: ('s1, 's2) => Schema.column<'a>,
+  getCondition: ('s1, 's2, 's3) => Expr.t,
 ) => {
   open Joins
 
-  let leftColumn = getLeftColumn(Utils.createColumnAccessor(2))->ColumnRef.make
-  let rightColumn = getRightColumn(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1))->ColumnRef.make
+  let condition = getCondition(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1), Utils.createColumnAccessor(2))
 
   let join = {
     joinType: Inner,
     tableName: table.name,
-    leftColumn,
-    rightColumn,
+    condition,
   }
 
   let query: Query.t3<'p1, 'p2, 'p3, 's1, 's2, 's3, 'projections> = {
@@ -27,19 +24,16 @@ let innerJoin = (
 let leftJoin = (
   query: Query.t2<'p1, 'p2, 's1, 's2, 'projections>,
   table: Schema.table<'p3, 'op3, 's3>,
-  getLeftColumn: 's3 => Schema.column<'a>,
-  getRightColumn: ('s1, 's2) => Schema.column<'a>,
+  getCondition: ('s1, 's2, 's3) => Expr.t,
 ) => {
   open Joins
 
-  let leftColumn = getLeftColumn(Utils.createColumnAccessor(2))->ColumnRef.make
-  let rightColumn = getRightColumn(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1))->ColumnRef.make
+  let condition = getCondition(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1), Utils.createColumnAccessor(2))
 
   let join = {
     joinType: Left,
     tableName: table.name,
-    leftColumn,
-    rightColumn,
+    condition,
   }
 
   let query: Query.t3<'p1, 'p2, 'p3, 's1, 's2, 's3, 'projections> = {

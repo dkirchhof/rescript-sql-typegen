@@ -10,31 +10,31 @@ QB.from(Db.AlbumsTable.t)
 
 // get all artists with all albums with songs
 QB.from(Db.ArtistsTable.t)
-->QB1.leftJoin(Db.AlbumsTable.t, al => al.artistId, ar => ar.id)
-->QB2.leftJoin(Db.SongsTable.t, s => s.albumId, (_ar, al) => al.id)
+->QB1.leftJoin(Db.AlbumsTable.t, (ar, al) => Expr.eqC(al.artistId, ar.id))
+->QB2.leftJoin(Db.SongsTable.t, (_ar, al, s) => Expr.eqC(s.albumId,  al.id))
 ->QB3.toSQL
 ->Js.log
 
 // get all album names with song names (exclude empty albums)
 QB.from(Db.AlbumsTable.t)
-->QB1.innerJoin(Db.SongsTable.t, s => s.albumId, a => a.id)
+->QB1.innerJoin(Db.SongsTable.t, (a, s) => Expr.eqC(s.albumId, a.id))
 ->QB2.select((a, s) => (a.name, s.name))
 ->QB2.toSQL
 ->Js.log
 
 // get all albums which are newer than "Fear of the Dark" (join)
-/* QB.from(Db.AlbumsTable.t) */
-/* ->QB1.innerJoin(Db.AlbumsTable.t, (_a1, a2) => Expr.eqV(a2.name, "Fear of the Dark")) */
-/* ->QB1.where(a => Expr.gtS(a.year, QB2.asSubQuery(yearOfFearOfTheDarkQuery))) */
-/* ->QB1.toSQL */
-/* ->Js.log */
+QB.from(Db.AlbumsTable.t)
+->QB1.innerJoin(Db.AlbumsTable.t, (_a1, a2) => Expr.eqV(a2.name, "Fear of the Dark"))
+->QB2.where((a1, a2) => Expr.gtC(a1.year, a2.year))
+->QB2.toSQL
+->Js.log
 
 // get all albums which are newer than "Fear of the Dark" (subquery)
 let yearOfFearOfTheDarkQuery =
   QB.from(Db.AlbumsTable.t)
   ->QB1.select(a => a.year)
   ->QB1.where(a => Expr.eqV(a.name, "Fear of the Dark"))
-  ->QB1.leftJoin(Db.SongsTable.t, s => s.id, a => a.id)
+  ->QB1.leftJoin(Db.SongsTable.t, (a, s) => Expr.eqC(s.id, a.id))
 
 QB.from(Db.AlbumsTable.t)
 ->QB1.where(a => Expr.gtS(a.year, QB2.asSubQuery(yearOfFearOfTheDarkQuery)))

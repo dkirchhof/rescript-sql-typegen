@@ -3,8 +3,7 @@ type joinType = Inner | Left
 type join = {
   joinType: joinType,
   tableName: string,
-  leftColumn: ColumnRef.t,
-  rightColumn: ColumnRef.t,
+  condition: Expr.t,
 }
 
 type t = array<join>
@@ -17,10 +16,7 @@ let toSQL = (joins, withAlias) =>
     | Left => "LEFT"
     }
     
-    let left = ColumnRef.toSQL(join.leftColumn, true);
-    let right = ColumnRef.toSQL(join.rightColumn, true);
-
-    let selectionString = `ON ${left} = ${right}`
+    let selectionString = `ON ${Expr.toSQL(join.condition, true)}`
 
     if withAlias {
       `${joinTypeString} JOIN ${join.tableName} AS ${Utils.createAlias(i + 1)} ${selectionString}`
