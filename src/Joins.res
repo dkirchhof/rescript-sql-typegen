@@ -1,27 +1,14 @@
-type joinType = Inner | Left
+type t<'p1, 's1, 'p2, 's2> = (option<Join.t<'p1, 's1>>, option<Join.t<'p2, 's2>>)
 
-type join = {
-  joinType: joinType,
-  tableName: string,
-  condition: Expr.t,
-}
+external toArray: t<_, _, _, _> => array<option<Join.t<_, _>>> = "%identity"
 
-type t = array<join>
+let getTableAliases = joins =>
+  Js.Array2.map(joins, join => Belt.Option.mapWithDefault(join, "", Join.getTableAlias))
 
-let toSQL = (joins, withAlias) =>
+let toSQL = (joins, tableAliases) => {
   joins
-  ->Js.Array2.mapi((join, i) => {
-    let joinTypeString = switch join.joinType {
-    | Inner => "INNER"
-    | Left => "LEFT"
-    }
-    
-    let selectionString = `ON ${Expr.toSQL(join.condition, true)}`
-
-    if withAlias {
-      `${joinTypeString} JOIN ${join.tableName} AS ${Utils.createAlias(i + 1)} ${selectionString}`
-    } else {
-      `${joinTypeString} JOIN ${join.tableName} ${selectionString}`
-    }
-  })
+  ->toArray
+  ->Js.Array2.map(Belt.Option.map(_, Join.toSQL(_, tableAliases)))
+  ->Js.Array2.filter(Belt.Option.isSome)
   ->Js.Array2.joinWith(" ")
+}

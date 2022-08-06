@@ -1,8 +1,7 @@
-type t = string
+type t<'p0, 's0> = Table.t<'p0, 's0>
 
-let toSQL = (from, withAlias) =>
-  if withAlias {
-    `FROM ${from} AS a`
-  } else {
-    `FROM ${from}`
-  }
+let toSQL = table => {
+  open Table
+
+  `FROM ${table.name} AS ${table.alias}`
+}

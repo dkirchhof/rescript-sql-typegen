@@ -15,49 +15,37 @@ type rec t =
 let and_ = ands => And(ands)
 let or_ = ors => Or(ors)
 
-let eq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => Equal(
-  Ref.tFromT2(left),
-  Ref.tFromT2(right),
-)
+let eq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => Equal(Ref.tFromT2(left), Ref.tFromT2(right))
 
-let neq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => NotEqual(
-  Ref.tFromT2(left),
-  Ref.tFromT2(right),
-)
+let neq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => NotEqual(Ref.tFromT2(left), Ref.tFromT2(right))
 
-let gt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThan(
-  Ref.tFromT2(left),
-  Ref.tFromT2(right),
-)
+let gt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThan(Ref.tFromT2(left), Ref.tFromT2(right))
 
 let gte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThanEqual(
   Ref.tFromT2(left),
   Ref.tFromT2(right),
 )
 
-let lt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThan(
-  Ref.tFromT2(left),
-  Ref.tFromT2(right),
-)
+let lt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThan(Ref.tFromT2(left), Ref.tFromT2(right))
 
 let lte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThanEqual(
   Ref.tFromT2(left),
   Ref.tFromT2(right),
 )
 
-let rec toSQL = (expr, withAlias: bool) => {
+let rec toSQL = (expr, tableAliases) => {
   switch expr {
-  | And(ands) => `(${Belt.Array.joinWith(ands, " AND ", toSQL(_, withAlias))})`
-  | Or(ors) => `(${Belt.Array.joinWith(ors, " OR ", toSQL(_, withAlias))})`
-  | Equal(left, right) => `${Ref.toSQL(left, withAlias)} = ${Ref.toSQL(right, withAlias)}`
-  | NotEqual(left, right) => `${Ref.toSQL(left, withAlias)} != ${Ref.toSQL(right, withAlias)}`
-  | GreaterThan(left, right) => `${Ref.toSQL(left, withAlias)} > ${Ref.toSQL(right, withAlias)}`
-  | GreaterThanEqual(left, right) => `${Ref.toSQL(left, withAlias)} >= ${Ref.toSQL(right, withAlias)}`
-  | LessThan(left, right) => `${Ref.toSQL(left, withAlias)} < ${Ref.toSQL(right, withAlias)}`
-  | LessThanEqual(left, right) => `${Ref.toSQL(left, withAlias)} <= ${Ref.toSQL(right, withAlias)}`
-
-
-
+  | And(ands) => `(${Belt.Array.joinWith(ands, " AND ", toSQL(_, tableAliases))})`
+  | Or(ors) => `(${Belt.Array.joinWith(ors, " OR ", toSQL(_, tableAliases))})`
+  | Equal(left, right) => `${Ref.toSQL(left, tableAliases)} = ${Ref.toSQL(right, tableAliases)}`
+  | NotEqual(left, right) => `${Ref.toSQL(left, tableAliases)} != ${Ref.toSQL(right, tableAliases)}`
+  | GreaterThan(left, right) =>
+    `${Ref.toSQL(left, tableAliases)} > ${Ref.toSQL(right, tableAliases)}`
+  | GreaterThanEqual(left, right) =>
+    `${Ref.toSQL(left, tableAliases)} >= ${Ref.toSQL(right, tableAliases)}`
+  | LessThan(left, right) => `${Ref.toSQL(left, tableAliases)} < ${Ref.toSQL(right, tableAliases)}`
+  | LessThanEqual(left, right) =>
+    `${Ref.toSQL(left, tableAliases)} <= ${Ref.toSQL(right, tableAliases)}`
 
   /* `${Ref.toSQL(left)} <= ${Ref.toSQL(right)}` */
   /* | In(left, rights) => */

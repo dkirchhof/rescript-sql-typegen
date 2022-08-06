@@ -1,3 +1,6 @@
+let getColumns = fn =>
+  fn(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1), Utils.createColumnAccessor(2))
+
 let from = (table: Schema.table<'p, _, 's>, alias) => {
   open Table
   open Query
@@ -10,26 +13,17 @@ let from = (table: Schema.table<'p, _, 's>, alias) => {
   let query = {
     from: t0,
     joins: (None, None),
-    projections: None,
     selections: None,
   }
 
   query
 }
 
-let join1 = (
-  joinType,
-  query: Query.t<'p0, 's0, _, _, 'p2, 's2, 'projections>,
-  table: Table.t<'p1, 's1>,
-  getCondition: ('s0, 's1, 's2) => Expr.t,
-) => {
+let join1 = (joinType, query, table, getCondition) => {
+  open Query
   open Join
 
-  let condition = getCondition(
-    Utils.createColumnAccessor(0),
-    Utils.createColumnAccessor(1),
-    Utils.createColumnAccessor(2),
-  )
+  let condition = getColumns(getCondition)
 
   let (_, j2) = query.joins
 
@@ -48,7 +42,7 @@ let join1 = (
 }
 
 let innerJoin1 = (
-  query: Query.t<'p0, 's0, _, _, 'p2, 's2, 'projections>,
+  query: Query.t<'p0, 's0, _, _, 'p2, 's2>,
   table: Schema.table<'p1, 'op1, 's1>,
   alias,
   getCondition: ('s0, 's1, 's2) => Expr.t,
@@ -62,7 +56,7 @@ let innerJoin1 = (
 }
 
 let leftJoin1 = (
-  query: Query.t<'p0, 's0, _, _, 'p2, 's2, 'projections>,
+  query: Query.t<'p0, 's0, _, _, 'p2, 's2>,
   table: Schema.table<'p1, 'op1, 's1>,
   alias,
   getCondition: ('s0, 's1, 's2) => Expr.t,
@@ -75,19 +69,11 @@ let leftJoin1 = (
   join1(Left, query, t1, getCondition)
 }
 
-let join2 = (
-  joinType,
-  query: Query.t<'p0, 's0, 'p1, 's1, _, _, 'projections>,
-  table: Table.t<'p2, 's2>,
-  getCondition: ('s0, 's1, 's2) => Expr.t,
-) => {
+let join2 = (joinType, query, table, getCondition) => {
+  open Query
   open Join
 
-  let condition = getCondition(
-    Utils.createColumnAccessor(0),
-    Utils.createColumnAccessor(1),
-    Utils.createColumnAccessor(2),
-  )
+  let condition = getColumns(getCondition)
 
   let (j1, _) = query.joins
 
@@ -106,7 +92,7 @@ let join2 = (
 }
 
 let innerJoin2 = (
-  query: Query.t<'p0, 's0, 'p1, 's1, _, _, 'projections>,
+  query: Query.t<'p0, 's0, 'p1, 's1, _, _>,
   table: Schema.table<'p2, 'op2, 's2>,
   alias,
   getCondition: ('s0, 's1, 's2) => Expr.t,
@@ -120,7 +106,7 @@ let innerJoin2 = (
 }
 
 let leftJoin2 = (
-  query: Query.t<'p0, 's0, 'p1, 's1, _, _, 'projections>,
+  query: Query.t<'p0, 's0, 'p1, 's1, _, _>,
   table: Schema.table<'p2, 'op2, 's2>,
   alias,
   getCondition: ('s0, 's1, 's2) => Expr.t,
@@ -134,19 +120,16 @@ let leftJoin2 = (
 }
 
 let select = (
-  query: Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2, 'projections>,
-  getColumns: ('p0, 'p1, 'p2) => 'projections,
+  query: Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
+  getProjections: ('p0, 'p1, 'p2) => 'projections,
 ) => {
-  let projections =
-    getColumns(
-      Utils.createColumnAccessor(0),
-      Utils.createColumnAccessor(1),
-      Utils.createColumnAccessor(2),
-    )->Obj.magic
+  open Query
 
-  let query: Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2, 'projections> = {
-    ...query,
-    projections: projections->Utils.ensureArray->Some,
+  let projections = getColumns(getProjections)->Utils.ensureArray->Obj.magic
+
+  let query = {
+    query,
+    projections: (projections :> 'projections),
   }
 
   query
@@ -166,16 +149,21 @@ let select = (
 /* query */
 /* } */
 
-/* let toSQL = (query: Query.t<_, _, _, _, _, _, _, _, _>) => { */
-/* [ */
-/* Projections.toSQL(query.projections, true), */
-/* From.toSQL(query.from, true), */
-/* Joins.toSQL(query.joins, true), */
-/* Selections.toSQL(query.selections, true), */
-/* ]->Js.Array2.joinWith(" ") */
-/* } */
-
 /* let asSubQuery: Query.t2<_, _, _, _, 'projections> => SubQuery.t<'projections> = query => { */
 /* query: query->Obj.magic, */
 /* toSQL: toSQL->Obj.magic, */
 /* } */
+
+let toSQL = (executable: Query.executable<_, _, _, _, _, _, _>) => {
+  let tableAliases = Js.Array2.concat(
+    [executable.query.from.alias],
+    executable.query.joins->Joins.toArray->Joins.getTableAliases,
+  )
+
+  [
+    Projections.toSQL(executable.projections->Obj.magic, tableAliases),
+    From.toSQL(executable.query.from),
+    Joins.toSQL(executable.query.joins, tableAliases),
+    /* Selections.toSQL(query.selections, true), */
+  ]->Js.Array2.joinWith(" ")
+}

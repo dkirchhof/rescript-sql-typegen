@@ -8,16 +8,6 @@ let inspect = %raw(`
   }
 `)
 
-let createColumnAccessorWithoutJoins = () => {
-  %raw(`
-    new Proxy({}, {
-      get(_, columnName) {
-        return { tableIndex: 0, columnName };
-      },
-    })
-  `)
-}
-
 let createColumnAccessor = (tableIndex: int) => {
   %raw(`
     function(tableIndex) {
@@ -29,22 +19,6 @@ let createColumnAccessor = (tableIndex: int) => {
     }
   `)(tableIndex)
 }
-
-let createColumnAccessorWithJoins = () => {
-  %raw(`
-    new Proxy({}, {
-      get(_, tableIndexString) {
-        return new Proxy({}, {
-          get(_, columnName) {
-            return { tableIndex: Number(tableIndexString), columnName };
-          },
-        });
-      },
-    })
-  `)
-}
-
-let createAlias = index => Js.String.fromCharCode(index + 97)
 
 let ensureArray: 'a => array<'a> = input => {
   %raw(`

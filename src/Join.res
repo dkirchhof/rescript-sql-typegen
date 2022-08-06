@@ -5,3 +5,16 @@ type t<'p, 's> = {
   joinType: joinType,
   condition: Expr.t,
 }
+
+let getTableAlias = join => join.table.alias
+
+let toSQL = (join, tableAliases) => {
+  let joinTypeString = switch join.joinType {
+  | Inner => "INNER"
+  | Left => "LEFT"
+  }
+
+  let selectionString = `ON ${Expr.toSQL(join.condition, tableAliases)}`
+
+  `${joinTypeString} JOIN ${join.table.name} AS ${join.table.alias} ${selectionString}`
+}
