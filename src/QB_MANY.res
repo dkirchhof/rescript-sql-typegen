@@ -135,24 +135,19 @@ let select = (
   query
 }
 
-/* let where = ( */
-/* query: Query.t2<'p1, 'p2, 's1, 's2, 'projections>, */
-/* getSelections: ('s1, 's2) => Expr.t, */
-/* ) => { */
-/* let selections = getSelections(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1)) */
+let where = (
+  query: Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
+  getSelections: ('s0, 's1, 's2) => Expr.t,
+) => {
+  let selections = getColumns(getSelections)
 
-/* let query: Query.t2<'p1, 'p2, 's1, 's2, 'projections> = { */
-/* ...query, */
-/* selections: Some(selections), */
-/* } */
+  let query = {
+    ...query,
+    selections: Some(selections),
+  }
 
-/* query */
-/* } */
-
-/* let asSubQuery: Query.t2<_, _, _, _, 'projections> => SubQuery.t<'projections> = query => { */
-/* query: query->Obj.magic, */
-/* toSQL: toSQL->Obj.magic, */
-/* } */
+  query
+}
 
 let toSQL = (executable: Query.executable<_, _, _, _, _, _, _>) => {
   let tableAliases = Js.Array2.concat(
@@ -164,6 +159,15 @@ let toSQL = (executable: Query.executable<_, _, _, _, _, _, _>) => {
     Projections.toSQL(executable.projections->Obj.magic, tableAliases),
     From.toSQL(executable.query.from),
     Joins.toSQL(executable.query.joins, tableAliases),
-    /* Selections.toSQL(query.selections, true), */
-  ]->Js.Array2.joinWith(" ")
+    Selections.toSQL(executable.query.selections, tableAliases),
+  ]
+  ->Js.Array2.filter(s => String.length(s) > 0)
+  ->Js.Array2.joinWith(" ")
+}
+
+let asSubQuery: Query.executable<_, _, _, _, _, _, 'projections> => SubQuery.t<
+  'projections,
+> = query => {
+  query: query->Obj.magic,
+  toSQL: toSQL->Obj.magic,
 }

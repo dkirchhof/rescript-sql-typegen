@@ -24,65 +24,69 @@ let s2: SubQuery.t<'a> => Ref.t2<'a> = subQuery => {
   Ref.QueryRef(QueryRef.make(subQuery))->Obj.magic
 }
 
-/* // get all artists */
-/* QB.from(Db.ArtistsTable.t)->QB1.toSQL->Js.log */
+open QB_MANY
 
-/* // get album names and years of year 1982 or 1992 */
-/* QB.from(Db.AlbumsTable.t) */
-/* ->QB1.where(a => Expr.or_([Expr.eq(c2(a.year), v2(1982)), Expr.eq(c2(a.year), v2(1992))])) */
-/* ->QB1.select(a => (c(a.name), c(a.year))) */
+let log = (title, query) => {
+  Js.log2(`\x1b[1m%s\x1b[0m`, title)
+  Js.log(query->toSQL ++ ";")
+  Js.log("")
+}
+
+log("get all artists:", from(Db.ArtistsTable.t, "a")->select((a, _, _) => (c(a.id), c(a.name))))
+
+log(
+  "get album names and years of year 1982 or 1992:",
+  from(Db.AlbumsTable.t, "a")
+  ->where((a, _, _) => Expr.or_([Expr.eq(c2(a.year), v2(1982)), Expr.eq(c2(a.year), v2(1992))]))
+  ->select((a, _, _) => (c(a.name), c(a.year))),
+)
+
+log(
+  "get all artists with it's albums with it's songs:",
+  from(Db.ArtistsTable.t, "artist")
+  ->leftJoin1(Db.AlbumsTable.t, "album", (ar, al, _s) => Expr.eq(c2(al.artistId), c2(ar.id)))
+  ->leftJoin2(Db.SongsTable.t, "song", (_ar, al, s) => Expr.eq(c2(s.albumId), c2(al.id)))
+  ->select((ar, al, s) => (c(ar.name), c(al.name), c(s.name))),
+)
+
+log(
+  "get all album names with song names (exclude empty albums):",
+  from(Db.AlbumsTable.t, "a")
+  ->innerJoin1(Db.SongsTable.t, "s", (a, s, _) => Expr.eq(c2(s.albumId), c2(a.id)))
+  ->select((a, s, _) => (c(a.name), c(s.name))),
+)
+
+log(
+  "get all albums which are newer than 'Fear of the Dark' (join):",
+  from(Db.AlbumsTable.t, "a1")
+  ->innerJoin1(Db.AlbumsTable.t, "a2", (_, a2, _) => Expr.eq(c2(a2.name), v2("Fear of the Dark")))
+  ->where((a1, a2, _) => Expr.gt(c2(a1.year), c2(a2.year)))
+  ->select((a1, _, _) => c(a1.name)),
+)
+
+log(
+  "get all albums which are newer than 'Fear of the Dark' (subquery):",
+  from(Db.AlbumsTable.t, "a1")
+  ->where((a, _, _) =>
+    Expr.gt(
+      c2(a.year),
+      s2(
+        from(Db.AlbumsTable.t, "a2")
+        ->where((a, _, _) => Expr.eq(c2(a.name), v2("Fear of the Dark")))
+        ->select((a, _, _) => c(a.year))
+        ->asSubQuery,
+      ),
+    )
+  )
+  ->select((a, _, _) => c(a.name)),
+)
+
+/* // get avg song duration */
+/* QB.from(Db.SongsTable.t) */
+/* /1* ->QB1.select(s => column(s.duration)) *1/ */
+/* /1* ->QB1.select(s => Agg.avg(s.id)) *1/ */
+/* ->QB1.select(s => Agg.avg(1)) */
 /* ->QB1.toSQL */
 /* ->Js.log */
 
-/* // get all artists with all albums with songs */
-/* QB.from(Db.ArtistsTable.t) */
-/* ->QB1.leftJoin(Db.AlbumsTable.t, (ar, al) => Expr.eq(c2(al.artistId), c2(ar.id))) */
-/* ->QB2.leftJoin(Db.SongsTable.t, (_ar, al, s) => Expr.eq(c2(s.albumId), c2(al.id))) */
-/* ->QB3.toSQL */
-/* ->Js.log */
-
-/* // get all album names with song names (exclude empty albums) */
-/* QB.from(Db.AlbumsTable.t) */
-/* ->QB1.innerJoin(Db.SongsTable.t, (a, s) => Expr.eq(c2(s.albumId), c2(a.id))) */
-/* ->QB2.select((a, s) => (c(a.name), c(s.name))) */
-/* ->QB2.toSQL */
-/* ->Js.log */
-
-/* // get all albums which are newer than "Fear of the Dark" (join) */
-/* QB.from(Db.AlbumsTable.t) */
-/* ->QB1.innerJoin(Db.AlbumsTable.t, (_a1, a2) => Expr.eq(c2(a2.name), v2("Fear of the Dark"))) */
-/* ->QB2.where((a1, a2) => Expr.gt(c2(a1.year), c2(a2.year))) */
-/* ->QB2.toSQL */
-/* ->Js.log */
-
-/* // get all albums which are newer than "Fear of the Dark" (subquery) */
-/* let yearOfFearOfTheDarkQuery = */
-/*   QB.from(Db.AlbumsTable.t) */
-/*   ->QB1.select(a => c(a.year)) */
-/*   ->QB1.where(a => Expr.eq(c2(a.name), v2("Fear of the Dark"))) */
-
-/* QB.from(Db.AlbumsTable.t) */
-/* ->QB1.where(a => Expr.gt(c2(a.year), s2(QB1.asSubQuery(yearOfFearOfTheDarkQuery)))) */
-/* ->QB1.toSQL */
-/* ->Js.log */
-
-/* /1* /2* // get avg song duration *2/ *1/ */
-/* /1* /2* QB.from(Db.SongsTable.t) *2/ *1/ */
-/* /1* /2* /3* ->QB1.select(s => column(s.duration)) *3/ *2/ *1/ */
-/* /1* /2* /3* ->QB1.select(s => Agg.avg(s.id)) *3/ *2/ *1/ */
-/* /1* /2* ->QB1.select(s => Agg.avg(1)) *2/ *1/ */
-/* /1* /2* ->QB1.toSQL *2/ *1/ */
-/* /1* /2* ->Js.log *2/ *1/ */
-
-/* /1* /2* // get all songs which are longer then the avg *2/ *1/ */
-
-
-Js.log("##############################")
-
-let test = QB_MANY.from(Db.ArtistsTable.t, "artist")
-->QB_MANY.leftJoin1(Db.AlbumsTable.t, "album", (ar, al, _) => Expr.eq(c2(al.artistId), c2(ar.id)))
-->QB_MANY.leftJoin2(Db.SongsTable.t, "song", (_ar, al, s) => Expr.eq(c2(s.albumId), c2(al.id)))
-->QB_MANY.select((ar, al, s) => (c(ar.name), c(al.name), c(s.name)))
-
-/* test->Utils.inspect */
-test->QB_MANY.toSQL->Js.log
+/* // get all songs which are longer then the avg */
