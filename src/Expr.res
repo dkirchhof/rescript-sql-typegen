@@ -1,14 +1,4 @@
-module Ref = {
-  type t = ColumnRef(ColumnRef.t) | ValueRef(ValueRef.t) | QueryRef(QueryRef.t)
-
-  let toSQL = (ref, withAlias) => {
-    switch ref {
-    | ColumnRef(column) => ColumnRef.toSQL(column, withAlias)
-    | ValueRef(value) => ValueRef.toSQL(value)
-    | QueryRef(query) => QueryRef.toSQL(query)
-    }
-  }
-}
+type ref<'t>
 
 type rec t =
   | And(array<t>)
@@ -25,94 +15,34 @@ type rec t =
 let and_ = ands => And(ands)
 let or_ = ors => Or(ors)
 
-let eqV = (column: Schema.column<'a>, value: 'a) => Equal(
-  ColumnRef(ColumnRef.make(column)),
-  ValueRef(ValueRef.make(value)),
+let eq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => Equal(
+  Ref.tFromT2(left),
+  Ref.tFromT2(right),
 )
 
-let eqC = (column: Schema.column<'a>, value: Schema.column<'a>) => Equal(
-  ColumnRef(ColumnRef.make(column)),
-  ColumnRef(ColumnRef.make(value)),
+let neq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => NotEqual(
+  Ref.tFromT2(left),
+  Ref.tFromT2(right),
 )
 
-let eqS = (column: Schema.column<'a>, value: SubQuery.t<'a>) => Equal(
-  ColumnRef(ColumnRef.make(column)),
-  QueryRef(QueryRef.make(value)),
+let gt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThan(
+  Ref.tFromT2(left),
+  Ref.tFromT2(right),
 )
 
-let neqV = (column: Schema.column<'a>, value: 'a) => NotEqual(
-  ColumnRef(ColumnRef.make(column)),
-  ValueRef(ValueRef.make(value)),
+let gte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThanEqual(
+  Ref.tFromT2(left),
+  Ref.tFromT2(right),
 )
 
-let neqC = (column: Schema.column<'a>, value: Schema.column<'a>) => NotEqual(
-  ColumnRef(ColumnRef.make(column)),
-  ColumnRef(ColumnRef.make(value)),
+let lt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThan(
+  Ref.tFromT2(left),
+  Ref.tFromT2(right),
 )
 
-let neqS = (column: Schema.column<'a>, value: SubQuery.t<'a>) => NotEqual(
-  ColumnRef(ColumnRef.make(column)),
-  QueryRef(QueryRef.make(value)),
-)
-
-let gtV = (column: Schema.column<'a>, value: 'a) => GreaterThan(
-  ColumnRef(ColumnRef.make(column)),
-  ValueRef(ValueRef.make(value)),
-)
-
-let gtC = (column: Schema.column<'a>, value: Schema.column<'a>) => GreaterThan(
-  ColumnRef(ColumnRef.make(column)),
-  ColumnRef(ColumnRef.make(value)),
-)
-
-let gtS = (column: Schema.column<'a>, value: SubQuery.t<'a>) => GreaterThan(
-  ColumnRef(ColumnRef.make(column)),
-  QueryRef(QueryRef.make(value)),
-)
-
-let gteV = (column: Schema.column<'a>, value: 'a) => GreaterThanEqual(
-  ColumnRef(ColumnRef.make(column)),
-  ValueRef(ValueRef.make(value)),
-)
-
-let gteC = (column: Schema.column<'a>, value: Schema.column<'a>) => GreaterThanEqual(
-  ColumnRef(ColumnRef.make(column)),
-  ColumnRef(ColumnRef.make(value)),
-)
-
-let gteS = (column: Schema.column<'a>, value: SubQuery.t<'a>) => GreaterThanEqual(
-  ColumnRef(ColumnRef.make(column)),
-  QueryRef(QueryRef.make(value)),
-)
-
-let ltV = (column: Schema.column<'a>, value: 'a) => LessThan(
-  ColumnRef(ColumnRef.make(column)),
-  ValueRef(ValueRef.make(value)),
-)
-
-let ltC = (column: Schema.column<'a>, value: Schema.column<'a>) => LessThan(
-  ColumnRef(ColumnRef.make(column)),
-  ColumnRef(ColumnRef.make(value)),
-)
-
-let ltS = (column: Schema.column<'a>, value: SubQuery.t<'a>) => LessThan(
-  ColumnRef(ColumnRef.make(column)),
-  QueryRef(QueryRef.make(value)),
-)
-
-let lteV = (column: Schema.column<'a>, value: 'a) => LessThanEqual(
-  ColumnRef(ColumnRef.make(column)),
-  ValueRef(ValueRef.make(value)),
-)
-
-let lteC = (column: Schema.column<'a>, value: Schema.column<'a>) => LessThanEqual(
-  ColumnRef(ColumnRef.make(column)),
-  ColumnRef(ColumnRef.make(value)),
-)
-
-let lteS = (column: Schema.column<'a>, value: SubQuery.t<'a>) => LessThanEqual(
-  ColumnRef(ColumnRef.make(column)),
-  QueryRef(QueryRef.make(value)),
+let lte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThanEqual(
+  Ref.tFromT2(left),
+  Ref.tFromT2(right),
 )
 
 let rec toSQL = (expr, withAlias: bool) => {

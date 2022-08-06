@@ -55,6 +55,8 @@ let select = (query: Query.t1<'p1, 's1, _>, getColumns: 'p1 => 'projections) => 
   query
 }
 
+/* let select2 = (query: Query.t1<'p1, 's1, _>, getColumns: 'p1 => (Ref.t2<'a>, Ref.t2<'b>)) => select(query, getColumns) */
+
 let where = (query: Query.t1<'p1, 's1, 'projections>, getSelections: 's1 => Expr.t) => {
   let selections = getSelections(Utils.createColumnAccessor(0))
 
@@ -68,9 +70,9 @@ let where = (query: Query.t1<'p1, 's1, 'projections>, getSelections: 's1 => Expr
 
 let toSQL = (query: Query.t1<_, _, _>) => {
   [
-    Projections.toSQL(query.projections, false),
-    From.toSQL(query.from, false),
-    Selections.toSQL(query.selections, false),
+    Projections.toSQL(query.projections, true),
+    From.toSQL(query.from, true),
+    Selections.toSQL(query.selections, true),
   ]->Js.Array2.joinWith(" ")
 }
 

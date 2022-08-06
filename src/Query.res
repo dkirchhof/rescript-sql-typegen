@@ -20,3 +20,10 @@ type t3<'p1, 'p2, 'p3, 's1, 's2, 's3, 'projections> = {
   projections: Projections.t,
   selections: Selections.t,
 }
+
+type t<'p0, 's0, 'p1, 's1, 'p2, 's2, 'projections> = {
+  from: Table.t<'p0,'s0>,
+  joins: (option<Join.t<'p1, 's1>>, option<Join.t<'p2, 's2>>),
+  projections: Projections.t,
+  selections: Selections.t,
+}
