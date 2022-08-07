@@ -80,6 +80,7 @@ let from = (table: Schema.table<_, _>, alias) => {
     joins: (None, None),
     selections: None,
     groupBys: [],
+    havings: None,
     orderBys: [],
   }
 
@@ -131,6 +132,19 @@ let groupBy = (query, getGroupBys) => {
   let query = {
     ...query,
     groupBys,
+  }
+
+  query
+}
+
+let having = (query, getHavings) => {
+  open Query
+
+  let havings = applyColumnAccessors(getHavings)
+
+  let query = {
+    ...query,
+    havings: Some(havings),
   }
 
   query

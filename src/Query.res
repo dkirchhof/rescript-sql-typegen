@@ -3,6 +3,7 @@ type t<'p0, 's0, 'p1, 's1, 'p2, 's2> = {
   joins: Joins.t<'p1, 's1, 'p2, 's2>,
   selections: Selections.t,
   groupBys: GroupBys.t, 
+  havings: Havings.t,
   orderBys: OrderBys.t, 
 }
 

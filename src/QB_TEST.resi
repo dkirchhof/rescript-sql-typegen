@@ -68,6 +68,11 @@ let groupBy: (
   ('s0, 's1, 's2) => GroupBys.t,
 ) => Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>
 
+let having: (
+  Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
+  ('s0, 's1, 's2) => Expr.t,
+) => Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>
+
 let orderBy: (
   Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
   ('s0, 's1, 's2) => OrderBys.t,
