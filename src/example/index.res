@@ -9,7 +9,7 @@ let v: 'a => 'a = value => {
 }
 
 let s: SubQuery.t<'a> => 'a = subQuery => {
-  conv(() => QueryRef.toSQL(subQuery))
+  Ref.QueryRef(QueryRef.make(subQuery))->Obj.magic
 }
 
 let c2: Schema.column<'a> => Ref.t2<'a> = column => {
@@ -44,22 +44,22 @@ log(
 log(
   "get all artists with it's albums with it's songs:",
   from(Db.ArtistsTable.t, "artist")
-  ->leftJoin1(Db.AlbumsTable.t, "album", (ar, al, _s) => Expr.eq(c2(al.artistId), c2(ar.id)))
-  ->leftJoin2(Db.SongsTable.t, "song", (_ar, al, s) => Expr.eq(c2(s.albumId), c2(al.id)))
+  ->QB_TEST.leftJoin1(Db.AlbumsTable.t, "album", (ar, al, _s) => Expr.eq(c2(al.artistId), c2(ar.id)))
+  ->QB_TEST.leftJoin2(Db.SongsTable.t, "song", (_ar, al, s) => Expr.eq(c2(s.albumId), c2(al.id)))
   ->select((ar, al, s) => (c(ar.name), c(al.name), c(s.name))),
 )
 
 log(
   "get all album names with song names (exclude empty albums):",
   from(Db.AlbumsTable.t, "a")
-  ->innerJoin1(Db.SongsTable.t, "s", (a, s, _) => Expr.eq(c2(s.albumId), c2(a.id)))
+  ->QB_TEST.innerJoin1(Db.SongsTable.t, "s", (a, s, _) => Expr.eq(c2(s.albumId), c2(a.id)))
   ->select((a, s, _) => (c(a.name), c(s.name))),
 )
 
 log(
   "get all albums which are newer than 'Fear of the Dark' (join):",
   from(Db.AlbumsTable.t, "a1")
-  ->innerJoin1(Db.AlbumsTable.t, "a2", (_, a2, _) => Expr.eq(c2(a2.name), v2("Fear of the Dark")))
+  ->QB_TEST.innerJoin1(Db.AlbumsTable.t, "a2", (_, a2, _) => Expr.eq(c2(a2.name), v2("Fear of the Dark")))
   ->where((a1, a2, _) => Expr.gt(c2(a1.year), c2(a2.year)))
   ->select((a1, _, _) => c(a1.name)),
 )
