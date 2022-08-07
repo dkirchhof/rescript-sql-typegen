@@ -27,15 +27,10 @@ let join1 = (joinType, query, table: Schema.table<_, _, _>, alias, getCondition)
 
   let condition = getColumns(getCondition)
 
-  let t1 = {
-    name: table.name,
-    alias,
-  }
-
   let (_, j2) = query.joins
 
   let j1 = Some({
-    table: t1,
+    table: {name: table.name, alias},
     joinType,
     condition,
   })
@@ -55,15 +50,10 @@ let join2 = (joinType, query, table: Schema.table<_, _, _>, alias, getCondition)
 
   let condition = getColumns(getCondition)
 
-  let t2 = {
-    name: table.name,
-    alias,
-  }
-
   let (j1, _) = query.joins
 
   let j2 = Some({
-    table: t2,
+    table: {name: table.name, alias},
     joinType,
     condition,
   })
@@ -76,25 +66,25 @@ let join2 = (joinType, query, table: Schema.table<_, _, _>, alias, getCondition)
   query
 }
 
-let innerJoin1 = (query, table: Schema.table<_, _, _>, alias, getCondition) => {
+let innerJoin1 = (query, table, alias, getCondition) => {
   open Join
 
   join1(Inner, query, table, alias, getCondition)
 }
 
-let leftJoin1 = (query, table: Schema.table<_, _, _>, alias, getCondition) => {
+let leftJoin1 = (query, table, alias, getCondition) => {
   open Join
 
   join1(Left, query, table, alias, getCondition)
 }
 
-let innerJoin2 = (query, table: Schema.table<_, _, _>, alias, getCondition) => {
+let innerJoin2 = (query, table, alias, getCondition) => {
   open Join
 
   join2(Inner, query, table, alias, getCondition)
 }
 
-let leftJoin2 = (query, table: Schema.table<_, _, _>, alias, getCondition) => {
+let leftJoin2 = (query, table, alias, getCondition) => {
   open Join
 
   join2(Left, query, table, alias, getCondition)
