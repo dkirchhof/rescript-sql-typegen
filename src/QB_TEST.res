@@ -20,7 +20,7 @@ let getColumns = fn =>
 /* let select4 = _select */
 /* let select5 = _select */
 
-let join1 = (joinType, query, table: Schema.table<_, _, _>, alias, getCondition) => {
+let join1 = (joinType, query, table: Schema.table<_, _>, alias, getCondition) => {
   open Table
   open Query
   open Join
@@ -43,7 +43,7 @@ let join1 = (joinType, query, table: Schema.table<_, _, _>, alias, getCondition)
   query
 }
 
-let join2 = (joinType, query, table: Schema.table<_, _, _>, alias, getCondition) => {
+let join2 = (joinType, query, table: Schema.table<_, _>, alias, getCondition) => {
   open Table
   open Query
   open Join
@@ -66,7 +66,7 @@ let join2 = (joinType, query, table: Schema.table<_, _, _>, alias, getCondition)
   query
 }
 
-let from = (table: Schema.table<_, _, _>, alias) => {
+let from = (table: Schema.table<_, _>, alias) => {
   open Table
   open Query
 

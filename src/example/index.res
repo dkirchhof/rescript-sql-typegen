@@ -77,12 +77,12 @@ log(
 
 log(
   "get all albums which are newer than 'Fear of the Dark' (subquery):",
-  from(Db.AlbumsTable.t, "a1")
+  from(Db.AlbumsTable.t, "a")
   ->where((a, _, _) =>
     Expr.gt(
       c2(a.year),
       s2(
-        from(Db.AlbumsTable.t, "a2")
+        from(Db.AlbumsTable.t, "a")
         ->where((a, _, _) => Expr.eq(c2(a.name), v2("Fear of the Dark")))
         ->select((a, _, _) => c(a.year))
         ->asSubQuery,

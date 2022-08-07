@@ -2,6 +2,6 @@ type column<'a> = {
   name: string,
 }
 
-type table<'projectables, 'optionalProjectables, 'selectables> = {
+type table<'columns, 'optionalColumns> = {
   name: string,
 }
