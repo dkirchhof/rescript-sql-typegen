@@ -66,6 +66,24 @@ let join2 = (joinType, query, table: Schema.table<_, _, _>, alias, getCondition)
   query
 }
 
+let from = (table: Schema.table<_, _, _>, alias) => {
+  open Table
+  open Query
+
+  let t0 = {
+    name: table.name,
+    alias,
+  }
+
+  let query = {
+    from: t0,
+    joins: (None, None),
+    selections: None,
+  }
+
+  query
+}
+
 let innerJoin1 = (query, table, alias, getCondition) => {
   open Join
 
@@ -88,4 +106,30 @@ let leftJoin2 = (query, table, alias, getCondition) => {
   open Join
 
   join2(Left, query, table, alias, getCondition)
+}
+
+let where = (query, getSelections) => {
+  open Query
+
+  let selections = getColumns(getSelections)
+
+  let query = {
+    ...query,
+    selections: Some(selections),
+  }
+
+  query
+}
+
+let select = (query, getProjections) => {
+  open Query
+
+  let projections = getColumns(getProjections)->Utils.ensureArray->Obj.magic
+
+  let query = {
+    query,
+    projections,
+  }
+
+  query
 }

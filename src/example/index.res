@@ -25,12 +25,23 @@ let s2: SubQuery.t<'a> => Ref.t2<'a> = subQuery => {
 }
 
 open QB_MANY
+open QB_TEST
 
 let log = (title, query) => {
   Js.log2(`\x1b[1m%s\x1b[0m`, title)
   Js.log(query->toSQL ++ ";")
   Js.log("")
 }
+
+%%raw(`
+  import { inspect as inspect_ } from "util";
+`)
+
+let inspect = %raw(`
+  function(value) {
+    console.log(inspect_(value, false, 10, true));
+  }
+`)
 
 log("get all artists:", from(Db.ArtistsTable.t, "a")->select((a, _, _) => (c(a.id), c(a.name))))
 
@@ -44,22 +55,22 @@ log(
 log(
   "get all artists with it's albums with it's songs:",
   from(Db.ArtistsTable.t, "artist")
-  ->QB_TEST.leftJoin1(Db.AlbumsTable.t, "album", (ar, al, _s) => Expr.eq(c2(al.artistId), c2(ar.id)))
-  ->QB_TEST.leftJoin2(Db.SongsTable.t, "song", (_ar, al, s) => Expr.eq(c2(s.albumId), c2(al.id)))
+  ->leftJoin1(Db.AlbumsTable.t, "album", (ar, al, _s) => Expr.eq(c2(al.artistId), c2(ar.id)))
+  ->leftJoin2(Db.SongsTable.t, "song", (_ar, al, s) => Expr.eq(c2(s.albumId), c2(al.id)))
   ->select((ar, al, s) => (c(ar.name), c(al.name), c(s.name))),
 )
 
 log(
   "get all album names with song names (exclude empty albums):",
   from(Db.AlbumsTable.t, "a")
-  ->QB_TEST.innerJoin1(Db.SongsTable.t, "s", (a, s, _) => Expr.eq(c2(s.albumId), c2(a.id)))
+  ->innerJoin1(Db.SongsTable.t, "s", (a, s, _) => Expr.eq(c2(s.albumId), c2(a.id)))
   ->select((a, s, _) => (c(a.name), c(s.name))),
 )
 
 log(
   "get all albums which are newer than 'Fear of the Dark' (join):",
   from(Db.AlbumsTable.t, "a1")
-  ->QB_TEST.innerJoin1(Db.AlbumsTable.t, "a2", (_, a2, _) => Expr.eq(c2(a2.name), v2("Fear of the Dark")))
+  ->innerJoin1(Db.AlbumsTable.t, "a2", (_, a2, _) => Expr.eq(c2(a2.name), v2("Fear of the Dark")))
   ->where((a1, a2, _) => Expr.gt(c2(a1.year), c2(a2.year)))
   ->select((a1, _, _) => c(a1.name)),
 )
