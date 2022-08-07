@@ -63,6 +63,16 @@ let where: (
   ('s0, 's1, 's2) => Expr.t,
 ) => Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>
 
+let groupBy: (
+  Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
+  ('s0, 's1, 's2) => GroupBys.t,
+) => Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>
+
+let orderBy: (
+  Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
+  ('s0, 's1, 's2) => OrderBys.t,
+) => Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>
+
 let select: (
   Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
   ('p0, 'p1, 'p2) => 'projections,

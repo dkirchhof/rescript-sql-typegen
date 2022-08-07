@@ -24,6 +24,22 @@ let s2: SubQuery.t<'a> => Ref.t2<'a> = subQuery => {
   Ref.QueryRef(QueryRef.make(subQuery))->Obj.magic
 }
 
+let asc: Schema.column<'a> => OrderBy.t = column => {
+  open OrderBy
+
+  {column: ColumnRef.make(column), direction: ASC}
+}
+
+let desc: Schema.column<'a> => OrderBy.t = column => {
+  open OrderBy
+
+  {column: ColumnRef.make(column), direction: DESC}
+}
+
+let group: Schema.column<'a> => GroupBy.t = column => {
+  ColumnRef.make(column)
+}
+
 open QB_MANY
 open QB_TEST
 
@@ -43,7 +59,12 @@ let inspect = %raw(`
   }
 `)
 
-log("get all artists:", from(Db.ArtistsTable.t, "a")->select((a, _, _) => (c(a.id), c(a.name))))
+log(
+  "get all artists ordered by name:",
+  from(Db.ArtistsTable.t, "a")
+  ->orderBy((a, _, _) => [asc(a.name)])
+  ->select((a, _, _) => (c(a.id), c(a.name))),
+)
 
 log(
   "get album names and years of year 1982 or 1992:",

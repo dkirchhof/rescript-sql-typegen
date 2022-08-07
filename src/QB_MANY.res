@@ -9,6 +9,8 @@ let toSQL = (executable: Query.executable<_, _, _, _, _, _, _>) => {
     From.toSQL(executable.query.from),
     Joins.toSQL(executable.query.joins, tableAliases),
     Selections.toSQL(executable.query.selections, tableAliases),
+    GroupBys.toSQL(executable.query.groupBys, tableAliases),
+    OrderBys.toSQL(executable.query.orderBys, tableAliases),
   ]
   ->Js.Array2.filter(s => String.length(s) > 0)
   ->Js.Array2.joinWith(" ")
