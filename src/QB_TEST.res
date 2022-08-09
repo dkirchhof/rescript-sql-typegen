@@ -1,24 +1,49 @@
 let applyColumnAccessors = fn =>
   fn(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1), Utils.createColumnAccessor(2))
 
-/* let _select = (query, getProjections) => { */
-/* open Query */
+let c = column => {
+  let column = Column.fromSchema(column)
 
-/* let projections = getColumns(getProjections)->Obj.magic */
+  ColumnRef2(column.columnName, column.tableIndex, None)->Ref.unboxRef2
+}
 
-/* let query = { */
-/* query, */
-/* projections, */
-/* } */
+let v = value => {
+  ValueRef2(ValueRef.make(value))->Ref.unboxRef2
+}
 
-/* query */
-/* } */
+let s = subQuery => {
+  QueryRef2(QueryRef.make(subQuery))->Ref.unboxRef2
+}
 
-/* let select1 = _select */
-/* let select2 = _select */
-/* let select3 = _select */
-/* let select4 = _select */
-/* let select5 = _select */
+let count = column => {
+  let column = Column.fromSchema(column)
+
+  ColumnRef2(column.columnName, column.tableIndex, Some(Column.COUNT))->Ref.unboxRef2
+}
+
+let sum = column => {
+  let column = Column.fromSchema(column)
+
+  ColumnRef2(column.columnName, column.tableIndex, Some(Column.SUM))->Ref.unboxRef2
+}
+
+let avg = column => {
+  let column = Column.fromSchema(column)
+
+  ColumnRef2(column.columnName, column.tableIndex, Some(Column.AVG))->Ref.unboxRef2
+}
+
+let min = column => {
+  let column = Column.fromSchema(column)
+
+  ColumnRef2(column.columnName, column.tableIndex, Some(Column.MIN))->Ref.unboxRef2
+}
+
+let max = column => {
+  let column = Column.fromSchema(column)
+
+  ColumnRef2(column.columnName, column.tableIndex, Some(Column.MAX))->Ref.unboxRef2
+}
 
 let join1 = (joinType, query, table: Schema.table<_, _>, alias, getCondition) => {
   open Table

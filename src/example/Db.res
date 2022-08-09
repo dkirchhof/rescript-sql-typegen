@@ -42,12 +42,14 @@ module SongsTable = {
     id: Schema.column<int>,
     albumId: Schema.column<int>,
     name: Schema.column<string>,
+    duration: Schema.column<string>,
   }
   
   type optionalColumns = {
     id: Schema.column<option<int>>,
     albumId: Schema.column<option<int>>,
     name: Schema.column<option<string>>,
+    duration: Schema.column<string>,
   }
 
   let t: Schema.table<columns, optionalColumns> = {

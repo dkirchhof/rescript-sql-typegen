@@ -1,32 +1,12 @@
-/* let select1: ( */
-/* Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>, */
-/* ('p0, 'p1, 'p2) => Ref.t2<'a>, */
-/* ) => Query.executable<'p0, 's0, 'p1, 's1, 'p2, 's2, 'a> */
+let c: Schema.column<'a> => Ref.t2<'a>
+let v: 'a => Ref.t2<'a>
+let s: SubQuery.t<'a> => Ref.t2<'a>
 
-/* let select2: ( */
-/* Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>, */
-/* ('p0, 'p1, 'p2) => (Ref.t2<'a>, Ref.t2<'b>), */
-/* ) => Query.executable<'p0, 's0, 'p1, 's1, 'p2, 's2, ('a, 'b)> */
-
-/* let select3: ( */
-/* Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>, */
-/* ('p0, 'p1, 'p2) => (Ref.t2<'a>, Ref.t2<'b>, Ref.t2<'c>), */
-/* ) => Query.executable<'p0, 's0, 'p1, 's1, 'p2, 's2, ('a, 'b, 'c)> */
-
-/* let select3: ( */
-/* Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>, */
-/* ('p0, 'p1, 'p2) => (Ref.t2<'a>, Ref.t2<'b>, Ref.t2<'c>), */
-/* ) => Query.executable<'p0, 's0, 'p1, 's1, 'p2, 's2, ('a, 'b, 'c)> */
-
-/* let select4: ( */
-/* Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>, */
-/* ('p0, 'p1, 'p2) => (Ref.t2<'a>, Ref.t2<'b>, Ref.t2<'c>, Ref.t2<'d>), */
-/* ) => Query.executable<'p0, 's0, 'p1, 's1, 'p2, 's2, ('a, 'b, 'c, 'd)> */
-
-/* let select5: ( */
-/* Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>, */
-/* ('p0, 'p1, 'p2) => (Ref.t2<'a>, Ref.t2<'b>, Ref.t2<'c>, Ref.t2<'d>, Ref.t2<'e>), */
-/* ) => Query.executable<'p0, 's0, 'p1, 's1, 'p2, 's2, ('a, 'b, 'c, 'd, 'e)> */
+let count: Schema.column<'a> => Ref.t2<'a>
+let sum: Schema.column<'a> => Ref.t2<'a>
+let avg: Schema.column<'a> => Ref.t2<'a>
+let min: Schema.column<'a> => Ref.t2<'a>
+let max: Schema.column<'a> => Ref.t2<'a>
 
 let from: (Schema.table<'c, 'oc>, string) => Query.t<'c, 'c, _, _, _, _>
 
