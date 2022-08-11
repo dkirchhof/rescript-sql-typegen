@@ -2,8 +2,8 @@ type t = Ref.t
 
 let toSQL = (projection, tableAliases) => {
   switch projection {
-  | Ref.ColumnRef(columnName, tableIndex, agg) =>
-    Column.toSQL(columnName, tableIndex, agg, tableAliases)
+  | Ref.ColumnRef(ref) => ColumnRef.toSQL(ref, tableAliases)
   | Ref.ValueRef(ref) => ValueRef.toSQL(ref)
+  | Ref.QueryRef(ref) => QueryRef.toSQL(ref)
   }
 }

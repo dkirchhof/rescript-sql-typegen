@@ -1,12 +1,11 @@
-let c: Schema.column<'a> => Ref.t2<'a>
 let v: 'a => Ref.t2<'a>
-let s: SubQuery.t<'a> => Ref.t2<'a>
+let s: SubQuery.t<Ref.t2<'a>> => Ref.t2<'a>
 
-let count: Schema.column<'a> => Ref.t2<'a>
-let sum: Schema.column<'a> => Ref.t2<'a>
-let avg: Schema.column<'a> => Ref.t2<'a>
-let min: Schema.column<'a> => Ref.t2<'a>
-let max: Schema.column<'a> => Ref.t2<'a>
+let count: Ref.t2<'a> => Ref.t2<'a>
+let sum: Ref.t2<'a> => Ref.t2<'a>
+let avg: Ref.t2<'a> => Ref.t2<'a>
+let min: Ref.t2<'a> => Ref.t2<'a>
+let max: Ref.t2<'a> => Ref.t2<'a>
 
 let from: (Schema.table<'c, 'oc>, string) => Query.t<'c, 'c, _, _, _, _>
 

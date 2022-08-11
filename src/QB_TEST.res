@@ -1,48 +1,32 @@
 let applyColumnAccessors = fn =>
   fn(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1), Utils.createColumnAccessor(2))
 
-let c = column => {
-  let column = Column.fromSchema(column)
-
-  ColumnRef2(column.columnName, column.tableIndex, None)->Ref.unboxRef2
-}
-
 let v = value => {
-  ValueRef2(ValueRef.make(value))->Ref.unboxRef2
+  Ref.ValueRef2(ValueRef.make(value))
 }
 
 let s = subQuery => {
-  QueryRef2(QueryRef.make(subQuery))->Ref.unboxRef2
+  Ref.QueryRef2(QueryRef.make(subQuery))
 }
 
-let count = column => {
-  let column = Column.fromSchema(column)
-
-  ColumnRef2(column.columnName, column.tableIndex, Some(Column.COUNT))->Ref.unboxRef2
+let count = ref => {
+  Ref.updateT2WithAggType(ref, Some(ColumnRef.COUNT))
 }
 
-let sum = column => {
-  let column = Column.fromSchema(column)
-
-  ColumnRef2(column.columnName, column.tableIndex, Some(Column.SUM))->Ref.unboxRef2
+let sum = ref => {
+  Ref.updateT2WithAggType(ref, Some(ColumnRef.SUM))
 }
 
-let avg = column => {
-  let column = Column.fromSchema(column)
-
-  ColumnRef2(column.columnName, column.tableIndex, Some(Column.AVG))->Ref.unboxRef2
+let avg = ref => {
+  Ref.updateT2WithAggType(ref, Some(ColumnRef.AVG))
 }
 
-let min = column => {
-  let column = Column.fromSchema(column)
-
-  ColumnRef2(column.columnName, column.tableIndex, Some(Column.MIN))->Ref.unboxRef2
+let min = ref => {
+  Ref.updateT2WithAggType(ref, Some(ColumnRef.MIN))
 }
 
-let max = column => {
-  let column = Column.fromSchema(column)
-
-  ColumnRef2(column.columnName, column.tableIndex, Some(Column.MAX))->Ref.unboxRef2
+let max = ref => {
+  Ref.updateT2WithAggType(ref, Some(ColumnRef.MAX))
 }
 
 let join1 = (joinType, query, table: Schema.table<_, _>, alias, getCondition) => {
