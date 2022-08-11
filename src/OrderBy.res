@@ -13,8 +13,8 @@ let desc = ref => {
   {ref: Ref.boxRef(ref), direction: DESC}
 }
 
-let toSQL = (orderBy, tableAliases) => {
-  let refString = Ref.toSQL(orderBy.ref, tableAliases)
+let toSQL = (orderBy, tableAliases, queryToString) => {
+  let refString = Ref.toSQL(orderBy.ref, tableAliases, queryToString)
 
   let directionString = switch orderBy.direction {
   | ASC => "ASC"

@@ -1,5 +1,5 @@
 type t
 
-external make: SubQuery.t<_> => t = "%identity"
+external make: 'a => t = "%identity"
 
-let toSQL = ref => `(${SubQuery.toSQL(ref->Obj.magic)})`
+let toSQL = (ref, queryToString) => `(${queryToString(ref->Obj.magic)})`

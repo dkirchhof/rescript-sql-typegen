@@ -5,10 +5,10 @@ external toArray: t<_, _, _, _> => array<option<Join.t<_, _>>> = "%identity"
 let getTableAliases = joins =>
   Js.Array2.map(joins, join => Belt.Option.mapWithDefault(join, "", Join.getTableAlias))
 
-let toSQL = (joins, tableAliases) => {
+let toSQL = (joins, tableAliases, queryToString) => {
   joins
   ->toArray
-  ->Js.Array2.map(Belt.Option.map(_, Join.toSQL(_, tableAliases)))
+  ->Js.Array2.map(Belt.Option.map(_, Join.toSQL(_, tableAliases, queryToString)))
   ->Js.Array2.filter(Belt.Option.isSome)
   ->Js.Array2.joinWith(" ")
 }

@@ -1,5 +1,5 @@
 let v: 'a => Ref.t2<'a>
-let s: SubQuery.t<Ref.t2<'a>> => Ref.t2<'a>
+let s: Query.executable<_, _, _, _, _, _, Ref.t2<'projections>> => Ref.t2<'projections>
 
 let count: Ref.t2<'a> => Ref.t2<'a>
 let sum: Ref.t2<'a> => Ref.t2<'a>

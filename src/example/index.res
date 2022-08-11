@@ -77,7 +77,6 @@ log(
         from(Db.AlbumsTable.t, "a")
         ->where((a, _, _) => Expr.eq(a.name, v("Fear of the Dark")))
         ->select((a, _, _) => a.year)
-        ->asSubQuery,
       ),
     )
   )

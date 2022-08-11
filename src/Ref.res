@@ -14,10 +14,10 @@ let updateT2WithAggType = (t2, aggType) =>
     | QueryRef2(_) => t2
   }
 
-let toSQL = (ref, tableAliases) => {
+let toSQL = (ref, tableAliases, queryToString) => {
   switch ref {
   | ColumnRef(ref) => ColumnRef.toSQL(ref, tableAliases)
   | ValueRef(ref) => ValueRef.toSQL(ref)
-  | QueryRef(ref) => QueryRef.toSQL(ref)
+  | QueryRef(ref) => QueryRef.toSQL(ref, queryToString)
   }
 }

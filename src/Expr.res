@@ -27,19 +27,16 @@ let lt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThan(Ref.boxRef(left), Ref
 
 let lte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThanEqual(Ref.boxRef(left), Ref.boxRef(right))
 
-let rec toSQL = (expr, tableAliases) => {
+let rec toSQL = (expr, tableAliases, queryToString) => {
   switch expr {
-  | And(ands) => `(${Belt.Array.joinWith(ands, " AND ", toSQL(_, tableAliases))})`
-  | Or(ors) => `(${Belt.Array.joinWith(ors, " OR ", toSQL(_, tableAliases))})`
-  | Equal(left, right) => `${Ref.toSQL(left, tableAliases)} = ${Ref.toSQL(right, tableAliases)}`
-  | NotEqual(left, right) => `${Ref.toSQL(left, tableAliases)} != ${Ref.toSQL(right, tableAliases)}`
-  | GreaterThan(left, right) =>
-    `${Ref.toSQL(left, tableAliases)} > ${Ref.toSQL(right, tableAliases)}`
-  | GreaterThanEqual(left, right) =>
-    `${Ref.toSQL(left, tableAliases)} >= ${Ref.toSQL(right, tableAliases)}`
-  | LessThan(left, right) => `${Ref.toSQL(left, tableAliases)} < ${Ref.toSQL(right, tableAliases)}`
-  | LessThanEqual(left, right) =>
-    `${Ref.toSQL(left, tableAliases)} <= ${Ref.toSQL(right, tableAliases)}`
+  | And(ands) => `(${Belt.Array.joinWith(ands, " AND ", toSQL(_, tableAliases, queryToString))})`
+  | Or(ors) => `(${Belt.Array.joinWith(ors, " OR ", toSQL(_, tableAliases, queryToString))})`
+  | Equal(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} = ${Ref.toSQL(right, tableAliases, queryToString)}`
+  | NotEqual(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} != ${Ref.toSQL(right, tableAliases, queryToString)}`
+  | GreaterThan(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} > ${Ref.toSQL(right, tableAliases, queryToString)}`
+  | GreaterThanEqual(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} >= ${Ref.toSQL(right, tableAliases, queryToString)}`
+  | LessThan(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} < ${Ref.toSQL(right, tableAliases, queryToString)}`
+  | LessThanEqual(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} <= ${Ref.toSQL(right, tableAliases, queryToString)}`
 
   /* `${Ref.toSQL(left)} <= ${Ref.toSQL(right)}` */
   /* | In(left, rights) => */

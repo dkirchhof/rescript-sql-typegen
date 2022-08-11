@@ -5,8 +5,8 @@ let v = value => {
   Ref.ValueRef2(ValueRef.make(value))
 }
 
-let s = subQuery => {
-  Ref.QueryRef2(QueryRef.make(subQuery))
+let s = query => {
+  Ref.QueryRef2(QueryRef.make(query))
 }
 
 let count = ref => {
