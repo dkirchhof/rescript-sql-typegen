@@ -1,11 +1,11 @@
-let v: 'a => Ref.t2<'a>
-let s: Query.executable<_, _, _, _, _, _, Ref.t2<'projections>> => Ref.t2<'projections>
+let v: 'a => Ref.Typed.t<'a>
+let s: Query.executable<_, _, _, _, _, _, Ref.Typed.t<'projections>> => Ref.Typed.t<'projections>
 
-let count: Ref.t2<'a> => Ref.t2<'a>
-let sum: Ref.t2<'a> => Ref.t2<'a>
-let avg: Ref.t2<'a> => Ref.t2<'a>
-let min: Ref.t2<'a> => Ref.t2<'a>
-let max: Ref.t2<'a> => Ref.t2<'a>
+let count: Ref.Typed.t<'a> => Ref.Typed.t<'a>
+let sum: Ref.Typed.t<'a> => Ref.Typed.t<'a>
+let avg: Ref.Typed.t<'a> => Ref.Typed.t<'a>
+let min: Ref.Typed.t<'a> => Ref.Typed.t<'a>
+let max: Ref.Typed.t<'a> => Ref.Typed.t<'a>
 
 let from: (Schema.table<'c, 'oc>, string) => Query.t<'c, 'c, _, _, _, _>
 

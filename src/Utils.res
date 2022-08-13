@@ -1,13 +1,13 @@
 let createColumnAccessor = (tableIndex: int) => {
   %raw(`
-    function(tableIndex, columnRef2Constructor) {
+    function(tableIndex, columnRefConstructor) {
       return new Proxy({}, {
         get(_, columnName) {
-          return columnRef2Constructor({ columnName, tableIndex });
+          return columnRefConstructor({ columnName, tableIndex });
         },
       });
     }
-  `)(tableIndex, Ref.columnRef2)
+  `)(tableIndex, Ref.Typed.columnRef)
 }
 
 let ensureArray: 'a => array<'a> = input => {

@@ -1,9 +1,9 @@
-type t = Ref.t
+type t = Ref.Untyped.t
 
 let toSQL = (projection, tableAliases, queryToString) => {
   switch projection {
-  | Ref.ColumnRef(ref) => ColumnRef.toSQL(ref, tableAliases)
-  | Ref.ValueRef(ref) => ValueRef.toSQL(ref)
-  | Ref.QueryRef(ref) => QueryRef.toSQL(ref, queryToString)
+  | Ref.Untyped.ColumnRef(ref) => ColumnRef.toSQL(ref, tableAliases)
+  | Ref.Untyped.ValueRef(ref) => ValueRef.toSQL(ref)
+  | Ref.Untyped.QueryRef(ref) => QueryRef.toSQL(ref, queryToString)
   }
 }

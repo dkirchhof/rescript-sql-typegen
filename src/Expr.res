@@ -1,53 +1,53 @@
 type rec t =
   | And(array<t>)
   | Or(array<t>)
-  | Equal(Ref.t, Ref.t)
-  | NotEqual(Ref.t, Ref.t)
-  | GreaterThan(Ref.t, Ref.t)
-  | GreaterThanEqual(Ref.t, Ref.t)
-  | LessThan(Ref.t, Ref.t)
-  | LessThanEqual(Ref.t, Ref.t)
-/* | In(Ref.t, array<Ref.t>) */
-/* | Nin(Ref.t, array<Ref.t>) */
+  | Equal(Ref.Untyped.t, Ref.Untyped.t)
+  | NotEqual(Ref.Untyped.t, Ref.Untyped.t)
+  | GreaterThan(Ref.Untyped.t, Ref.Untyped.t)
+  | GreaterThanEqual(Ref.Untyped.t, Ref.Untyped.t)
+  | LessThan(Ref.Untyped.t, Ref.Untyped.t)
+  | LessThanEqual(Ref.Untyped.t, Ref.Untyped.t)
+/* | In(Ref.Untyped.t, array<Ref.Untyped.t>) */
+/* | Nin(Ref.Untyped.t, array<Ref.Untyped.t>) */
 
 let and_ = ands => And(ands)
 let or_ = ors => Or(ors)
 
-let eq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => Equal(Ref.tFromT2(left), Ref.tFromT2(right))
+let eq = (left: Ref.Typed.t<'a>, right: Ref.Typed.t<'a>) => Equal(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
 
-let neq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => NotEqual(Ref.tFromT2(left), Ref.tFromT2(right))
+let neq = (left: Ref.Typed.t<'a>, right: Ref.Typed.t<'a>) => NotEqual(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
 
-let gt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThan(Ref.tFromT2(left), Ref.tFromT2(right))
+let gt = (left: Ref.Typed.t<'a>, right: Ref.Typed.t<'a>) => GreaterThan(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
 
-let gte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThanEqual(Ref.tFromT2(left), Ref.tFromT2(right))
+let gte = (left: Ref.Typed.t<'a>, right: Ref.Typed.t<'a>) => GreaterThanEqual(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
 
-let lt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThan(Ref.tFromT2(left), Ref.tFromT2(right))
+let lt = (left: Ref.Typed.t<'a>, right: Ref.Typed.t<'a>) => LessThan(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
 
-let lte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThanEqual(Ref.tFromT2(left), Ref.tFromT2(right))
+let lte = (left: Ref.Typed.t<'a>, right: Ref.Typed.t<'a>) => LessThanEqual(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
 
 let rec toSQL = (expr, tableAliases, queryToString) => {
   switch expr {
   | And(ands) => `(${Belt.Array.joinWith(ands, " AND ", toSQL(_, tableAliases, queryToString))})`
   | Or(ors) => `(${Belt.Array.joinWith(ors, " OR ", toSQL(_, tableAliases, queryToString))})`
-  | Equal(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} = ${Ref.toSQL(right, tableAliases, queryToString)}`
-  | NotEqual(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} != ${Ref.toSQL(right, tableAliases, queryToString)}`
-  | GreaterThan(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} > ${Ref.toSQL(right, tableAliases, queryToString)}`
-  | GreaterThanEqual(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} >= ${Ref.toSQL(right, tableAliases, queryToString)}`
-  | LessThan(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} < ${Ref.toSQL(right, tableAliases, queryToString)}`
-  | LessThanEqual(left, right) => `${Ref.toSQL(left, tableAliases, queryToString)} <= ${Ref.toSQL(right, tableAliases, queryToString)}`
+  | Equal(left, right) => `${Ref.Untyped.toSQL(left, tableAliases, queryToString)} = ${Ref.Untyped.toSQL(right, tableAliases, queryToString)}`
+  | NotEqual(left, right) => `${Ref.Untyped.toSQL(left, tableAliases, queryToString)} != ${Ref.Untyped.toSQL(right, tableAliases, queryToString)}`
+  | GreaterThan(left, right) => `${Ref.Untyped.toSQL(left, tableAliases, queryToString)} > ${Ref.Untyped.toSQL(right, tableAliases, queryToString)}`
+  | GreaterThanEqual(left, right) => `${Ref.Untyped.toSQL(left, tableAliases, queryToString)} >= ${Ref.Untyped.toSQL(right, tableAliases, queryToString)}`
+  | LessThan(left, right) => `${Ref.Untyped.toSQL(left, tableAliases, queryToString)} < ${Ref.Untyped.toSQL(right, tableAliases, queryToString)}`
+  | LessThanEqual(left, right) => `${Ref.Untyped.toSQL(left, tableAliases, queryToString)} <= ${Ref.Untyped.toSQL(right, tableAliases, queryToString)}`
 
-  /* `${Ref.toSQL(left)} <= ${Ref.toSQL(right)}` */
+  /* `${toSQL(left)} <= ${toSQL(right)}` */
   /* | In(left, rights) => */
-  /* `${Ref.toSQL(left)} IN(${Belt.Array.joinWith( */
+  /* `${toSQL(left)} IN(${Belt.Array.joinWith( */
   /* rights, */
   /* ", ", */
-  /* Ref.toSQL, */
+  /* toSQL, */
   /* )})` */
   /* | Nin(left, rights) => */
-  /* `${Ref.toSQL(left)} NOT IN(${Belt.Array.joinWith( */
+  /* `${toSQL(left)} NOT IN(${Belt.Array.joinWith( */
   /* rights, */
   /* ", ", */
-  /* Ref.toSQL, */
+  /* toSQL, */
   /* )})` */
   }
 }

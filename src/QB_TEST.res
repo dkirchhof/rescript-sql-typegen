@@ -2,31 +2,31 @@ let applyColumnAccessors = fn =>
   fn(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1), Utils.createColumnAccessor(2))
 
 let v = value => {
-  Ref.ValueRef2(ValueRef.make(value))
+  Ref.Typed.ValueRef(ValueRef.make(value))
 }
 
 let s = query => {
-  Ref.QueryRef2(QueryRef.make(query))
+  Ref.Typed.QueryRef(QueryRef.make(query))
 }
 
 let count = ref => {
-  Ref.updateT2WithAggType(ref, Some(ColumnRef.COUNT))
+  Ref.Typed.updateAggType(ref, Some(ColumnRef.COUNT))
 }
 
 let sum = ref => {
-  Ref.updateT2WithAggType(ref, Some(ColumnRef.SUM))
+  Ref.Typed.updateAggType(ref, Some(ColumnRef.SUM))
 }
 
 let avg = ref => {
-  Ref.updateT2WithAggType(ref, Some(ColumnRef.AVG))
+  Ref.Typed.updateAggType(ref, Some(ColumnRef.AVG))
 }
 
 let min = ref => {
-  Ref.updateT2WithAggType(ref, Some(ColumnRef.MIN))
+  Ref.Typed.updateAggType(ref, Some(ColumnRef.MIN))
 }
 
 let max = ref => {
-  Ref.updateT2WithAggType(ref, Some(ColumnRef.MAX))
+  Ref.Typed.updateAggType(ref, Some(ColumnRef.MAX))
 }
 
 let join1 = (joinType, query, table: Schema.table<_, _>, alias, getCondition) => {
