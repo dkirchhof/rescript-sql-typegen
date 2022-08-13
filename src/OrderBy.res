@@ -6,11 +6,11 @@ type t = {
 }
 
 let asc = ref => {
-  {ref: Ref.boxRef(ref), direction: ASC}
+  {ref: Ref.tFromT2(ref), direction: ASC}
 }
 
 let desc = ref => {
-  {ref: Ref.boxRef(ref), direction: DESC}
+  {ref: Ref.tFromT2(ref), direction: DESC}
 }
 
 let toSQL = (orderBy, tableAliases, queryToString) => {

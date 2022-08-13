@@ -1,5 +1,3 @@
-type ref<'t>
-
 type rec t =
   | And(array<t>)
   | Or(array<t>)
@@ -15,17 +13,17 @@ type rec t =
 let and_ = ands => And(ands)
 let or_ = ors => Or(ors)
 
-let eq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => Equal(Ref.boxRef(left), Ref.boxRef(right))
+let eq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => Equal(Ref.tFromT2(left), Ref.tFromT2(right))
 
-let neq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => NotEqual(Ref.boxRef(left), Ref.boxRef(right))
+let neq = (left: Ref.t2<'a>, right: Ref.t2<'a>) => NotEqual(Ref.tFromT2(left), Ref.tFromT2(right))
 
-let gt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThan(Ref.boxRef(left), Ref.boxRef(right))
+let gt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThan(Ref.tFromT2(left), Ref.tFromT2(right))
 
-let gte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThanEqual(Ref.boxRef(left), Ref.boxRef(right))
+let gte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => GreaterThanEqual(Ref.tFromT2(left), Ref.tFromT2(right))
 
-let lt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThan(Ref.boxRef(left), Ref.boxRef(right))
+let lt = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThan(Ref.tFromT2(left), Ref.tFromT2(right))
 
-let lte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThanEqual(Ref.boxRef(left), Ref.boxRef(right))
+let lte = (left: Ref.t2<'a>, right: Ref.t2<'a>) => LessThanEqual(Ref.tFromT2(left), Ref.tFromT2(right))
 
 let rec toSQL = (expr, tableAliases, queryToString) => {
   switch expr {

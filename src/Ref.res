@@ -5,7 +5,6 @@ type t2<'a> = ColumnRef2(ColumnRef.t) | ValueRef2(ValueRef.t) | QueryRef2(QueryR
 
 external tFromT2: t2<'a> => t = "%identity"
 external unboxRef2: t2<'a> => 'a = "%identity"
-external boxRef: 'a => t = "%identity"
 
 let updateT2WithAggType = (t2, aggType) => 
   switch t2 {
