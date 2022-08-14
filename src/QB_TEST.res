@@ -1,19 +1,27 @@
 let applyColumnAccessors = fn =>
   fn(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1), Utils.createColumnAccessor(2))
 
-let v = value => {
+let value = value => {
   Ref.Typed.ValueRef(ValueRef.make(value))
 }
 
-let s = query => {
+let subQuery = query => {
   Ref.Typed.QueryRef(QueryRef.make(query))
 }
 
 let count = ref => {
-  Ref.Typed.updateAggType(ref, Some(ColumnRef.COUNT))
+  (Ref.Typed.updateAggType(ref, Some(ColumnRef.COUNT)) :> Ref.Typed.t<int>)
 }
 
-let sum = ref => {
+let countAll = () => {
+  (Ref.Typed.updateAggType(Ref.Typed.All, Some(ColumnRef.COUNT)) :> Ref.Typed.t<int>)
+}
+
+let sumI = ref => {
+  Ref.Typed.updateAggType(ref, Some(ColumnRef.SUM))
+}
+
+let sumF = ref => {
   Ref.Typed.updateAggType(ref, Some(ColumnRef.SUM))
 }
 

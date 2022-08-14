@@ -1,8 +1,10 @@
-let v: 'a => Ref.Typed.t<'a>
-let s: Query.executable<_, _, _, _, _, _, Ref.Typed.t<'projections>> => Ref.Typed.t<'projections>
+let value: 'a => Ref.Typed.t<'a>
+let subQuery: Query.executable<_, _, _, _, _, _, Ref.Typed.t<'projections>> => Ref.Typed.t<'projections>
 
-let count: Ref.Typed.t<'a> => Ref.Typed.t<'a>
-let sum: Ref.Typed.t<'a> => Ref.Typed.t<'a>
+let count: Ref.Typed.t<'a> => Ref.Typed.t<int>
+let countAll: () => Ref.Typed.t<int>
+let sumI: Ref.Typed.t<int> => Ref.Typed.t<int>
+let sumF: Ref.Typed.t<float> => Ref.Typed.t<float>
 let avg: Ref.Typed.t<'a> => Ref.Typed.t<'a>
 let min: Ref.Typed.t<'a> => Ref.Typed.t<'a>
 let max: Ref.Typed.t<'a> => Ref.Typed.t<'a>

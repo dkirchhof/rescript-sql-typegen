@@ -1,5 +1,3 @@
-external conv: (unit => string) => 'a = "%identity"
-
 open QB_MANY
 open QB_TEST
 
@@ -22,25 +20,23 @@ let inspect = %raw(`
 log(
   "get all artists ordered by name:",
   from(Db.ArtistsTable.t, "a")
-  ->where((a, _, _) => Expr.eq(a.id, v(1)))
-  ->orderBy((a, _, _) => [OrderBy.asc(a.name)])
-  ->groupBy((a, _, _) => [GroupBy.group(a.id)])
-  ->select((a, _, _) => (count(a.id), a.id, a.name)),
-)
-
-log(
-  "get all artists ordered by name:",
-  from(Db.ArtistsTable.t, "a")
   ->orderBy((a, _, _) => [OrderBy.asc(a.name)])
   ->select((a, _, _) => (a.id, a.name)),
 )
 
-log("get number of songs:", from(Db.SongsTable.t, "s")->select((s, _, _) => count(s.id)))
+log("get number of songs:", from(Db.SongsTable.t, "s")->select((_, _, _) => countAll()))
 
 log(
-  "get album names and years of year 1982 or 1992:",
+  "get album names and years of year 1982 or 1992 (OR):",
   from(Db.AlbumsTable.t, "a")
-  ->where((a, _, _) => Expr.or_([Expr.eq(a.year, v(1982)), Expr.eq(a.year, v(1992))]))
+  ->where((a, _, _) => Expr.or_([Expr.eq(a.year, value(1982)), Expr.eq(a.year, value(1992))]))
+  ->select((a, _, _) => (a.name, a.year)),
+)
+
+log(
+  "get album names and years of year 1982 or 1992 (IN):",
+  from(Db.AlbumsTable.t, "a")
+  ->where((a, _, _) => Expr.in_(a.year, [value(1982), value(1992)]))
   ->select((a, _, _) => (a.name, a.year)),
 )
 
@@ -62,7 +58,7 @@ log(
 log(
   "get all albums which are newer than 'Fear of the Dark' (join):",
   from(Db.AlbumsTable.t, "a1")
-  ->innerJoin1(Db.AlbumsTable.t, "a2", (_, a2, _) => Expr.eq(a2.name, v("Fear of the Dark")))
+  ->innerJoin1(Db.AlbumsTable.t, "a2", (_, a2, _) => Expr.eq(a2.name, value("Fear of the Dark")))
   ->where((a1, a2, _) => Expr.gt(a1.year, a2.year))
   ->select((a1, _, _) => a1.name),
 )
@@ -73,16 +69,23 @@ log(
   ->where((a, _, _) =>
     Expr.gt(
       a.year,
-      s(
+      subQuery(
         from(Db.AlbumsTable.t, "a")
-        ->where((a, _, _) => Expr.eq(a.name, v("Fear of the Dark")))
-        ->select((a, _, _) => a.year)
+        ->where((a, _, _) => Expr.eq(a.name, value("Fear of the Dark")))
+        ->select((a, _, _) => a.year),
       ),
     )
   )
   ->select((a, _, _) => a.name),
 )
 
-log("get avg song duration:", from(Db.SongsTable.t, "s")->select((s, _, _) => avg(s.duration)))
+let avgDurationQuery = from(Db.SongsTable.t, "s")->select((s, _, _) => avg(s.duration))
 
-// get all songs which are longer then the avg
+log("get avg song duration:", avgDurationQuery)
+
+log(
+  "get all songs which are longer then the avg:",
+  from(Db.SongsTable.t, "song")
+  ->where((s, _, _) => Expr.gt(s.duration, subQuery(avgDurationQuery)))
+  ->select((s, _, _) => (s.id, s.name, s.duration)),
+)
