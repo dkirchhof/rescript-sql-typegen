@@ -7,6 +7,8 @@ type rec t =
   | GreaterThanEqual(Ref.Untyped.t, Ref.Untyped.t)
   | LessThan(Ref.Untyped.t, Ref.Untyped.t)
   | LessThanEqual(Ref.Untyped.t, Ref.Untyped.t)
+  | Between(Ref.Untyped.t, Ref.Untyped.t, Ref.Untyped.t)
+  | NotBetween(Ref.Untyped.t, Ref.Untyped.t, Ref.Untyped.t)
   | In(Ref.Untyped.t, array<Ref.Untyped.t>)
   | NotIn(Ref.Untyped.t, array<Ref.Untyped.t>)
 
@@ -19,6 +21,8 @@ let gt: (Ref.Typed.t<'a>, Ref.Typed.t<'a>) => t
 let gte: (Ref.Typed.t<'a>, Ref.Typed.t<'a>) => t
 let lt: (Ref.Typed.t<'a>, Ref.Typed.t<'a>) => t
 let lte: (Ref.Typed.t<'a>, Ref.Typed.t<'a>) => t
+let btw: (Ref.Typed.t<'a>, Ref.Typed.t<'a>, Ref.Typed.t<'a>) => t
+let nbtw: (Ref.Typed.t<'a>, Ref.Typed.t<'a>, Ref.Typed.t<'a>) => t
 let in_: (Ref.Typed.t<'a>, array<Ref.Typed.t<'a>>) => t
 let nin_: (Ref.Typed.t<'a>, array<Ref.Typed.t<'a>>) => t
 

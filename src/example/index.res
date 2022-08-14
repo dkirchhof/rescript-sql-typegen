@@ -18,10 +18,10 @@ let inspect = %raw(`
 `)
 
 /* log( */
-/*   "get all artists ordered by name:", */
-/*   from(Db.ArtistsTable.t, "a") */
-/*   ->orderBy((a, _, _) => [OrderBy.asc(a.name)]) */
-/*   ->select((_, _, _) => all()), */
+/* "get all artists ordered by name:", */
+/* from(Db.ArtistsTable.t, "a") */
+/* ->orderBy((a, _, _) => [OrderBy.asc(a.name)]) */
+/* ->select((_, _, _) => all()), */
 /* ) */
 
 log(
@@ -97,4 +97,11 @@ log(
   from(Db.SongsTable.t, "song")
   ->where((s, _, _) => Expr.gt(s.duration, subQuery(avgDurationQuery)))
   ->select((s, _, _) => (s.id, s.name, s.duration)),
+)
+
+log(
+  "get songs with duration between 1 and 2 minutes:",
+  from(Db.SongsTable.t, "song")
+  ->where((s, _, _) => Expr.btw(s.duration, value("1:00"), value("2:00")))
+  ->select((_, _, _) => all()),
 )
