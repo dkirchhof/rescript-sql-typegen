@@ -1,8 +1,13 @@
 module Untyped = {
-  type t = ColumnRef(ColumnRef.t) | ValueRef(ValueRef.t) | QueryRef(QueryRef.t)
+  type t =
+    | AsteriskRef(AsteriskRef.t)
+    | ColumnRef(ColumnRef.t)
+    | ValueRef(ValueRef.t)
+    | QueryRef(QueryRef.t)
 
   let toSQL = (ref, tableAliases, queryToString) => {
     switch ref {
+    | AsteriskRef(ref) => AsteriskRef.toSQL(ref)
     | ColumnRef(ref) => ColumnRef.toSQL(ref, tableAliases)
     | ValueRef(ref) => ValueRef.toSQL(ref)
     | QueryRef(ref) => QueryRef.toSQL(ref, queryToString)
@@ -12,10 +17,15 @@ module Untyped = {
 
 module Typed = {
   @deriving(accessors)
-  type t<'a> = ColumnRef(ColumnRef.t) | ValueRef(ValueRef.t) | QueryRef(QueryRef.t)
+  type t<'a> =
+    | AsteriskRef(AsteriskRef.t)
+    | ColumnRef(ColumnRef.t)
+    | ValueRef(ValueRef.t)
+    | QueryRef(QueryRef.t)
 
   let updateAggType = (t2, aggType) =>
     switch t2 {
+    | AsteriskRef(ref) => AsteriskRef({...ref, aggType})
     | ColumnRef(ref) => ColumnRef({...ref, aggType})
     | ValueRef(_) => t2
     | QueryRef(_) => t2
@@ -24,4 +34,3 @@ module Typed = {
   external unbox: t<'a> => 'a = "%identity"
   external toUntyped: t<'a> => Untyped.t = "%identity"
 }
-

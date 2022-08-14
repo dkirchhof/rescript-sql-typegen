@@ -1,6 +1,10 @@
 let applyColumnAccessors = fn =>
   fn(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1), Utils.createColumnAccessor(2))
 
+let all = () => {
+  Ref.Typed.AsteriskRef(AsteriskRef.make())->Obj.magic
+}
+
 let value = value => {
   Ref.Typed.ValueRef(ValueRef.make(value))
 }
@@ -14,7 +18,7 @@ let count = ref => {
 }
 
 let countAll = () => {
-  (Ref.Typed.updateAggType(Ref.Typed.All, Some(Aggregation.COUNT)) :> Ref.Typed.t<int>)
+  Ref.Typed.AsteriskRef({aggType: Some(Aggregation.COUNT)})
 }
 
 let sumI = ref => {

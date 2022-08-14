@@ -17,12 +17,21 @@ let inspect = %raw(`
   }
 `)
 
+/* log( */
+/*   "get all artists ordered by name:", */
+/*   from(Db.ArtistsTable.t, "a") */
+/*   ->orderBy((a, _, _) => [OrderBy.asc(a.name)]) */
+/*   ->select((_, _, _) => all()), */
+/* ) */
+
 log(
   "get all artists ordered by name:",
   from(Db.ArtistsTable.t, "a")
   ->orderBy((a, _, _) => [OrderBy.asc(a.name)])
   ->select((a, _, _) => (a.id, a.name)),
 )
+
+/* log("get number of songs:", from(Db.SongsTable.t, "s")->select((_, _, _) => count(all()))) */
 
 log("get number of songs:", from(Db.SongsTable.t, "s")->select((_, _, _) => countAll()))
 

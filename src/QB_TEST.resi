@@ -1,3 +1,4 @@
+let all: () => 'a
 let value: 'a => Ref.Typed.t<'a>
 let subQuery: Query.executable<_, _, _, _, _, _, Ref.Typed.t<'projections>> => Ref.Typed.t<'projections>
 
