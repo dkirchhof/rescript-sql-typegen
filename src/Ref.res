@@ -23,12 +23,12 @@ module Typed = {
     | ValueRef(ValueRef.t)
     | QueryRef(QueryRef.t)
 
-  let updateAggType = (t2, aggType) =>
-    switch t2 {
-    | AsteriskRef(ref) => AsteriskRef({...ref, aggType})
+  let updateAggType = (t, aggType) =>
+    switch t {
+    | AsteriskRef(_) => AsteriskRef({aggType: aggType})
     | ColumnRef(ref) => ColumnRef({...ref, aggType})
-    | ValueRef(_) => t2
-    | QueryRef(_) => t2
+    | ValueRef(_) => t
+    | QueryRef(_) => t
     }
 
   external unbox: t<'a> => 'a = "%identity"
