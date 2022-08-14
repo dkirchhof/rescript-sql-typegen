@@ -10,31 +10,31 @@ let subQuery = query => {
 }
 
 let count = ref => {
-  (Ref.Typed.updateAggType(ref, Some(ColumnRef.COUNT)) :> Ref.Typed.t<int>)
+  (Ref.Typed.updateAggType(ref, Some(Aggregation.COUNT)) :> Ref.Typed.t<int>)
 }
 
 let countAll = () => {
-  (Ref.Typed.updateAggType(Ref.Typed.All, Some(ColumnRef.COUNT)) :> Ref.Typed.t<int>)
+  (Ref.Typed.updateAggType(Ref.Typed.All, Some(Aggregation.COUNT)) :> Ref.Typed.t<int>)
 }
 
 let sumI = ref => {
-  Ref.Typed.updateAggType(ref, Some(ColumnRef.SUM))
+  Ref.Typed.updateAggType(ref, Some(Aggregation.SUM))
 }
 
 let sumF = ref => {
-  Ref.Typed.updateAggType(ref, Some(ColumnRef.SUM))
+  Ref.Typed.updateAggType(ref, Some(Aggregation.SUM))
 }
 
 let avg = ref => {
-  Ref.Typed.updateAggType(ref, Some(ColumnRef.AVG))
+  Ref.Typed.updateAggType(ref, Some(Aggregation.AVG))
 }
 
 let min = ref => {
-  Ref.Typed.updateAggType(ref, Some(ColumnRef.MIN))
+  Ref.Typed.updateAggType(ref, Some(Aggregation.MIN))
 }
 
 let max = ref => {
-  Ref.Typed.updateAggType(ref, Some(ColumnRef.MAX))
+  Ref.Typed.updateAggType(ref, Some(Aggregation.MAX))
 }
 
 let join1 = (joinType, query, table: Schema.table<_, _>, alias, getCondition) => {

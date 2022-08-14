@@ -1,9 +1,7 @@
-type aggType = COUNT | SUM | AVG | MIN | MAX
-
 type t = {
   columnName: string,
   tableIndex: int,
-  aggType: option<aggType>,
+  aggType: option<Aggregation.t>,
 }
 
 let toSQL = (ref, tableAliases) => {
