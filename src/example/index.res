@@ -113,3 +113,12 @@ log(
   ->groupBy((_, al, _) => [GroupBy.group(al.artistId)])
   ->select((ar, al, _) => (ar.name, count(al.id))),
 )
+
+log(
+  "get number of albums per artist (less than 4 albums):",
+  from(Db.ArtistsTable.t, "ar")
+  ->leftJoin1(Db.AlbumsTable.t, "al", (ar, al, _) => Expr.eq(al.artistId, ar.id))
+  ->groupBy((_, al, _) => [GroupBy.group(al.artistId)])
+  ->having((_, al, _) => Expr.lt(count(al.id), value(4)))
+  ->select((ar, al, _) => (ar.name, count(al.id))),
+)
