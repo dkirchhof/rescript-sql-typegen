@@ -105,3 +105,11 @@ log(
   ->where((s, _, _) => Expr.btw(s.duration, value("1:00"), value("2:00")))
   ->select((_, _, _) => all()),
 )
+
+log(
+  "get number of albums per artist:",
+  from(Db.ArtistsTable.t, "ar")
+  ->leftJoin1(Db.AlbumsTable.t, "al", (ar, al, _) => Expr.eq(al.artistId, ar.id))
+  ->groupBy((_, al, _) => [GroupBy.group(al.artistId)])
+  ->select((ar, al, _) => (ar.name, count(al.id))),
+)
