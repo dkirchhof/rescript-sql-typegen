@@ -64,3 +64,5 @@ let select: (
   Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
   ('p0, 'p1, 'p2) => 'projections,
 ) => Query.executable<'p0, 's0, 'p1, 's1, 'p2, 's2, 'projections>
+
+let toSQL: Query.executable<_, _, _, _, _, _, _> => string

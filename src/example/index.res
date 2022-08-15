@@ -1,5 +1,4 @@
-open QB_MANY
-open QB_TEST
+open QB
 
 let log = (title, query) => {
   Js.log2(`\x1b[1m%s\x1b[0m`, title)
