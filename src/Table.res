@@ -1,4 +1,4 @@
-type t<'projectables, 'selectables> = {
+type t = {
   name: string,
   alias: string,
 }

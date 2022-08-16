@@ -1,20 +1,23 @@
 type joinType = Inner | Left
 
-type t<'p, 's> = {
-  table: Table.t<'p, 's>,
+type t = {
+  table: Table.t,
   joinType: joinType,
-  condition: Expr.t,
+  condition: option<Expr.t>,
 }
 
 let getTableAlias = join => join.table.alias
 
-let toSQL = (join, tableAliases, queryToString) => {
+let toSQL = (join, queryToString) => {
   let joinTypeString = switch join.joinType {
   | Inner => "INNER"
   | Left => "LEFT"
   }
 
-  let selectionString = `ON ${Expr.toSQL(join.condition, tableAliases, queryToString)}`
+  let selectionString = switch join.condition {
+    | Some(condition) => ` ON ${Expr.toSQL(condition, queryToString)}`
+    | None => ""
+  }
 
-  `${joinTypeString} JOIN ${join.table.name} AS ${join.table.alias} ${selectionString}`
+  `${joinTypeString} JOIN ${join.table.name} AS ${join.table.alias}${selectionString}`
 }

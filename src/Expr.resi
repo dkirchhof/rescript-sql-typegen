@@ -26,4 +26,4 @@ let nbtw: (Ref.Typed.t<'a>, Ref.Typed.t<'a>, Ref.Typed.t<'a>) => t
 let in_: (Ref.Typed.t<'a>, array<Ref.Typed.t<'a>>) => t
 let nin_: (Ref.Typed.t<'a>, array<Ref.Typed.t<'a>>) => t
 
-let toSQL: (t, array<string>, 'a => string) => string
+let toSQL: (t, 'a => string) => string

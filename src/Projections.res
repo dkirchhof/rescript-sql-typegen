@@ -1,8 +1,8 @@
 type t = option<array<Projection.t>>
 
-let toSQL = (projections, tableAliases, queryToString) =>
+let toSQL = (projections, queryToString) =>
   switch projections {
   | Some(projections') =>
-    `SELECT ${projections'->Belt.Array.joinWith(", ", Projection.toSQL(_, tableAliases, queryToString))}`
+    `SELECT ${projections'->Belt.Array.joinWith(", ", Projection.toSQL(_, queryToString))}`
   | None => `SELECT *`
   }

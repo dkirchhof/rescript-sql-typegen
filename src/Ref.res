@@ -5,10 +5,10 @@ module Untyped = {
     | ValueRef(ValueRef.t)
     | QueryRef(QueryRef.t)
 
-  let toSQL = (ref, tableAliases, queryToString) => {
+  let toSQL = (ref, queryToString) => {
     switch ref {
     | AsteriskRef(ref) => AsteriskRef.toSQL(ref)
-    | ColumnRef(ref) => ColumnRef.toSQL(ref, tableAliases)
+    | ColumnRef(ref) => ColumnRef.toSQL(ref)
     | ValueRef(ref) => ValueRef.toSQL(ref)
     | QueryRef(ref) => QueryRef.toSQL(ref, queryToString)
     }

@@ -1,7 +1,7 @@
 type t = option<Expr.t>
 
-let toSQL = (havings, tableAliases, queryToString) =>
+let toSQL = (havings, queryToString) =>
   switch havings {
-  | Some(expr) => `HAVING ${Expr.toSQL(expr, tableAliases, queryToString)}`
+  | Some(expr) => `HAVING ${Expr.toSQL(expr, queryToString)}`
   | None => ""
   }

@@ -1,4 +1,4 @@
-type t<'p0, 's0> = Table.t<'p0, 's0>
+type t = Table.t
 
 let toSQL = table => {
   open Table

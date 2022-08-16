@@ -1,7 +1,7 @@
 type t = option<Expr.t>
 
-let toSQL = (selections, tableAliases, queryToSQL) =>
+let toSQL = (selections, queryToSQL) =>
   switch selections {
-  | Some(expr) => `WHERE ${Expr.toSQL(expr, tableAliases, queryToSQL)}`
+  | Some(expr) => `WHERE ${Expr.toSQL(expr, queryToSQL)}`
   | None => ""
   }

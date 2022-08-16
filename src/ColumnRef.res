@@ -1,11 +1,11 @@
 type t = {
+  tableAlias: string,
   columnName: string,
-  tableIndex: int,
   aggType: option<Aggregation.t>,
 }
 
-let toSQL = (ref, tableAliases) => {
-  let columnString = `${tableAliases[ref.tableIndex]}.${ref.columnName}`
+let toSQL = ref => {
+  let columnString = `${ref.tableAlias}.${ref.columnName}`
 
   switch ref.aggType {
   | Some(COUNT) => `COUNT(${columnString})`

@@ -1,5 +1,5 @@
 let applyColumnAccessors = fn =>
-  fn(Utils.createColumnAccessor(0), Utils.createColumnAccessor(1), Utils.createColumnAccessor(2))
+  fn(Utils.createColumnAccessor())
 
 let all = () => {
   Ref.Typed.AsteriskRef(AsteriskRef.make())->Obj.magic
@@ -41,95 +41,25 @@ let max = ref => {
   Ref.Typed.updateAggType(ref, Some(Aggregation.MAX))
 }
 
-let join1 = (joinType, query, table: Schema.table<_, _>, alias, getCondition) => {
-  open Table
+let join = (query, index, getCondition) => {
   open Query
-  open Join
 
   let condition = applyColumnAccessors(getCondition)
 
-  let (_, j2) = query.joins
-
-  let j1 = Some({
-    table: {name: table.name, alias},
-    joinType,
-    condition,
-  })
-
-  let query = {
-    ...query,
-    joins: (j1, j2),
-  }
-
-  query
-}
-
-let join2 = (joinType, query, table: Schema.table<_, _>, alias, getCondition) => {
-  open Table
-  open Query
-  open Join
-
-  let condition = applyColumnAccessors(getCondition)
-
-  let (j1, _) = query.joins
-
-  let j2 = Some({
-    table: {name: table.name, alias},
-    joinType,
-    condition,
-  })
+  let joins = query.joins->Js.Array2.mapi((join, i) => {
+    if i === index {
+      {...join, condition: Some(condition) }
+    } else {
+      join
+    }
+  }) 
 
   let query = {
     ...query,
-    joins: (j1, j2),
+    joins: joins,
   }
 
   query
-}
-
-let from = (table: Schema.table<_, _>, alias) => {
-  open Table
-  open Query
-
-  let t0 = {
-    name: table.name,
-    alias,
-  }
-
-  let query = {
-    from: t0,
-    joins: (None, None),
-    selections: None,
-    groupBys: [],
-    havings: None,
-    orderBys: [],
-  }
-
-  query
-}
-
-let innerJoin1 = (query, table, alias, getCondition) => {
-  open Join
-
-  join1(Inner, query, table, alias, getCondition)
-}
-
-let leftJoin1 = (query, table, alias, getCondition) => {
-  open Join
-
-  join1(Left, query, table, alias, getCondition)
-}
-
-let innerJoin2 = (query, table, alias, getCondition) => {
-  open Join
-
-  join2(Inner, query, table, alias, getCondition)
-}
-
-let leftJoin2 = (query, table, alias, getCondition) => {
-  open Join
-
-  join2(Left, query, table, alias, getCondition)
 }
 
 let where = (query, getSelections) => {
@@ -200,19 +130,14 @@ let select = (query, getProjections) => {
 let rec toSQL = executable => {
   open Query
 
-  let tableAliases = Js.Array2.concat(
-    [executable.query.from.alias],
-    executable.query.joins->Joins.toArray->Joins.getTableAliases,
-  )
-
   [
-    Projections.toSQL(executable.projections->Obj.magic, tableAliases, toSQL),
+    Projections.toSQL(executable.projections->Obj.magic, toSQL),
     From.toSQL(executable.query.from),
-    Joins.toSQL(executable.query.joins, tableAliases, toSQL),
-    Selections.toSQL(executable.query.selections, tableAliases, toSQL),
-    GroupBys.toSQL(executable.query.groupBys, tableAliases, toSQL),
-    Havings.toSQL(executable.query.havings, tableAliases, toSQL),
-    OrderBys.toSQL(executable.query.orderBys, tableAliases, toSQL),
+    Joins.toSQL(executable.query.joins, toSQL),
+    Selections.toSQL(executable.query.selections, toSQL),
+    GroupBys.toSQL(executable.query.groupBys, toSQL),
+    Havings.toSQL(executable.query.havings, toSQL),
+    OrderBys.toSQL(executable.query.orderBys, toSQL),
   ]
   ->Js.Array2.filter(s => String.length(s) > 0)
   ->Js.Array2.joinWith(" ")

@@ -13,8 +13,8 @@ let desc = ref => {
   {ref: Ref.Typed.toUntyped(ref), direction: DESC}
 }
 
-let toSQL = (orderBy, tableAliases, queryToString) => {
-  let refString = Ref.Untyped.toSQL(orderBy.ref, tableAliases, queryToString)
+let toSQL = (orderBy, queryToString) => {
+  let refString = Ref.Untyped.toSQL(orderBy.ref, queryToString)
 
   let directionString = switch orderBy.direction {
   | ASC => "ASC"

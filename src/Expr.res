@@ -44,17 +44,17 @@ let nin_ = (left, rights) => In(
   Js.Array2.map(rights, Ref.Typed.toUntyped),
 )
 
-let leftRightToSQL = (left, op, right, tableAliases, queryToString) => {
-  let ls = Ref.Untyped.toSQL(left, tableAliases, queryToString)
-  let rs = Ref.Untyped.toSQL(right, tableAliases, queryToString)
+let leftRightToSQL = (left, op, right, queryToString) => {
+  let ls = Ref.Untyped.toSQL(left, queryToString)
+  let rs = Ref.Untyped.toSQL(right, queryToString)
 
   `${ls} ${op} ${rs}`
 }
 
-let betweenToSQL = (left, bool, r1, r2, tableAliases, queryToString) => {
-  let ls = Ref.Untyped.toSQL(left, tableAliases, queryToString)
-  let r1s = Ref.Untyped.toSQL(r1, tableAliases, queryToString)
-  let r2s = Ref.Untyped.toSQL(r2, tableAliases, queryToString)
+let betweenToSQL = (left, bool, r1, r2, queryToString) => {
+  let ls = Ref.Untyped.toSQL(left, queryToString)
+  let r1s = Ref.Untyped.toSQL(r1, queryToString)
+  let r2s = Ref.Untyped.toSQL(r2, queryToString)
 
   if bool {
     `${ls} BETWEEN ${r1s} AND ${r2s}`
@@ -63,28 +63,28 @@ let betweenToSQL = (left, bool, r1, r2, tableAliases, queryToString) => {
   }
 }
 
-let rec toSQL = (expr, tableAliases, queryToString) =>
+let rec toSQL = (expr, queryToString) =>
   switch expr {
-  | And(ands) => combine(ands, "AND", tableAliases, queryToString)
-  | Or(ors) => combine(ors, "OR", tableAliases, queryToString)
-  | Equal(left, right) => leftRightToSQL(left, "=", right, tableAliases, queryToString)
-  | NotEqual(left, right) => leftRightToSQL(left, "!=", right, tableAliases, queryToString)
-  | GreaterThan(left, right) => leftRightToSQL(left, ">", right, tableAliases, queryToString)
-  | GreaterThanEqual(left, right) => leftRightToSQL(left, ">=", right, tableAliases, queryToString)
-  | LessThan(left, right) => leftRightToSQL(left, "<", right, tableAliases, queryToString)
-  | LessThanEqual(left, right) => leftRightToSQL(left, "<=", right, tableAliases, queryToString)
-  | Between(left, r1, r2) => betweenToSQL(left, true, r1, r2, tableAliases, queryToString)
-  | NotBetween(left, r1, r2) => betweenToSQL(left, false, r1, r2, tableAliases, queryToString)
-  | In(left, rights) => leftRightsToSQL(left, "IN", rights, tableAliases, queryToString)
-  | NotIn(left, rights) => leftRightsToSQL(left, "NOT IN", rights, tableAliases, queryToString)
+  | And(ands) => combine(ands, "AND", queryToString)
+  | Or(ors) => combine(ors, "OR", queryToString)
+  | Equal(left, right) => leftRightToSQL(left, "=", right, queryToString)
+  | NotEqual(left, right) => leftRightToSQL(left, "!=", right, queryToString)
+  | GreaterThan(left, right) => leftRightToSQL(left, ">", right, queryToString)
+  | GreaterThanEqual(left, right) => leftRightToSQL(left, ">=", right, queryToString)
+  | LessThan(left, right) => leftRightToSQL(left, "<", right, queryToString)
+  | LessThanEqual(left, right) => leftRightToSQL(left, "<=", right, queryToString)
+  | Between(left, r1, r2) => betweenToSQL(left, true, r1, r2, queryToString)
+  | NotBetween(left, r1, r2) => betweenToSQL(left, false, r1, r2, queryToString)
+  | In(left, rights) => leftRightsToSQL(left, "IN", rights, queryToString)
+  | NotIn(left, rights) => leftRightsToSQL(left, "NOT IN", rights, queryToString)
   }
 
-and combine = (exprs, bool, tableAliases, queryToString) =>
-  `(${Belt.Array.joinWith(exprs, ` ${bool} `, toSQL(_, tableAliases, queryToString))})`
+and combine = (exprs, bool, queryToString) =>
+  `(${Belt.Array.joinWith(exprs, ` ${bool} `, toSQL(_, queryToString))})`
 
-and leftRightsToSQL = (left, op, rights, tableAliases, queryToString) => {
-  let ls = Ref.Untyped.toSQL(left, tableAliases, queryToString)
-  let rs = Belt.Array.joinWith(rights, ", ", Ref.Untyped.toSQL(_, tableAliases, queryToString))
+and leftRightsToSQL = (left, op, rights, queryToString) => {
+  let ls = Ref.Untyped.toSQL(left, queryToString)
+  let rs = Belt.Array.joinWith(rights, ", ", Ref.Untyped.toSQL(_, queryToString))
 
   `${ls} ${op}(${rs})`
 }

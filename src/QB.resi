@@ -1,68 +1,44 @@
-let all: () => 'a
+let all: unit => 'a
 let value: 'a => Ref.Typed.t<'a>
-let subQuery: Query.executable<_, _, _, _, _, _, Ref.Typed.t<'projections>> => Ref.Typed.t<'projections>
+/* let subQuery: Query.executable<_, _, _, _, _, _, Ref.Typed.t<'projections>> => Ref.Typed.t<'projections> */
 
 let count: Ref.Typed.t<'a> => Ref.Typed.t<int>
-let countAll: () => Ref.Typed.t<int>
+let countAll: unit => Ref.Typed.t<int>
 let sumI: Ref.Typed.t<int> => Ref.Typed.t<int>
 let sumF: Ref.Typed.t<float> => Ref.Typed.t<float>
 let avg: Ref.Typed.t<'a> => Ref.Typed.t<'a>
 let min: Ref.Typed.t<'a> => Ref.Typed.t<'a>
 let max: Ref.Typed.t<'a> => Ref.Typed.t<'a>
 
-let from: (Schema.table<'c, 'oc>, string) => Query.t<'c, 'c, _, _, _, _>
-
-let innerJoin1: (
-  Query.t<'p0, 's0, _, _, 'p2, 's2>,
-  Schema.table<'c, 'oc>,
-  string,
-  ('s0, 'c, 's2) => Expr.t,
-) => Query.t<'p0, 's0, 'c, 'c, 'p2, 's2>
-
-let leftJoin1: (
-  Query.t<'p0, 's0, _, _, 'p2, 's2>,
-  Schema.table<'c, 'oc>,
-  string,
-  ('s0, 'c, 's2) => Expr.t,
-) => Query.t<'p0, 's0, 'oc, 'c, 'p2, 's2>
-
-let innerJoin2: (
-  Query.t<'p0, 's0, 'p1, 's1, _, _>,
-  Schema.table<'c, 'oc>,
-  string,
-  ('s0, 's1, 'c) => Expr.t,
-) => Query.t<'p0, 's0, 'p1, 's1, 'c, 'c>
-
-let leftJoin2: (
-  Query.t<'p0, 's0, 'p1, 's1, _, _>,
-  Schema.table<'c, 'oc>,
-  string,
-  ('s0, 's1, 'c) => Expr.t,
-) => Query.t<'p0, 's0, 'p1, 's1, 'oc, 'c>
+let join: (
+  Query.t<'projectables, 'selectables>,
+  int,
+  'selectables => Expr.t,
+) => Query.t<'projectables, 'selectables>
 
 let where: (
-  Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
-  ('s0, 's1, 's2) => Expr.t,
-) => Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>
+  Query.t<'projectables, 'selectables>,
+  'selectables => Expr.t,
+) => Query.t<'projectables, 'selectables>
 
 let groupBy: (
-  Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
-  ('s0, 's1, 's2) => GroupBys.t,
-) => Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>
+  Query.t<'projectables, 'selectables>,
+  'selectables => GroupBys.t,
+) => Query.t<'projectables, 'selectables>
 
 let having: (
-  Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
-  ('s0, 's1, 's2) => Expr.t,
-) => Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>
+  Query.t<'projectables, 'selectables>,
+  'selectables => Expr.t,
+) => Query.t<'projectables, 'selectables>
 
 let orderBy: (
-  Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
-  ('s0, 's1, 's2) => OrderBys.t,
-) => Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>
+  Query.t<'projectables, 'selectables>,
+  'selectables => OrderBys.t,
+) => Query.t<'projectables, 'selectables>
 
 let select: (
-  Query.t<'p0, 's0, 'p1, 's1, 'p2, 's2>,
-  ('p0, 'p1, 'p2) => 'projections,
-) => Query.executable<'p0, 's0, 'p1, 's1, 'p2, 's2, 'projections>
+  Query.t<'projectables, 'selectables>,
+  'projectables => 'projections,
+) => Query.executable<'projectables, 'selectables, 'projections>
 
-let toSQL: Query.executable<_, _, _, _, _, _, _> => string
+let toSQL: Query.executable<_, _, _> => string
