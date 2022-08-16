@@ -16,59 +16,44 @@ let inspect = %raw(`
   }
 `)
 
-/* log( */
-/* "get all artists ordered by name:", */
-/* from(Db.ArtistsTable.t, "a") */
-/* ->orderBy((a, _, _) => [OrderBy.asc(a.name)]) */
-/* ->select((_, _, _) => all()), */
-/* ) */
+log("get all artists:", Db.ArtistsTable.query)
 
 log(
-  "get all artists ordered by name:",
-  Db.ArtistsTable.query
-  ->orderBy(c => [OrderBy.asc(c.artists.name)])
-  ->select(c => (c.artists.id, c.artists.name)),
+  "get all artist names in alphabetic order:",
+  Db.ArtistsTable.query->orderBy(c => [OrderBy.asc(c.artists.name)])->select(c => c.artists.name),
 )
 
-log("get number of songs 1:", Db.SongsTable.query->select(_ => count(all())))
-
-log("get number of songs 2:", Db.SongsTable.query->select(_ => countAll()))
+log("get number of songs:", Db.SongsTable.query->select(_ => countAll()))
 
 log(
-  "get album names and years of year 1982 or 1992 (OR):",
-  Db.AlbumsTable.query
-  ->where(c => Expr.or_([Expr.eq(c.albums.year, value(1982)), Expr.eq(c.albums.year, value(1992))]))
-  ->select(c => (c.albums.name, c.albums.year)),
+  "get albums of year 1982 or 1992 (OR):",
+  Db.AlbumsTable.query->where(c =>
+    Expr.or_([Expr.eq(c.albums.year, value(1982)), Expr.eq(c.albums.year, value(1992))])
+  ),
 )
 
 log(
-  "get album names and years of year 1982 or 1992 (IN):",
-  Db.AlbumsTable.query
-  ->where(c => Expr.in_(c.albums.year, [value(1982), value(1992)]))
-  ->select(c => (c.albums.name, c.albums.year)),
+  "get albums of year 1982 or 1992 (IN):",
+  Db.AlbumsTable.query->where(c => Expr.in_(c.albums.year, [value(1982), value(1992)])),
 )
 
 log(
   "get all artists with it's albums with it's songs:",
   Db.ArtistsLeftJoinAlbumsLeftJoinSongs.query
   ->join(0, c => Expr.eq(c.al.artistId, c.ar.id))
-  ->join(1, c => Expr.eq(c.s.albumId, c.al.id))
-  ->select(c => (c.ar.name, c.al.name, c.s.name)),
+  ->join(1, c => Expr.eq(c.s.albumId, c.al.id)),
 )
 
 log(
-  "get all album names with song names (exclude empty albums):",
-  Db.AlbumsInnerJoinSongs.query
-  ->join(0, c => Expr.eq(c.s.albumId, c.a.id))
-  ->select(c => (c.a.name, c.s.name)),
+  "get all albums with songs (exclude empty albums):",
+  Db.AlbumsInnerJoinSongs.query->join(0, c => Expr.eq(c.s.albumId, c.a.id)),
 )
 
 log(
   "get all albums which are newer than 'Fear of the Dark' (join):",
   Db.AlbumsInnerJoinAlbums.query
   ->join(0, c => Expr.eq(c.a2.name, value("Fear of the Dark")))
-  ->where(c => Expr.gt(c.a1.year, c.a2.year))
-  ->select(c => c.a1.name),
+  ->where(c => Expr.gt(c.a1.year, c.a2.year)),
 )
 
 /* log( */
@@ -100,9 +85,7 @@ log("get avg song duration:", avgDurationQuery)
 
 log(
   "get songs with duration between 1 and 2 minutes:",
-  Db.SongsTable.query
-  ->where(c => Expr.btw(c.songs.duration, value("1:00"), value("2:00")))
-  ->select(_ => all()),
+  Db.SongsTable.query->where(c => Expr.btw(c.songs.duration, value("1:00"), value("2:00"))),
 )
 
 log(
@@ -114,7 +97,7 @@ log(
 )
 
 log(
-  "get number of albums per artist (less than 4 albums):",
+  "get number of albums per artist (but only artists with less than 4 albums):",
   Db.ArtistsLeftJoinAlbums.query
   ->join(0, c => Expr.eq(c.al.artistId, c.ar.id))
   ->groupBy(c => [GroupBy.group(c.al.artistId)])

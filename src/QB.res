@@ -1,10 +1,6 @@
 let applyColumnAccessors = fn =>
   fn(Utils.createColumnAccessor())
 
-let all = () => {
-  Ref.Typed.AsteriskRef(AsteriskRef.make())->Obj.magic
-}
-
 let value = value => {
   Ref.Typed.ValueRef(ValueRef.make(value))
 }
@@ -120,24 +116,24 @@ let select = (query, getProjections) => {
   let projections = applyColumnAccessors(getProjections)->Utils.ensureArray->Obj.magic
 
   let query = {
-    query,
+    ...query,
     projections,
   }
 
   query
 }
 
-let rec toSQL = executable => {
+let rec toSQL = query => {
   open Query
 
   [
-    Projections.toSQL(executable.projections->Obj.magic, toSQL),
-    From.toSQL(executable.query.from),
-    Joins.toSQL(executable.query.joins, toSQL),
-    Selections.toSQL(executable.query.selections, toSQL),
-    GroupBys.toSQL(executable.query.groupBys, toSQL),
-    Havings.toSQL(executable.query.havings, toSQL),
-    OrderBys.toSQL(executable.query.orderBys, toSQL),
+    Projections.toSQL(query.projections->Obj.magic, toSQL),
+    From.toSQL(query.from),
+    Joins.toSQL(query.joins, toSQL),
+    Selections.toSQL(query.selections, toSQL),
+    GroupBys.toSQL(query.groupBys, toSQL),
+    Havings.toSQL(query.havings, toSQL),
+    OrderBys.toSQL(query.orderBys, toSQL),
   ]
   ->Js.Array2.filter(s => String.length(s) > 0)
   ->Js.Array2.joinWith(" ")
