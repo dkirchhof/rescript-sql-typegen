@@ -18,10 +18,6 @@ module ArtistsTable = {
     artists: columns,
   }
 
-  let t: Schema.table<columns, optionalColumns> = {
-    name: "artists",
-  }
-
   let query: Query.t<projectables, selectables> = {
     from: {
       name: "artists",
@@ -57,10 +53,6 @@ module AlbumsTable = {
 
   type selectables = {
     albums: columns,
-  }
-
-  let t: Schema.table<columns, optionalColumns> = {
-    name: "albums",
   }
 
   let query: Query.t<projectables, selectables> = {
@@ -100,10 +92,6 @@ module SongsTable = {
     songs: columns,
   }
 
-  let t: Schema.table<columns, optionalColumns> = {
-    name: "songs",
-  }
-
   let query: Query.t<projectables, selectables> = {
     from: {
       name: "songs",
@@ -130,19 +118,9 @@ module AlbumsInnerJoinSongs = {
   }
 
   let query: Query.t<projectables, selectables> = {
-    from: {
-      name: "albums",
-      alias: "a",
-    },
+    from: { name: "albums", alias: "a" },
     joins: [
-      {
-        table: {
-          name: "songs",
-          alias: "s",
-        },
-        joinType: Left,
-        condition: None,
-      },
+      { table: { name: "songs", alias: "s" }, joinType: Left, condition: None },
     ],
     selections: None,
     groupBys: [],
@@ -164,19 +142,9 @@ module AlbumsInnerJoinAlbums = {
   }
 
   let query: Query.t<projectables, selectables> = {
-    from: {
-      name: "albums",
-      alias: "a1",
-    },
+    from: { name: "albums", alias: "a1" },
     joins: [
-      {
-        table: {
-          name: "albums",
-          alias: "a2",
-        },
-        joinType: Left,
-        condition: None,
-      },
+      { table: { name: "albums", alias: "a2" }, joinType: Left, condition: None },
     ],
     selections: None,
     groupBys: [],
@@ -197,19 +165,9 @@ module ArtistsLeftJoinAlbums = {
   }
 
   let query: Query.t<projectables, selectables> = {
-    from: {
-      name: "artists",
-      alias: "ar",
-    },
+    from: { name: "artists", alias: "ar" },
     joins: [
-      {
-        table: {
-          name: "albums",
-          alias: "al",
-        },
-        joinType: Left,
-        condition: None,
-      },
+      { table: { name: "albums", alias: "al" }, joinType: Left, condition: None },
     ],
     selections: None,
     groupBys: [],
@@ -233,27 +191,10 @@ module ArtistsLeftJoinAlbumsLeftJoinSongs = {
   }
 
   let query: Query.t<projectables, selectables> = {
-    from: {
-      name: "artists",
-      alias: "ar",
-    },
+    from: { name: "artists", alias: "ar" },
     joins: [
-      {
-        table: {
-          name: "albums",
-          alias: "al",
-        },
-        joinType: Left,
-        condition: None,
-      },
-      {
-        table: {
-          name: "songs",
-          alias: "s",
-        },
-        joinType: Left,
-        condition: None,
-      },
+      { table: { name: "albums", alias: "al" }, joinType: Left, condition: None },
+      { table: { name: "songs", alias: "s" }, joinType: Left, condition: None },
     ],
     selections: None,
     groupBys: [],
