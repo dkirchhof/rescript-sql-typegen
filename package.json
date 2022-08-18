@@ -9,5 +9,9 @@
     "devDependencies": {
         "rescript": "^9.1.4"
     },
-    "dependencies": {}
+    "dependencies": {},
+    "optionalDependencies": {
+        "better-sqlite3": "^7.6.2",
+        "js-array2-ex": "^0.0.4"
+    }
 }

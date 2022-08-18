@@ -6,6 +6,16 @@ let log = (title, query) => {
   Js.log("")
 }
 
+let logAndExecute = (title, query, db) => {
+  Js.log2(`\x1b[1m%s\x1b[0m`, title)
+  Js.log(query->toSQL ++ ";")
+
+  let result = execute(query, db)
+
+  Js.log(result)
+  Js.log("")
+}
+
 %%raw(`
   import { inspect as inspect_ } from "util";
 `)
@@ -15,6 +25,8 @@ let inspect = %raw(`
     console.log(inspect_(value, false, 10, true));
   }
 `)
+
+let db = SQLite3.createDB("db.db")
 
 log("get all artists:", Db.ArtistsTable.query)
 
@@ -104,3 +116,23 @@ log(
   ->having(c => Expr.lt(count(c.al.id), value(4)))
   ->select(c => (c.ar.name, count(c.al.id))),
 )
+
+let aas =
+  Db.ArtistsLeftJoinAlbumsLeftJoinSongs.query
+  ->join(0, c => Expr.eq(c.al.artistId, c.ar.id))
+  ->join(1, c => Expr.eq(c.s.albumId, c.al.id))
+  ->execute(db)
+
+open! JsArray2Ex
+
+aas
+->groupBy(row => row.ar)
+->map(((artist, rows)) =>
+  {
+    "artist": artist.name,
+    "albums": rows
+    ->groupBy(row => row.al)
+    ->map(((album, rows2)) => {"album": album.name, "songs": rows2->map(row => row.s.name)}),
+  }
+)
+->inspect

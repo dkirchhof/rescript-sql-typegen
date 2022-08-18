@@ -12,6 +12,7 @@
       "in-source": true
     }
   ],
+  "bs-dependencies": ["js-array2-ex"],
   "suffix": ".bs.js",
   "warnings": {
     "error": false

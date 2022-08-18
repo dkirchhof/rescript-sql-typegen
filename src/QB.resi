@@ -41,3 +41,5 @@ let select: (
 ) => Query.t<'projectables, 'selectables, 'projections>
 
 let toSQL: Query.t<_, _, _> => string
+
+let execute: (Query.t<_, _, 'projections>, SQLite3.db) => QueryResult.t<'projections>

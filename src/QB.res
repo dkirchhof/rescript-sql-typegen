@@ -1,5 +1,4 @@
-let applyColumnAccessors = fn =>
-  fn(Utils.createColumnAccessor())
+let applyColumnAccessors = fn => fn(Utils.createColumnAccessor())
 
 let value = value => {
   Ref.Typed.ValueRef(ValueRef.make(value))
@@ -44,15 +43,15 @@ let join = (query, index, getCondition) => {
 
   let joins = query.joins->Js.Array2.mapi((join, i) => {
     if i === index {
-      {...join, condition: Some(condition) }
+      {...join, condition: Some(condition)}
     } else {
       join
     }
-  }) 
+  })
 
   let query = {
     ...query,
-    joins: joins,
+    joins,
   }
 
   query
@@ -137,4 +136,26 @@ let rec toSQL = query => {
   ]
   ->Js.Array2.filter(s => String.length(s) > 0)
   ->Js.Array2.joinWith(" ")
+}
+
+let execute = (query: Query.t<_, _, 'projections>, db) => {
+  let queryString = toSQL(query)
+
+  let p = query.projections->Obj.magic
+
+  let makeSubDict = (row, dict) =>
+    dict->Js.Dict.entries->Js.Array2.map(((key, value)) => (key, row[value]))->Js.Dict.fromArray
+
+  let makeDict = (row, dict) =>
+    dict
+    ->Js.Dict.entries
+    ->Js.Array2.map(((key, value)) => (key, makeSubDict(row, value)))
+    ->Js.Dict.fromArray
+
+  db
+  ->SQLite3.prepare(queryString)
+  ->SQLite3.raw(true)
+  ->SQLite3.all
+  ->Js.Array2.map(makeDict(_, p))
+  ->Obj.magic
 }

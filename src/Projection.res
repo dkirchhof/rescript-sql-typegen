@@ -1,4 +1,7 @@
-type t = Ref.Untyped.t
+type t = {
+  column: ColumnRef.t,
+  alias: string,
+}
 
 let toSQL = (projection, queryToString) => {
   switch projection {
