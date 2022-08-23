@@ -112,7 +112,7 @@ let orderBy = (query, getOrderBys) => {
 let select = (query, getProjections) => {
   open Query
 
-  let projections = applyColumnAccessors(getProjections)->Utils.ensureArray->Obj.magic
+  let projections = applyColumnAccessors(getProjections)->Obj.magic
 
   let query = {
     ...query,
@@ -141,21 +141,27 @@ let rec toSQL = query => {
 let execute = (query: Query.t<_, _, 'projections>, db) => {
   let queryString = toSQL(query)
 
-  let p = query.projections->Obj.magic
+  let makeDict = row => {
+    let result = Js.Dict.empty()
 
-  let makeSubDict = (row, dict) =>
-    dict->Js.Dict.entries->Js.Array2.map(((key, value)) => (key, row[value]))->Js.Dict.fromArray
+    let addOrUpdateSubDict = (result, namespace, name, value) => {
+      switch result->Js.Dict.get(namespace) {
+      | Some(subDict) => subDict->Js.Dict.set(name, value)
+      | None => result->Js.Dict.set(namespace, Js.Dict.fromArray([(name, value)]))
+      }
+    }
 
-  let makeDict = (row, dict) =>
-    dict
+    row
     ->Js.Dict.entries
-    ->Js.Array2.map(((key, value)) => (key, makeSubDict(row, value)))
-    ->Js.Dict.fromArray
+    ->Js.Array2.forEach(((key, value)) => {
+      switch key->Js.String2.split(".") {
+      | [namespace, name] => addOrUpdateSubDict(result, namespace, name, value)
+      | _ => Js.Exn.raiseError("")
+      }
+    })
 
-  db
-  ->SQLite3.prepare(queryString)
-  ->SQLite3.raw(true)
-  ->SQLite3.all
-  ->Js.Array2.map(makeDict(_, p))
-  ->Obj.magic
+    result
+  }
+
+  db->SQLite3.prepare(queryString)->SQLite3.all->Js.Array2.map(makeDict)->Obj.magic
 }

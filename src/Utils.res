@@ -13,11 +13,3 @@ let createColumnAccessor = () => {
     }
   `)(Ref.Typed.columnRef)
 }
-
-let ensureArray: 'a => array<'a> = input => {
-  %raw(`
-    function(input) {
-      return Array.isArray(input) ? input : [input];
-    }
-  `)(input)
-}

@@ -30,42 +30,50 @@ let db = SQLite3.createDB("db.db")
 
 log("get all artists:", Db.ArtistsTable.query)
 
-/* log( */
-/*   "get all artist names in alphabetic order:", */
-/*   Db.ArtistsTable.query->orderBy(c => [OrderBy.asc(c.artist.name)])->select(c => c.artist.name), */
-/* ) */
+logAndExecute(
+  "get all artist names in alphabetic order:",
+  Db.ArtistsTable.query
+  ->orderBy(c => [OrderBy.asc(c.artist.name)])
+  ->select(c => {"artist": {"id": c.artist.id, "name": c.artist.name}}),
+  db,
+)
 
-/* log("get number of songs:", Db.SongsTable.query->select(_ => countAll())) */
+logAndExecute(
+  "get number of songs:",
+  Db.SongsTable.query->select(_ => {"song": {"count": countAll()}}),
+  db,
+)
 
-/* log( */
+/* logAndExecute( */
 /*   "get albums of year 1982 or 1992 (OR):", */
 /*   Db.AlbumsTable.query->where(c => */
 /*     Expr.or_([Expr.eq(c.album.year, value(1982)), Expr.eq(c.album.year, value(1992))]) */
 /*   ), */
+/*   db */
 /* ) */
 
 /* log( */
-/*   "get albums of year 1982 or 1992 (IN):", */
-/*   Db.AlbumsTable.query->where(c => Expr.in_(c.album.year, [value(1982), value(1992)])), */
+/* "get albums of year 1982 or 1992 (IN):", */
+/* Db.AlbumsTable.query->where(c => Expr.in_(c.album.year, [value(1982), value(1992)])), */
 /* ) */
 
 /* log( */
-/*   "get all artists with it's albums with it's songs:", */
-/*   Db.ArtistsLeftJoinAlbumsLeftJoinSongs.query */
-/*   ->join(0, c => Expr.eq(c.al.artistId, c.ar.id)) */
-/*   ->join(1, c => Expr.eq(c.s.albumId, c.al.id)), */
+/* "get all artists with it's albums with it's songs:", */
+/* Db.ArtistsLeftJoinAlbumsLeftJoinSongs.query */
+/* ->join(0, c => Expr.eq(c.al.artistId, c.ar.id)) */
+/* ->join(1, c => Expr.eq(c.s.albumId, c.al.id)), */
 /* ) */
 
 /* log( */
-/*   "get all albums with songs (exclude empty albums):", */
-/*   Db.AlbumsInnerJoinSongs.query->join(0, c => Expr.eq(c.s.albumId, c.a.id)), */
+/* "get all albums with songs (exclude empty albums):", */
+/* Db.AlbumsInnerJoinSongs.query->join(0, c => Expr.eq(c.s.albumId, c.a.id)), */
 /* ) */
 
 /* log( */
-/*   "get all albums which are newer than 'Fear of the Dark' (join):", */
-/*   Db.AlbumsInnerJoinAlbums.query */
-/*   ->join(0, c => Expr.eq(c.a2.name, value("Fear of the Dark"))) */
-/*   ->where(c => Expr.gt(c.a1.year, c.a2.year)), */
+/* "get all albums which are newer than 'Fear of the Dark' (join):", */
+/* Db.AlbumsInnerJoinAlbums.query */
+/* ->join(0, c => Expr.eq(c.a2.name, value("Fear of the Dark"))) */
+/* ->where(c => Expr.gt(c.a1.year, c.a2.year)), */
 /* ) */
 
 /* /1* log( *1/ */
@@ -96,28 +104,26 @@ log("get all artists:", Db.ArtistsTable.query)
 /* /1* ) *1/ */
 
 /* log( */
-/*   "get songs with duration between 1 and 2 minutes:", */
-/*   Db.SongsTable.query->where(c => Expr.btw(c.song.duration, value("1:00"), value("2:00"))), */
+/* "get songs with duration between 1 and 2 minutes:", */
+/* Db.SongsTable.query->where(c => Expr.btw(c.song.duration, value("1:00"), value("2:00"))), */
 /* ) */
 
 /* log( */
-/*   "get number of albums per artist:", */
-/*   Db.ArtistsLeftJoinAlbums.query */
-/*   ->join(0, c => Expr.eq(c.al.artistId, c.ar.id)) */
-/*   ->groupBy(c => [GroupBy.group(c.al.artistId)]) */
-/*   ->select(c => (c.ar.name, count(c.al.id))), */
+/* "get number of albums per artist:", */
+/* Db.ArtistsLeftJoinAlbums.query */
+/* ->join(0, c => Expr.eq(c.al.artistId, c.ar.id)) */
+/* ->groupBy(c => [GroupBy.group(c.al.artistId)]) */
+/* ->select(c => (c.ar.name, count(c.al.id))), */
 /* ) */
 
 /* log( */
-/*   "get number of albums per artist (but only artists with less than 4 albums):", */
-/*   Db.ArtistsLeftJoinAlbums.query */
-/*   ->join(0, c => Expr.eq(c.al.artistId, c.ar.id)) */
-/*   ->groupBy(c => [GroupBy.group(c.al.artistId)]) */
-/*   ->having(c => Expr.lt(count(c.al.id), value(4))) */
-/*   ->select(c => (c.ar.name, count(c.al.id))), */
+/* "get number of albums per artist (but only artists with less than 4 albums):", */
+/* Db.ArtistsLeftJoinAlbums.query */
+/* ->join(0, c => Expr.eq(c.al.artistId, c.ar.id)) */
+/* ->groupBy(c => [GroupBy.group(c.al.artistId)]) */
+/* ->having(c => Expr.lt(count(c.al.id), value(4))) */
+/* ->select(c => (c.ar.name, count(c.al.id))), */
 /* ) */
-
-
 
 /* /1* let aas = *1/ */
 /* /1*   Db.ArtistsLeftJoinAlbumsLeftJoinSongs.query *1/ */

@@ -37,7 +37,7 @@ let orderBy: (
 
 let select: (
   Query.t<'projectables, 'selectables, _>,
-  'projectables => 'projections,
+  'projectables => Js.t<Js.t<{..}>> as 'projections,
 ) => Query.t<'projectables, 'selectables, 'projections>
 
 let toSQL: Query.t<_, _, _> => string

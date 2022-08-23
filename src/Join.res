@@ -19,5 +19,5 @@ let toSQL = (join, queryToString) => {
     | None => ""
   }
 
-  `${joinTypeString} JOIN ${join.table.name} AS ${join.table.alias}${selectionString}`
+  `${joinTypeString} JOIN ${join.table.name} AS "${join.table.alias}"${selectionString}`
 }
