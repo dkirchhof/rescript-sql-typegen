@@ -1,13 +1,11 @@
-type t = {
-  column: ColumnRef.t,
-  alias: string,
-}
+type t = string;
 
 let toSQL = (projection, queryToString) => {
-  switch projection {
-  | Ref.Untyped.AsteriskRef(ref) => AsteriskRef.toSQL(ref)
-  | Ref.Untyped.ColumnRef(ref) => ColumnRef.toSQL(ref)
-  | Ref.Untyped.ValueRef(ref) => ValueRef.toSQL(ref)
-  | Ref.Untyped.QueryRef(ref) => QueryRef.toSQL(ref, queryToString)
-  }
+  /* switch projection { */
+  /* | Ref.Untyped.AsteriskRef(ref) => `${AsteriskRef.toSQL(ref)} AS ${projection.alias}` */
+  /* | Ref.Untyped.ColumnRef(ref) => `${ColumnRef.toSQL(ref)} AS ${projection.alias}` */
+  /* | Ref.Untyped.ValueRef(ref) => `${ValueRef.toSQL(ref)} AS ${projection.alias}` */
+  /* | Ref.Untyped.QueryRef(ref) => `${QueryRef.toSQL(ref, queryToString)} AS ${projection.alias}` */
+  /* } */
+  "COLUMN"
 }
