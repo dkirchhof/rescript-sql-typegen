@@ -28,13 +28,13 @@ let inspect = %raw(`
 
 let db = SQLite3.createDB("db.db")
 
-log("get all artists:", Db.ArtistsTable.query)
+logAndExecute("get all artists:", Db.ArtistsTable.query, db)
 
 logAndExecute(
   "get all artist names in alphabetic order:",
   Db.ArtistsTable.query
   ->orderBy(c => [OrderBy.asc(c.artist.name)])
-  ->select(c => {"artist": {"id": c.artist.id, "name": c.artist.name}}),
+  ->select(c => {"artist": {"name": c.artist.name}}),
   db,
 )
 
@@ -44,13 +44,13 @@ logAndExecute(
   db,
 )
 
-/* logAndExecute( */
-/*   "get albums of year 1982 or 1992 (OR):", */
-/*   Db.AlbumsTable.query->where(c => */
-/*     Expr.or_([Expr.eq(c.album.year, value(1982)), Expr.eq(c.album.year, value(1992))]) */
-/*   ), */
-/*   db */
-/* ) */
+logAndExecute(
+  "get albums of year 1982 or 1992 (OR):",
+  Db.AlbumsTable.query->where(c =>
+    Expr.or_([Expr.eq(c.album.year, value(1982)), Expr.eq(c.album.year, value(1992))])
+  ),
+  db,
+)
 
 /* log( */
 /* "get albums of year 1982 or 1992 (IN):", */

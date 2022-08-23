@@ -37,16 +37,16 @@ module ArtistsTable = {
     orderBys: [],
     projections: {
       "artist": {
-        "id": {
+        "id": Ref.Typed.ColumnRef({
           tableAlias: "artist",
           columnName: "id",
           aggType: None,
-        },
-        "name": {
+        }),
+        "name": Ref.Typed.ColumnRef({
           tableAlias: "artist",
           columnName: "name",
           aggType: None,
-        },
+        }),
       },
     }->Obj.magic,
   }
@@ -95,7 +95,30 @@ module AlbumsTable = {
     groupBys: [],
     havings: None,
     orderBys: [],
-    projections: None->Obj.magic,
+    projections: {
+      "album": {
+        "id": Ref.Typed.ColumnRef({
+          tableAlias: "album",
+          columnName: "id",
+          aggType: None,
+        }),
+        "artistId": Ref.Typed.ColumnRef({
+          tableAlias: "album",
+          columnName: "artistId",
+          aggType: None,
+        }),
+        "name": Ref.Typed.ColumnRef({
+          tableAlias: "album",
+          columnName: "name",
+          aggType: None,
+        }),
+        "year": Ref.Typed.ColumnRef({
+          tableAlias: "album",
+          columnName: "year",
+          aggType: None,
+        }),
+      },
+    }->Obj.magic,
   }
 }
 
