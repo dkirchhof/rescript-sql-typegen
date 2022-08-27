@@ -1,5 +1,4 @@
 {
-    "type": "module",
     "scripts": {
         "dev": "rescript build -w",
         "start": "node src/index12.bs.js",
@@ -7,7 +6,7 @@
         "codegen": "node src/db_codegen.bs.js > src/db.res"
     },
     "devDependencies": {
-        "rescript": "^9.1.4"
+        "rescript": "10.0.0"
     },
     "dependencies": {},
     "optionalDependencies": {

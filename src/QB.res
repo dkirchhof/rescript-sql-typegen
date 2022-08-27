@@ -8,12 +8,10 @@ let subQuery = query => {
   Ref.Typed.QueryRef(QueryRef.make(query))
 }
 
-let count = ref => {
-  (Ref.Typed.updateAggType(ref, Some(Aggregation.COUNT)) :> Ref.Typed.t<int>)
-}
+let unbox = Ref.Typed.unbox
 
-let countAll = () => {
-  Ref.Typed.AsteriskRef({aggType: Some(Aggregation.COUNT)})
+let count = ref => {
+  Ref.Typed.updateAggType(ref, Some(Aggregation.COUNT))->Obj.magic
 }
 
 let sumI = ref => {
@@ -155,7 +153,7 @@ let execute = (query: Query.t<_, _, 'projections>, db) => {
     ->Js.Dict.entries
     ->Js.Array2.forEach(((key, value)) => {
       switch key->Js.String2.split(".") {
-      | [namespace, name] => addOrUpdateSubDict(result, namespace, name, value)
+      | [namespace, name] => addOrUpdateSubDict(result, namespace, name, Js.nullToOption(value))
       | _ => Js.Exn.raiseError("")
       }
     })
