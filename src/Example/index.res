@@ -56,7 +56,7 @@ log(
 
 log(
   "get all albums with songs (exclude empty albums):",
-  Db.AlbumsInnerJoinSongs.query->join(0, c => Expr.eq(c.song.albumId, c.album.id)),
+  Db.AlbumsInnerJoinSongs.createSelectQuery()->join(0, c => Expr.eq(c.song.albumId, c.album.id)),
 )
 
 log(

@@ -6,6 +6,12 @@ type t = {
   condition: option<Expr.t>,
 }
 
+let make = (tableName, tableAlias, joinType) => {
+  table: Table.make(tableName, tableAlias),
+  joinType,
+  condition: None,
+}
+
 let getTableAlias = join => join.table.alias
 
 let toSQL = (join, queryToString) => {
@@ -15,8 +21,8 @@ let toSQL = (join, queryToString) => {
   }
 
   let selectionString = switch join.condition {
-    | Some(condition) => ` ON ${Expr.toSQL(condition, queryToString)}`
-    | None => ""
+  | Some(condition) => ` ON ${Expr.toSQL(condition, queryToString)}`
+  | None => ""
   }
 
   `${joinTypeString} JOIN ${join.table.name} AS "${join.table.alias}"${selectionString}`

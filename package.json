@@ -1,9 +1,8 @@
 {
     "scripts": {
         "dev": "rescript build -w",
-        "start": "node src/index12.bs.js",
-        "start-with-db": "node src/index12.bs.js | sqlite3 db.db",
-        "codegen": "node src/db_codegen.bs.js > src/db.res"
+        "start": "node src/Example/index.mjs",
+        "codegen": "node src/Example/_Db.mjs"
     },
     "devDependencies": {
         "rescript": "10.0.0"

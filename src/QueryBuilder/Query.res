@@ -8,15 +8,17 @@ type t<'projectables, 'selectables, 'projections> = {
   projections: 'projections,
 }
 
-let makeSelectQuery = (tableName, tableAlias) => {
-  from: {
-    name: tableName,
-    alias: tableAlias,
-  },
+let makeSelectQuery = from => {
+  from: from,
   joins: [],
   selections: None,
   groupBys: [],
   havings: None,
   orderBys: [],
   projections: Js.Obj.empty(),
+}
+
+let makeJoinQuery = (from, joins) => {
+  ...makeSelectQuery(from),
+  joins,
 }
