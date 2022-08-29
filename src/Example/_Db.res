@@ -37,39 +37,37 @@ let songsTable: Table.t = {
 printTableModule(songsTable)
 Js.log("")
 
-printSelectQueryModule("Artists", (artistsTable, "artist"), [])
+printSelectQueryModule("Artists", artistsTable, "artist", [])
 Js.log("")
 
-printSelectQueryModule("Albums", (albumsTable, "album"), [])
+printSelectQueryModule("Albums", albumsTable, "album", [])
 Js.log("")
 
-printSelectQueryModule("Songs", (songsTable, "song"), [])
+printSelectQueryModule("Songs", songsTable, "song", [])
 Js.log("")
 
 printSelectQueryModule(
   "AlbumsInnerJoinSongs",
-  (albumsTable, "album"),
-  [Join.Inner(songsTable, "song")],
+  albumsTable,
+  "album",
+  [innerJoin(songsTable, "song")],
 )
 Js.log("")
 
-printSelectQueryModule(
-  "AlbumsInnerJoinAlbums",
-  (albumsTable, "a1"),
-  [Join.Inner(albumsTable, "a2")],
-)
+printSelectQueryModule("AlbumsInnerJoinAlbums", albumsTable, "a1", [innerJoin(albumsTable, "a2")])
 Js.log("")
 
 printSelectQueryModule(
   "ArtistsLeftJoinAlbums",
-  (artistsTable, "artist"),
-  [Join.Left(albumsTable, "album")],
+  artistsTable,
+  "artist",
+  [leftJoin(albumsTable, "album")],
 )
 Js.log("")
 
 printSelectQueryModule(
   "ArtistsLeftJoinAlbumsLeftJoinSongs",
-  (artistsTable, "artist"),
-  [Join.Left(albumsTable, "album"), Join.Left(songsTable, "song")],
+  artistsTable,
+  "artist",
+  [leftJoin(albumsTable, "album"), leftJoin(songsTable, "song")],
 )
-Js.log("")

@@ -54,12 +54,14 @@ module Artists = {
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("artists", "artist")
 
-    let joins = [
-    ]
+    let joins = []
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
-        "artist": {"id": c.artist.id->QB.unbox, "name": c.artist.name->QB.unbox},
+        "artist": {
+          "id": c.artist.id->QB.unbox,
+          "name": c.artist.name->QB.unbox,
+        },
       }
     )
   }
@@ -77,12 +79,16 @@ module Albums = {
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("albums", "album")
 
-    let joins = [
-    ]
+    let joins = []
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
-        "album": {"id": c.album.id->QB.unbox, "artistId": c.album.artistId->QB.unbox, "name": c.album.name->QB.unbox, "year": c.album.year->QB.unbox},
+        "album": {
+          "id": c.album.id->QB.unbox,
+          "artistId": c.album.artistId->QB.unbox,
+          "name": c.album.name->QB.unbox,
+          "year": c.album.year->QB.unbox,
+        },
       }
     )
   }
@@ -100,12 +106,16 @@ module Songs = {
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("songs", "song")
 
-    let joins = [
-    ]
+    let joins = []
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
-        "song": {"id": c.song.id->QB.unbox, "albumId": c.song.albumId->QB.unbox, "name": c.song.name->QB.unbox, "duration": c.song.duration->QB.unbox},
+        "song": {
+          "id": c.song.id->QB.unbox,
+          "albumId": c.song.albumId->QB.unbox,
+          "name": c.song.name->QB.unbox,
+          "duration": c.song.duration->QB.unbox,
+        },
       }
     )
   }
@@ -131,8 +141,18 @@ module AlbumsInnerJoinSongs = {
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
-        "album": {"id": c.album.id->QB.unbox, "artistId": c.album.artistId->QB.unbox, "name": c.album.name->QB.unbox, "year": c.album.year->QB.unbox},
-        "song": {"id": c.song.id->QB.unbox, "albumId": c.song.albumId->QB.unbox, "name": c.song.name->QB.unbox, "duration": c.song.duration->QB.unbox},
+        "album": {
+          "id": c.album.id->QB.unbox,
+          "artistId": c.album.artistId->QB.unbox,
+          "name": c.album.name->QB.unbox,
+          "year": c.album.year->QB.unbox,
+        },
+        "song": {
+          "id": c.song.id->QB.unbox,
+          "albumId": c.song.albumId->QB.unbox,
+          "name": c.song.name->QB.unbox,
+          "duration": c.song.duration->QB.unbox,
+        },
       }
     )
   }
@@ -158,8 +178,18 @@ module AlbumsInnerJoinAlbums = {
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
-        "a1": {"id": c.a1.id->QB.unbox, "artistId": c.a1.artistId->QB.unbox, "name": c.a1.name->QB.unbox, "year": c.a1.year->QB.unbox},
-        "a2": {"id": c.a2.id->QB.unbox, "artistId": c.a2.artistId->QB.unbox, "name": c.a2.name->QB.unbox, "year": c.a2.year->QB.unbox},
+        "a1": {
+          "id": c.a1.id->QB.unbox,
+          "artistId": c.a1.artistId->QB.unbox,
+          "name": c.a1.name->QB.unbox,
+          "year": c.a1.year->QB.unbox,
+        },
+        "a2": {
+          "id": c.a2.id->QB.unbox,
+          "artistId": c.a2.artistId->QB.unbox,
+          "name": c.a2.name->QB.unbox,
+          "year": c.a2.year->QB.unbox,
+        },
       }
     )
   }
@@ -185,8 +215,16 @@ module ArtistsLeftJoinAlbums = {
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
-        "artist": {"id": c.artist.id->QB.unbox, "name": c.artist.name->QB.unbox},
-        "album": {"id": c.album.id->QB.unbox, "artistId": c.album.artistId->QB.unbox, "name": c.album.name->QB.unbox, "year": c.album.year->QB.unbox},
+        "artist": {
+          "id": c.artist.id->QB.unbox,
+          "name": c.artist.name->QB.unbox,
+        },
+        "album": {
+          "id": c.album.id->QB.unbox,
+          "artistId": c.album.artistId->QB.unbox,
+          "name": c.album.name->QB.unbox,
+          "year": c.album.year->QB.unbox,
+        },
       }
     )
   }
@@ -215,11 +253,23 @@ module ArtistsLeftJoinAlbumsLeftJoinSongs = {
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
-        "artist": {"id": c.artist.id->QB.unbox, "name": c.artist.name->QB.unbox},
-        "album": {"id": c.album.id->QB.unbox, "artistId": c.album.artistId->QB.unbox, "name": c.album.name->QB.unbox, "year": c.album.year->QB.unbox},
-        "song": {"id": c.song.id->QB.unbox, "albumId": c.song.albumId->QB.unbox, "name": c.song.name->QB.unbox, "duration": c.song.duration->QB.unbox},
+        "artist": {
+          "id": c.artist.id->QB.unbox,
+          "name": c.artist.name->QB.unbox,
+        },
+        "album": {
+          "id": c.album.id->QB.unbox,
+          "artistId": c.album.artistId->QB.unbox,
+          "name": c.album.name->QB.unbox,
+          "year": c.album.year->QB.unbox,
+        },
+        "song": {
+          "id": c.song.id->QB.unbox,
+          "albumId": c.song.albumId->QB.unbox,
+          "name": c.song.name->QB.unbox,
+          "duration": c.song.duration->QB.unbox,
+        },
       }
     )
   }
 }
-

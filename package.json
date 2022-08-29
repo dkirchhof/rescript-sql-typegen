@@ -2,6 +2,7 @@
     "scripts": {
         "dev": "rescript build -w",
         "start": "node src/Example/index.mjs",
+        "codegen-dry": "node src/Example/_Db.mjs",
         "codegen": "node src/Example/_Db.mjs > src/Example/Db.res"
     },
     "devDependencies": {
