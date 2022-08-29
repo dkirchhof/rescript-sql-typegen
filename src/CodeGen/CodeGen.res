@@ -15,55 +15,59 @@ module Column = {
   }
 
   let toColumnString = column =>
-    `${column.name}: Ref.Typed.t<${column.dt->ColumnType.toRescriptType}>,`
+    `${column.name}: Ref.Typed.t<${column.dt->ColumnType.toRescriptType}>`
 
   let toOptColumnString = column =>
-    `${column.name}: Ref.Typed.t<option<${column.dt->ColumnType.toRescriptType}>>,`
+    `${column.name}: Ref.Typed.t<option<${column.dt->ColumnType.toRescriptType}>>`
 
-  let toProjectionString = (column, alias) => `"${column.name}": c.${alias}.${column.name}`
+  let toProjectionString = (column, alias) => `"${column.name}": c.${alias}.${column.name}->QB.unbox`
 }
 
 module Table = {
   type t = {
     moduleName: string,
     tableName: string,
-    defaultTableAlias: string,
     columns: array<Column.t>,
   }
 
-  let columnsToObjString = table => {
+  let columnsToObjString = (table, alias) => {
     let columns =
       table.columns
-      ->Js.Array2.map(Column.toProjectionString(_, table.defaultTableAlias))
+      ->Js.Array2.map(Column.toProjectionString(_, alias))
       ->Js.Array2.joinWith(", ")
 
-    `{"${table.defaultTableAlias}": {${columns}}}`
+    `{${columns}}`
   }
 }
 
 module Join = {
-  type t = Inner(Table.t) | Left(Table.t)
+  type t = Inner(Table.t, string) | Left(Table.t, string)
 
   let toSelectable = joinTable =>
     switch joinTable {
-    | Inner(table) | Left(table) => `${table.defaultTableAlias}: ${table.moduleName}.columns`
+    | Inner(table, alias) | Left(table, alias) => `${alias}: ${table.moduleName}.columns`
     }
 
   let toProjectable = joinTable =>
     switch joinTable {
-    | Inner(table) => `${table.defaultTableAlias}: ${table.moduleName}.columns`
-    | Left(table) => `${table.defaultTableAlias}: ${table.moduleName}.optionalColumns`
+    | Inner(table, alias) => `${alias}: ${table.moduleName}.columns`
+    | Left(table, alias) => `${alias}: ${table.moduleName}.optionalColumns`
     }
 
   let toJoinMake = joinTable =>
     switch joinTable {
-    | Inner(table) => `Join.make("${table.tableName}", "${table.defaultTableAlias}", Inner)`
-    | Left(table) => `Join.make("${table.tableName}", "${table.defaultTableAlias}", Left)`
+    | Inner(table, alias) => `Join.make("${table.tableName}", "${alias}", Inner)`
+    | Left(table, alias) => `Join.make("${table.tableName}", "${alias}", Left)`
     }
 
   let columnsToObjString = joinTable =>
     switch joinTable {
-    | Inner(table) | Left(table) => Table.columnsToObjString(table)
+    | Inner(table, alias) | Left(table, alias) => Table.columnsToObjString(table, alias)
+    }
+
+  let getAlias = joinTable =>
+    switch joinTable {
+    | Inner(_, alias) | Left(_, alias) => alias
     }
 }
 
@@ -71,48 +75,37 @@ let printTableModule = (table: Table.t) => {
   Js.log(`module ${table.moduleName} = {`)
 
   Js.log(`  type columns = {`)
-  table.columns->Js.Array2.forEach(column => Js.log(`     ${column->Column.toColumnString}`))
+  table.columns->Js.Array2.forEach(column => Js.log(`     ${column->Column.toColumnString},`))
   Js.log(`  }`)
 
   Js.log(``)
 
   Js.log(`  type optionalColumns = {`)
-  table.columns->Js.Array2.forEach(column => Js.log(`     ${column->Column.toOptColumnString}`))
+  table.columns->Js.Array2.forEach(column => Js.log(`     ${column->Column.toOptColumnString},`))
   Js.log(`  }`)
-
-  Js.log(``)
-
-  Js.log(`  type selectables = {${table.defaultTableAlias}: columns}`)
-  Js.log(`  type projectables = {${table.defaultTableAlias}: columns}`)
-
-  Js.log(``)
-
-  Js.log(`  let query: Query.t<projectables, selectables, _> =`)
-  Js.log(`    Query.makeSelectQuery("${table.tableName}", "${table.defaultTableAlias}")`)
-  Js.log(`    ->QB.select(c => ${table->Table.columnsToObjString})`)
 
   Js.log(`}`)
 }
 
-let printJoinModule = (moduleName, table: Table.t, joins: array<Join.t>) => {
+let printSelectQueryModule = (moduleName, (table: Table.t, alias), joins: array<Join.t>) => {
   Js.log(`module ${moduleName} = {`)
 
   Js.log(`  type selectables = {`)
-  Js.log(`    ${table.defaultTableAlias}: ${table.moduleName}.columns`)
+  Js.log(`    ${alias}: ${table.moduleName}.columns,`)
   joins->Js.Array2.forEach(join => Js.log(`    ${Join.toSelectable(join)},`))
   Js.log(`  }`)
 
   Js.log(``)
 
   Js.log(`  type projectables = {`)
-  Js.log(`    ${table.defaultTableAlias}: ${table.moduleName}.columns`)
+  Js.log(`    ${alias}: ${table.moduleName}.columns,`)
   joins->Js.Array2.forEach(join => Js.log(`    ${Join.toProjectable(join)},`))
   Js.log(`  }`)
 
   Js.log(``)
 
-  Js.log(`  let createSelectQuery = (): Query.t<projectables, selectables, _> = {`)
-  Js.log(`    let from = From.make("${table.tableName}", "${table.defaultTableAlias}")`)
+  Js.log(`  let createSelectQuery = (): Query.t<projectables, selectables, _> => {`)
+  Js.log(`    let from = From.make("${table.tableName}", "${alias}")`)
 
   Js.log(``)
 
@@ -122,10 +115,10 @@ let printJoinModule = (moduleName, table: Table.t, joins: array<Join.t>) => {
 
   Js.log(``)
 
-  Js.log(`    Query.makeJoinQuery(from, joins)->QB.select(c =>`)
+  Js.log(`    Query.makeSelectQuery(from, joins)->QB.select(c =>`)
   Js.log(`      {`)
-  Js.log(`        ${table->Table.columnsToObjString},`)
-  joins->Js.Array2.forEach(join => Js.log(`        ${join->Join.columnsToObjString},`))
+  Js.log(`        "${alias}": ${table->Table.columnsToObjString(alias)},`)
+  joins->Js.Array2.forEach(join => Js.log(`        "${join->Join.getAlias}": ${join->Join.columnsToObjString},`))
   Js.log(`      }`)
   Js.log(`    )`)
 

@@ -28,30 +28,30 @@ let inspect = %raw(`
 
 let db = SQLite3.createDB("db.db")
 
-log("get all artists:", Db.ArtistsTable.query)
+log("get all artists:", Db.Artists.createSelectQuery())
 
 log(
   "get all artist names in alphabetic order:",
-  Db.ArtistsTable.query
+  Db.Artists.createSelectQuery()
   ->orderBy(c => [OrderBy.asc(c.artist.name)])
   ->select(c => {"artist": {"name": c.artist.name->unbox}}),
 )
 
 log(
   "get number of songs:",
-  Db.SongsTable.query->select(c => {"song": {"count": c.song.id->count->unbox}}),
+  Db.Songs.createSelectQuery()->select(c => {"song": {"count": c.song.id->count->unbox}}),
 )
 
 log(
   "get albums of year 1982 or 1992 (OR):",
-  Db.AlbumsTable.query->where(c =>
+  Db.Albums.createSelectQuery()->where(c =>
     Expr.or_([Expr.eq(c.album.year, value(1982)), Expr.eq(c.album.year, value(1992))])
   ),
 )
 
 log(
   "get albums of year 1982 or 1992 (IN):",
-  Db.AlbumsTable.query->where(c => Expr.in_(c.album.year, [value(1982), value(1992)])),
+  Db.Albums.createSelectQuery()->where(c => Expr.in_(c.album.year, [value(1982), value(1992)])),
 )
 
 log(
@@ -61,18 +61,18 @@ log(
 
 log(
   "get all albums which are newer than 'Fear of the Dark' (join):",
-  Db.AlbumsInnerJoinAlbums.query
+  Db.AlbumsInnerJoinAlbums.createSelectQuery()
   ->join(0, c => Expr.eq(c.a2.name, value("Fear of the Dark")))
   ->where(c => Expr.gt(c.a1.year, c.a2.year)),
 )
 
 log(
   "get all albums which are newer than 'Fear of the Dark' (subquery):",
-  Db.AlbumsTable.query->where(c =>
+  Db.Albums.createSelectQuery()->where(c =>
     Expr.gt(
       c.album.year,
       subQuery(
-        Db.AlbumsTable.query
+        Db.Albums.createSelectQuery()
         ->where(c => Expr.eq(c.album.name, value("Fear of the Dark")))
         ->select(c => {"result": {"year": c.album.year}}),
       ),
@@ -81,23 +81,23 @@ log(
 )
 
 let avgDurationQuery =
-  Db.SongsTable.query->select(c => {"song": {"avgDuration": c.song.duration->avg->unbox}})
+  Db.Songs.createSelectQuery()->select(c => {"song": {"avgDuration": c.song.duration->avg->unbox}})
 
 log("get avg song duration:", avgDurationQuery)
 
 log(
   "get all songs which are longer then the avg:",
-  Db.SongsTable.query->where(c => Expr.gt(c.song.duration, subQuery(avgDurationQuery))),
+  Db.Songs.createSelectQuery()->where(c => Expr.gt(c.song.duration, subQuery(avgDurationQuery))),
 )
 
 log(
   "get songs with duration between 1 and 2 minutes:",
-  Db.SongsTable.query->where(c => Expr.btw(c.song.duration, value("1:00"), value("2:00"))),
+  Db.Songs.createSelectQuery()->where(c => Expr.btw(c.song.duration, value("1:00"), value("2:00"))),
 )
 
 log(
   "get number of albums per artist:",
-  Db.ArtistsLeftJoinAlbums.query
+  Db.ArtistsLeftJoinAlbums.createSelectQuery()
   ->join(0, c => Expr.eq(c.album.artistId, c.artist.id))
   ->groupBy(c => [GroupBy.group(c.album.artistId)])
   ->select(c =>
@@ -107,7 +107,7 @@ log(
 
 log(
   "get number of albums per artist (but only artists with less than 4 albums):",
-  Db.ArtistsLeftJoinAlbums.query
+  Db.ArtistsLeftJoinAlbums.createSelectQuery()
   ->join(0, c => Expr.eq(c.album.artistId, c.artist.id))
   ->groupBy(c => [GroupBy.group(c.album.artistId)])
   ->having(c => Expr.lt(count(c.album.id), value(4)))
@@ -117,7 +117,7 @@ log(
 )
 
 let getEverything =
-  Db.ArtistsLeftJoinAlbumsLeftJoinSongs.query
+  Db.ArtistsLeftJoinAlbumsLeftJoinSongs.createSelectQuery()
   ->join(0, c => Expr.eq(c.album.artistId, c.artist.id))
   ->join(1, c => Expr.eq(c.song.albumId, c.album.id))
 
