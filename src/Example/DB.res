@@ -17,7 +17,7 @@ module ArtistsTable = {
         name: "id",
         dt: "INTEGER",
         size: None,
-        notNull: true,
+        nullable: false,
         unique: false,
         default: None,
       },
@@ -25,15 +25,130 @@ module ArtistsTable = {
         table: "artists",
         name: "name",
         dt: "TEXT",
-        size: Some(255),
-        notNull: true,
+        size: None,
+        nullable: false,
         unique: true,
-        default: Some("test"),
+        default: None,
       },
     },
   }
 }
 
+module AlbumsTable = {
+  type columns = {
+    id: DDL.Column.t<int>,
+    artistId: DDL.Column.t<int>,
+    name: DDL.Column.t<string>,
+    year: DDL.Column.t<int>,
+  }
+
+  type optionalColumns = {
+    id: DDL.Column.t<option<int>>,
+    artistId: DDL.Column.t<option<int>>,
+    name: DDL.Column.t<option<string>>,
+    year: DDL.Column.t<option<int>>,
+  }
+
+  let table: DDL.Table.t<columns> = {
+    name: "albums",
+    columns: {
+      id: {
+        table: "albums",
+        name: "id",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      artistId: {
+        table: "albums",
+        name: "artistId",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      name: {
+        table: "albums",
+        name: "name",
+        dt: "TEXT",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      year: {
+        table: "albums",
+        name: "year",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+    },
+  }
+}
+
+module SongsTable = {
+  type columns = {
+    id: DDL.Column.t<int>,
+    albumId: DDL.Column.t<int>,
+    name: DDL.Column.t<string>,
+    duration: DDL.Column.t<string>,
+  }
+
+  type optionalColumns = {
+    id: DDL.Column.t<option<int>>,
+    albumId: DDL.Column.t<option<int>>,
+    name: DDL.Column.t<option<string>>,
+    duration: DDL.Column.t<option<string>>,
+  }
+
+  let table: DDL.Table.t<columns> = {
+    name: "songs",
+    columns: {
+      id: {
+        table: "songs",
+        name: "id",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      albumId: {
+        table: "songs",
+        name: "albumId",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      name: {
+        table: "songs",
+        name: "name",
+        dt: "TEXT",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      duration: {
+        table: "songs",
+        name: "duration",
+        dt: "TEXT",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+    },
+  }
+}
 /* module AlbumsTable = { */
 /*   type columns = { */
 /*     id: Ref.Typed.t<int>, */

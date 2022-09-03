@@ -11,7 +11,7 @@ module Column = {
     name: string,
     dt: string,
     size: option<int>,
-    notNull: bool,
+    nullable: bool,
     unique: bool,
     default: option<'t>,
   }
@@ -33,7 +33,7 @@ module Column = {
     [
       column.name,
       dtToSQL(column.dt, column.size),
-      column.notNull ? "NOT NULL" : "",
+      column.nullable ? "": "NOT NULL",
       column.unique ? "UNIQUE" : "",
       Belt.Option.mapWithDefault(column.default, "", defaultValueToSQL),
     ]
@@ -66,7 +66,7 @@ module PrimaryKey = {
 
   let toSQL = primaryKey =>
     switch primaryKey {
-    | Some(pk) => [`  CONSTRAINT ${pk.name} PRIMARY KEY(${pk.columns->Js.Array2.joinWith(", ")})`]
+    | Some(pk) => [`  CONSTRAINT ${pk.name} PRIMARY KEY (${pk.columns->Js.Array2.joinWith(", ")})`]
     | None => [``]
     }
 }
@@ -88,7 +88,7 @@ module ForeignKey = {
   }
 
   let toSQL = foreignKey =>
-    `  CONSTRAINT ${foreignKey.name} (${foreignKey.ownColumn}) REFERENCES ${foreignKey.foreignColumn.table}(${foreignKey.foreignColumn.name})`
+    `  CONSTRAINT ${foreignKey.name} FOREIGN KEY (${foreignKey.ownColumn}) REFERENCES ${foreignKey.foreignColumn.table}(${foreignKey.foreignColumn.name})`
 }
 
 module ForeignKeys = {

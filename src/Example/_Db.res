@@ -3,39 +3,39 @@ open CodeGen
 let artistsTable: Table.t = {
   moduleName: "ArtistsTable",
   tableName: "artists",
-  columns: [{name: "id", dt: Integer}, {name: "name", dt: String, size: 255, unique: true }],
+  columns: [{name: "id", dt: Integer}, {name: "name", dt: String, unique: true }],
 }
 
 createTableModule(artistsTable)->Js.log
 Js.log("")
 
-/* let albumsTable: Table.t = { */
-/*   moduleName: "AlbumsTable", */
-/*   tableName: "albums", */
-/*   columns: [ */
-/*     {name: "id", dt: Integer}, */
-/*     {name: "artistId", dt: Integer}, */
-/*     {name: "name", dt: String}, */
-/*     {name: "year", dt: Integer}, */
-/*   ], */
-/* } */
+let albumsTable: Table.t = {
+  moduleName: "AlbumsTable",
+  tableName: "albums",
+  columns: [
+    {name: "id", dt: Integer},
+    {name: "artistId", dt: Integer},
+    {name: "name", dt: String},
+    {name: "year", dt: Integer},
+  ],
+}
 
-/* printTableModule(albumsTable) */
-/* Js.log("") */
+createTableModule(albumsTable)->Js.log
+Js.log("")
 
-/* let songsTable: Table.t = { */
-/*   moduleName: "SongsTable", */
-/*   tableName: "songs", */
-/*   columns: [ */
-/*     {name: "id", dt: Integer}, */
-/*     {name: "albumId", dt: Integer}, */
-/*     {name: "name", dt: String}, */
-/*     {name: "duration", dt: String}, */
-/*   ], */
-/* } */
+let songsTable: Table.t = {
+  moduleName: "SongsTable",
+  tableName: "songs",
+  columns: [
+    {name: "id", dt: Integer},
+    {name: "albumId", dt: Integer},
+    {name: "name", dt: String},
+    {name: "duration", dt: String},
+  ],
+}
 
-/* printTableModule(songsTable) */
-/* Js.log("") */
+createTableModule(songsTable)->Js.log
+Js.log("")
 
 /* printSelectQueryModule("Artists", artistsTable, "artist", []) */
 /* Js.log("") */

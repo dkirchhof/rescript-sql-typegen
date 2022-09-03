@@ -1,3 +1,4 @@
+open DB
 open DDL
 open Test
 
@@ -5,23 +6,26 @@ let equal = (a: 't, b: 't) => assertion((a, b) => a === b, a, b)
 
 test("create table query", () => {
   let result =
-    createTable(Db.ArtistsTable.table)
-    ->primaryKey(c => PrimaryKey.make1("PK_Artist", c.id))
+    createTable(AlbumsTable.table)
+    ->primaryKey(c => PrimaryKey.make1("PK_Album", c.id))
     ->foreignKeys(c => [
-      ForeignKey.make("FK_ArtistId", c.id, Db.ArtistsTable.table.columns.id),
-      ForeignKey.make("FK_ArtistName", c.name, Db.ArtistsTable.table.columns.name),
+      ForeignKey.make("FK_AlbumArtist", c.artistId, ArtistsTable.table.columns.id),
     ])
     ->toSQL
 
-  let sql = [
-    "CREATE TABLE artists (",
-    "  id INTEGER NOT NULL,",
-    "  name TEXT(255) NOT NULL UNIQUE DEFAULT 'test',",
-    "  CONSTRAINT PK_Artist PRIMARY KEY(id),",
-    "  CONSTRAINT FK_ArtistId (id) REFERENCES artists(id),",
-    "  CONSTRAINT FK_ArtistName (name) REFERENCES artists(name)",
-    ")",
-  ]->Js.Array2.joinWith("\n")
+  open StringBuilder
+
+  let sql =
+    make()
+    ->addS("CREATE TABLE albums (")
+    ->addS("  id INTEGER NOT NULL,")
+    ->addS("  artistId INTEGER NOT NULL,")
+    ->addS("  name TEXT NOT NULL,")
+    ->addS("  year INTEGER NOT NULL,")
+    ->addS("  CONSTRAINT PK_Album PRIMARY KEY (id),")
+    ->addS("  CONSTRAINT FK_AlbumArtist FOREIGN KEY (artistId) REFERENCES artists(id)")
+    ->addS(")")
+    ->build
 
   equal(result, sql)
 })
