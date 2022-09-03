@@ -1,24 +1,60 @@
+type columnOptions = {
+  tableAlias: string,
+  columnName: string,
+  aggType: option<Aggregation.t>,
+}
+
 module Untyped = {
   type t =
-    | ColumnRef(ColumnRef.t)
+    | ColumnRef(columnOptions)
     | ValueRef(ValueRef.t)
     | QueryRef(QueryRef.t)
 
+  let columnRefToSQL = options => {
+    let columnString = `${options.tableAlias}.${options.columnName}`
+
+    switch options.aggType {
+    | Some(COUNT) => `COUNT(${columnString})`
+    | Some(SUM) => `SUM(${columnString})`
+    | Some(AVG) => `AVG(${columnString})`
+    | Some(MIN) => `MIN(${columnString})`
+    | Some(MAX) => `MAX(${columnString})`
+    | None => columnString
+    }
+  }
+
   let toSQL = (ref, queryToString) => {
     switch ref {
-    | ColumnRef(ref) => ColumnRef.toSQL(ref)
+    | ColumnRef(options) => columnRefToSQL(options)
     | ValueRef(ref) => ValueRef.toSQL(ref)
     | QueryRef(ref) => QueryRef.toSQL(ref, queryToString)
+    }
+  }
+
+  let toProjectionSQL = (projection, alias, queryToString) => {
+    switch projection {
+    | ColumnRef(ref) => `${columnRefToSQL(ref)} AS "${alias}"`
+    | ValueRef(ref) => `${ValueRef.toSQL(ref)} AS "${alias}"`
+    | QueryRef(ref) => `${QueryRef.toSQL(ref, queryToString)} AS "${alias}"`
     }
   }
 }
 
 module Typed = {
-  @deriving(accessors)
   type t<'a> =
-    | ColumnRef(ColumnRef.t)
+    | ColumnRef(columnOptions)
     | ValueRef(ValueRef.t)
     | QueryRef(QueryRef.t)
+
+  let makeColumnRef = column => {
+    open DDL.Column
+
+    {
+      tableAlias: column.table,
+      columnName: column.name,
+      aggType: None,
+    }->ColumnRef
+  }
 
   let updateAggType = (t, aggType) =>
     switch t {

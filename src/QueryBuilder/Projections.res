@@ -2,6 +2,7 @@ type t = Js.Dict.t<Js.Dict.t<Projection.t>>
 
 let toSQL = (projections, queryToString) => {
   `SELECT ${projections
+    ->Obj.magic
     ->Js.Dict.entries
     ->Js.Array2.map(((namespace, columns)) => {
       columns

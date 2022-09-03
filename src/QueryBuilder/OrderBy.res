@@ -6,11 +6,11 @@ type t = {
 }
 
 let asc = ref => {
-  {ref: Ref.Typed.toUntyped(ref), direction: ASC}
+  {ref: ref->Ref.Typed.toUntyped, direction: ASC}
 }
 
 let desc = ref => {
-  {ref: Ref.Typed.toUntyped(ref), direction: DESC}
+  {ref: ref->Ref.Typed.toUntyped, direction: DESC}
 }
 
 let toSQL = (orderBy, queryToString) => {

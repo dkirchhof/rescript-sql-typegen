@@ -1,3 +1,4 @@
+let column: DDL.Column.t<'a> => Ref.Typed.t<'a>
 let value: 'a => Ref.Typed.t<'a>
 let subQuery: Query.t<_, _, _> => Ref.Typed.t<'projections>
 
@@ -9,6 +10,9 @@ let sumF: Ref.Typed.t<float> => Ref.Typed.t<float>
 let avg: Ref.Typed.t<'a> => Ref.Typed.t<'a>
 let min: Ref.Typed.t<'a> => Ref.Typed.t<'a>
 let max: Ref.Typed.t<'a> => Ref.Typed.t<'a>
+
+let asc: Ref.Typed.t<'a> => OrderBy.t
+let desc: Ref.Typed.t<'a> => OrderBy.t
 
 let join: (
   Query.t<'projectables, 'selectables, 'projections>,

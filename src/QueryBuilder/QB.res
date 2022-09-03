@@ -1,5 +1,9 @@
 let applyColumnAccessors = fn => fn(Utils.createColumnAccessor())
 
+let column = column => {
+  Ref.Typed.makeColumnRef(column)->Obj.magic
+}
+
 let value = value => {
   Ref.Typed.ValueRef(ValueRef.make(value))
 }
@@ -33,6 +37,9 @@ let min = ref => {
 let max = ref => {
   Ref.Typed.updateAggType(ref, Some(Aggregation.MAX))
 }
+
+let asc = OrderBy.asc
+let desc = OrderBy.desc
 
 let join = (query, index, getCondition) => {
   open Query
@@ -124,7 +131,7 @@ let rec toSQL = query => {
   open Query
 
   [
-    Projections.toSQL(query.projections->Obj.magic, toSQL),
+    Projections.toSQL(query.projections, toSQL),
     From.toSQL(query.from),
     Joins.toSQL(query.joins, toSQL),
     Selections.toSQL(query.selections, toSQL),

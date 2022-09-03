@@ -16,6 +16,8 @@ module Column = {
     default: option<'t>,
   }
 
+  external unbox: t<'a> => 'a = "%identity"
+
   let dtToSQL = (dt, size) => {
     switch size {
     | Some(s) => `${dt}(${s->Js.Int.toString})`
