@@ -1,6 +1,12 @@
 module ColumnType = {
   type t = Integer | String
 
+  let toSQLType = dt =>
+    switch dt {
+    | Integer => `INTEGER`
+    | String => `TEXT`
+    }
+
   let toRescriptType = dt =>
     switch dt {
     | Integer => `int`
@@ -12,16 +18,46 @@ module Column = {
   type t = {
     name: string,
     dt: ColumnType.t,
+    size?: int,
+    nullable?: bool,
+    unique?: bool,
+    default?: string,
   }
+  
+  let booleanToString = bool => bool ? "true" : "false"
+  let optSizeToString = optSize => Belt.Option.mapWithDefault(optSize, "None", s => `Some(${Belt.Int.toString(s)})`)
+  let optBoolToString = optNullable => Belt.Option.mapWithDefault(optNullable, "false", booleanToString)
+  let optDefaultToString = optDefault => Belt.Option.getWithDefault(optDefault, "None")
 
   let toColumnString = column =>
-    `${column.name}: Ref.Typed.t<${column.dt->ColumnType.toRescriptType}>`
+    `    ${column.name}: DDL.Column.t<${column.dt->ColumnType.toRescriptType}>,`
 
   let toOptColumnString = column =>
-    `${column.name}: Ref.Typed.t<option<${column.dt->ColumnType.toRescriptType}>>`
+    `    ${column.name}: DDL.Column.t<option<${column.dt->ColumnType.toRescriptType}>>,`
+
+  let toColumnObj = (column, tableName) => {
+    open StringBuilder
+
+    make()
+    ->addS(`      ${column.name}: {`)
+    ->addS(`        table: "${tableName}",`)
+    ->addS(`        name: "${column.name}",`)
+    ->addS(`        dt: "${ColumnType.toSQLType(column.dt)}",`)
+    ->addS(`        size: ${optSizeToString(column.size)},`)
+    ->addS(`        nullable: ${optBoolToString(column.nullable)},`)
+    ->addS(`        unique: ${optBoolToString(column.unique)},`)
+    ->addS(`        default: ${optDefaultToString(column.default)},`)
+    ->addS(`      },`)->build
+  }
 
   let toProjectionString = (column, alias) =>
     `"${column.name}": c.${alias}.${column.name}->QB.unbox`
+}
+
+module Columns = {
+  let toColumnStrings = columns => columns->Js.Array2.map(Column.toColumnString)
+  let toOptColumnStrings = columns => columns->Js.Array2.map(Column.toOptColumnString)
+  let toColumnObjs = (columns, tableName) => columns->Js.Array2.map(Column.toColumnObj(_, tableName))
 }
 
 module Table = {
@@ -71,15 +107,22 @@ let leftJoin = (table, alias): Source.t => {
 
 let createTableModule = (table: Table.t) => {
   open StringBuilder
-  
+
   make()
   ->addS(`module ${table.moduleName} = {`)
   ->addS(`  type columns = {`)
-  ->addM(table.columns->Js.Array2.map(column => `     ${column->Column.toColumnString},`))
+  ->addM(Columns.toColumnStrings(table.columns))
   ->addS(`  }`)
-  ->addS(``)
+  ->addE
   ->addS(`  type optionalColumns = {`)
-  ->addM(table.columns->Js.Array2.map(column => `     ${column->Column.toOptColumnString},`))
+  ->addM(Columns.toOptColumnStrings(table.columns))
+  ->addS(`  }`)
+  ->addE
+  ->addS(`  let table: DDL.Table.t<columns> = {`)
+  ->addS(`    name: "${table.tableName}",`)
+  ->addS(`    columns: {`)
+  ->addM(Columns.toColumnObjs(table.columns, table.tableName))
+  ->addS(`    },`)
   ->addS(`  }`)
   ->addS(`}`)
   ->build

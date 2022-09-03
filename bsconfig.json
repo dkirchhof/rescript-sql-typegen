@@ -17,8 +17,12 @@
       "in-source": true
     }
   ],
-  "bs-dependencies": ["js-array2-ex"],
-  "bs-dev-dependencies": ["@dusty-phillips/rescript-zora"],
+  "bs-dependencies": [
+    "js-array2-ex"
+  ],
+  "bs-dev-dependencies": [
+    "rescript-test"
+  ],
   "suffix": ".mjs",
   "warnings": {
     "error": false

@@ -1,8 +1,10 @@
 open DDL
-open Zora
+open Test
 
-zora("create table", t => {
-  let sql =
+let equal = (a: 't, b: 't) => assertion((a, b) => a === b, a, b)
+
+test("create table query", () => {
+  let result =
     createTable(Db.ArtistsTable.table)
     ->primaryKey(c => PrimaryKey.make1("PK_Artist", c.id))
     ->foreignKeys(c => [
@@ -11,17 +13,15 @@ zora("create table", t => {
     ])
     ->toSQL
 
-  let result = [
+  let sql = [
     "CREATE TABLE artists (",
     "  id INTEGER NOT NULL,",
     "  name TEXT(255) NOT NULL UNIQUE DEFAULT 'test',",
     "  CONSTRAINT PK_Artist PRIMARY KEY(id),",
-    "  CONSTRAINT FK_ArtistId (id) REFERENCES aritsts(id),",
-    "  CONSTRAINT FK_ArtistName (name) REFERENCES aritsts(name)",
+    "  CONSTRAINT FK_ArtistId (id) REFERENCES artists(id),",
+    "  CONSTRAINT FK_ArtistName (name) REFERENCES artists(name)",
     ")",
   ]->Js.Array2.joinWith("\n")
 
-  t->equal(sql, result, "")
-
-  done()
+  equal(result, sql)
 })

@@ -3,7 +3,7 @@ open CodeGen
 let artistsTable: Table.t = {
   moduleName: "ArtistsTable",
   tableName: "artists",
-  columns: [{name: "id", dt: Integer}, {name: "name", dt: String}],
+  columns: [{name: "id", dt: Integer}, {name: "name", dt: String, size: 255, unique: true }],
 }
 
 createTableModule(artistsTable)->Js.log

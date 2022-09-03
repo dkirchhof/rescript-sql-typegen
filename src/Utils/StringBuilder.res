@@ -10,4 +10,10 @@ let addS = (builder, line) => {
 
 let addM = Js.Array2.concat
 
+let addE = builder => {
+  Js.Array2.push(builder, "")->ignore
+
+  builder
+}
+
 let build = Js.Array2.joinWith(_, "\n")
