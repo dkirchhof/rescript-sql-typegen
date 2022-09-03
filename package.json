@@ -3,9 +3,11 @@
         "dev": "rescript build -w",
         "start": "node src/Example/index.mjs",
         "codegen-dry": "node src/Example/_Db.mjs",
-        "codegen": "node src/Example/_Db.mjs > src/Example/Db.res"
+        "codegen": "node src/Example/_Db.mjs > src/Example/Db.res",
+        "test": "node --test"
     },
     "devDependencies": {
+        "@dusty-phillips/rescript-zora": "^3.0.1",
         "rescript": "10.0.0"
     },
     "dependencies": {},

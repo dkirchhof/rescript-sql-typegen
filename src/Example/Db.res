@@ -1,55 +1,80 @@
 module ArtistsTable = {
   type columns = {
-     id: Ref.Typed.t<int>,
-     name: Ref.Typed.t<string>,
+    id: Ref.Typed.t<int>,
+    name: Ref.Typed.t<string>,
   }
 
   type optionalColumns = {
-     id: Ref.Typed.t<option<int>>,
-     name: Ref.Typed.t<option<string>>,
+    id: Ref.Typed.t<option<int>>,
+    name: Ref.Typed.t<option<string>>,
+  }
+
+  type realColumns = {
+    id: DDL.Column.t<int>,
+    name: DDL.Column.t<string>,
+  }
+
+  let table: DDL.Table.t<realColumns> = {
+    name: "artists",
+    columns: {
+      id: {
+        table: "aritsts",
+        name: "id",
+        dt: "INTEGER",
+        size: None,
+        notNull: true,
+        unique: false,
+        default: None,
+      },
+      name: {
+        table: "aritsts",
+        name: "name",
+        dt: "TEXT",
+        size: Some(255),
+        notNull: true,
+        unique: true,
+        default: Some("test"),
+      },
+    },
   }
 }
 
 module AlbumsTable = {
   type columns = {
-     id: Ref.Typed.t<int>,
-     artistId: Ref.Typed.t<int>,
-     name: Ref.Typed.t<string>,
-     year: Ref.Typed.t<int>,
+    id: Ref.Typed.t<int>,
+    artistId: Ref.Typed.t<int>,
+    name: Ref.Typed.t<string>,
+    year: Ref.Typed.t<int>,
   }
 
   type optionalColumns = {
-     id: Ref.Typed.t<option<int>>,
-     artistId: Ref.Typed.t<option<int>>,
-     name: Ref.Typed.t<option<string>>,
-     year: Ref.Typed.t<option<int>>,
+    id: Ref.Typed.t<option<int>>,
+    artistId: Ref.Typed.t<option<int>>,
+    name: Ref.Typed.t<option<string>>,
+    year: Ref.Typed.t<option<int>>,
   }
 }
 
 module SongsTable = {
   type columns = {
-     id: Ref.Typed.t<int>,
-     albumId: Ref.Typed.t<int>,
-     name: Ref.Typed.t<string>,
-     duration: Ref.Typed.t<string>,
+    id: Ref.Typed.t<int>,
+    albumId: Ref.Typed.t<int>,
+    name: Ref.Typed.t<string>,
+    duration: Ref.Typed.t<string>,
   }
 
   type optionalColumns = {
-     id: Ref.Typed.t<option<int>>,
-     albumId: Ref.Typed.t<option<int>>,
-     name: Ref.Typed.t<option<string>>,
-     duration: Ref.Typed.t<option<string>>,
+    id: Ref.Typed.t<option<int>>,
+    albumId: Ref.Typed.t<option<int>>,
+    name: Ref.Typed.t<option<string>>,
+    duration: Ref.Typed.t<option<string>>,
   }
 }
 
 module Artists = {
-  type selectables = {
-    artist: ArtistsTable.columns,
-  }
+  type selectables = {artist: ArtistsTable.columns}
 
-  type projectables = {
-    artist: ArtistsTable.columns,
-  }
+  type projectables = {artist: ArtistsTable.columns}
 
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("artists", "artist")
@@ -68,13 +93,9 @@ module Artists = {
 }
 
 module Albums = {
-  type selectables = {
-    album: AlbumsTable.columns,
-  }
+  type selectables = {album: AlbumsTable.columns}
 
-  type projectables = {
-    album: AlbumsTable.columns,
-  }
+  type projectables = {album: AlbumsTable.columns}
 
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("albums", "album")
@@ -95,13 +116,9 @@ module Albums = {
 }
 
 module Songs = {
-  type selectables = {
-    song: SongsTable.columns,
-  }
+  type selectables = {song: SongsTable.columns}
 
-  type projectables = {
-    song: SongsTable.columns,
-  }
+  type projectables = {song: SongsTable.columns}
 
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("songs", "song")
@@ -135,9 +152,7 @@ module AlbumsInnerJoinSongs = {
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("albums", "album")
 
-    let joins = [
-      Join.make("songs", "song", Inner),
-    ]
+    let joins = [Join.make("songs", "song", Inner)]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
@@ -172,9 +187,7 @@ module AlbumsInnerJoinAlbums = {
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("albums", "a1")
 
-    let joins = [
-      Join.make("albums", "a2", Inner),
-    ]
+    let joins = [Join.make("albums", "a2", Inner)]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
@@ -209,9 +222,7 @@ module ArtistsLeftJoinAlbums = {
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("artists", "artist")
 
-    let joins = [
-      Join.make("albums", "album", Left),
-    ]
+    let joins = [Join.make("albums", "album", Left)]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
@@ -246,10 +257,7 @@ module ArtistsLeftJoinAlbumsLeftJoinSongs = {
   let createSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("artists", "artist")
 
-    let joins = [
-      Join.make("albums", "album", Left),
-      Join.make("songs", "song", Left),
-    ]
+    let joins = [Join.make("albums", "album", Left), Join.make("songs", "song", Left)]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {

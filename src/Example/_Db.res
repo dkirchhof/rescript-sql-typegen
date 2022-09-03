@@ -6,7 +6,7 @@ let artistsTable: Table.t = {
   columns: [{name: "id", dt: Integer}, {name: "name", dt: String}],
 }
 
-printTableModule(artistsTable)
+createTableModule(artistsTable)->Js.log
 Js.log("")
 
 let albumsTable: Table.t = {

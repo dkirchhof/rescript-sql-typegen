@@ -4,6 +4,11 @@
     {
       "dir": "src",
       "subdirs": true
+    },
+    {
+      "dir": "test",
+      "subdirs": true,
+      "type": "dev"
     }
   ],
   "package-specs": [
@@ -13,6 +18,7 @@
     }
   ],
   "bs-dependencies": ["js-array2-ex"],
+  "bs-dev-dependencies": ["@dusty-phillips/rescript-zora"],
   "suffix": ".mjs",
   "warnings": {
     "error": false
