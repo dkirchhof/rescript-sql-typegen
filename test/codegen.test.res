@@ -8,7 +8,7 @@ zora("create table", t => {
     columns: [{name: "id", dt: Integer}, {name: "name", dt: String}],
   }
 
-  printTableModule(artistsTable)
+  /* printTableModule(artistsTable) */
 
   /* t->equal(sql, result, "") */
 

@@ -69,20 +69,20 @@ let leftJoin = (table, alias): Source.t => {
   sourceType: LeftJoin,
 }
 
-let printTableModule = (table: Table.t) => {
-  Js.log(`module ${table.moduleName} = {`)
-
-  Js.log(`  type columns = {`)
-  table.columns->Js.Array2.forEach(column => Js.log(`     ${column->Column.toColumnString},`))
-  Js.log(`  }`)
-
-  Js.log(``)
-
-  Js.log(`  type optionalColumns = {`)
-  table.columns->Js.Array2.forEach(column => Js.log(`     ${column->Column.toOptColumnString},`))
-  Js.log(`  }`)
-
-  Js.log(`}`)
+let createTableModule = (table: Table.t) => {
+  open StringBuilder
+  
+  make()
+  ->addS(`module ${table.moduleName} = {`)
+  ->addS(`  type columns = {`)
+  ->addM(table.columns->Js.Array2.map(column => `     ${column->Column.toColumnString},`))
+  ->addS(`  }`)
+  ->addS(``)
+  ->addS(`  type optionalColumns = {`)
+  ->addM(table.columns->Js.Array2.map(column => `     ${column->Column.toOptColumnString},`))
+  ->addS(`  }`)
+  ->addS(`}`)
+  ->build
 }
 
 let printSelectQueryModule = (moduleName, table: Table.t, alias, joins: array<Source.t>) => {
