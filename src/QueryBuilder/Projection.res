@@ -1,3 +1,3 @@
-type t = Ref.Untyped.t;
+type t = Ref.t<Ref.any>;
 
-let toSQL = Ref.Untyped.toProjectionSQL
+let toSQL = Ref.toProjectionSQL

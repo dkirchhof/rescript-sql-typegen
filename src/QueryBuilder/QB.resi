@@ -1,18 +1,20 @@
-let column: DDL.Column.t<'a> => Ref.Typed.t<'a>
-let value: 'a => Ref.Typed.t<'a>
-let subQuery: Query.t<_, _, _> => Ref.Typed.t<'projections>
+let column: DDL.Column.t<'a> => Ref.t<'a>
+let value: 'a => Ref.t<'a>
+let subQuery: Query.t<_, _, _> => Ref.t<'projections>
 
-let unbox: Ref.Typed.t<'a> => 'a
+let unbox: Ref.t<'a> => 'a
 
-let count: Ref.Typed.t<'a> => Ref.Typed.t<int>
-let sumI: Ref.Typed.t<int> => Ref.Typed.t<int>
-let sumF: Ref.Typed.t<float> => Ref.Typed.t<float>
-let avg: Ref.Typed.t<'a> => Ref.Typed.t<'a>
-let min: Ref.Typed.t<'a> => Ref.Typed.t<'a>
-let max: Ref.Typed.t<'a> => Ref.Typed.t<'a>
+let count: Ref.t<'a> => Ref.t<int>
+let sumI: Ref.t<int> => Ref.t<int>
+let sumF: Ref.t<float> => Ref.t<float>
+let avg: Ref.t<'a> => Ref.t<'a>
+let min: Ref.t<'a> => Ref.t<'a>
+let max: Ref.t<'a> => Ref.t<'a>
 
-let asc: Ref.Typed.t<'a> => OrderBy.t
-let desc: Ref.Typed.t<'a> => OrderBy.t
+let asc: Ref.t<'a> => OrderBy.t
+let desc: Ref.t<'a> => OrderBy.t
+
+let group: Ref.t<'a> => GroupBy.t
 
 let join: (
   Query.t<'projectables, 'selectables, 'projections>,

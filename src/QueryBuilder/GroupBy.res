@@ -1,7 +1,7 @@
-type t = Ref.Untyped.t
+type t = Ref.t<Ref.any>
 
-let group = ref => Ref.Typed.toUntyped(ref)
+let group = ref => ref->Ref.toAnyRef
 
 let toSQL = (groupBy, queryToString) => {
-  Ref.Untyped.toSQL(groupBy, queryToString)
+  Ref.toSQL(groupBy, queryToString)
 }

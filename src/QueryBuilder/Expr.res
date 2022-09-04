@@ -1,60 +1,60 @@
 type rec t =
   | And(array<t>)
   | Or(array<t>)
-  | Equal(Ref.Untyped.t, Ref.Untyped.t)
-  | NotEqual(Ref.Untyped.t, Ref.Untyped.t)
-  | GreaterThan(Ref.Untyped.t, Ref.Untyped.t)
-  | GreaterThanEqual(Ref.Untyped.t, Ref.Untyped.t)
-  | LessThan(Ref.Untyped.t, Ref.Untyped.t)
-  | LessThanEqual(Ref.Untyped.t, Ref.Untyped.t)
-  | Between(Ref.Untyped.t, Ref.Untyped.t, Ref.Untyped.t)
-  | NotBetween(Ref.Untyped.t, Ref.Untyped.t, Ref.Untyped.t)
-  | In(Ref.Untyped.t, array<Ref.Untyped.t>)
-  | NotIn(Ref.Untyped.t, array<Ref.Untyped.t>)
+  | Equal(Ref.t<Ref.any>, Ref.t<Ref.any>)
+  | NotEqual(Ref.t<Ref.any>, Ref.t<Ref.any>)
+  | GreaterThan(Ref.t<Ref.any>, Ref.t<Ref.any>)
+  | GreaterThanEqual(Ref.t<Ref.any>, Ref.t<Ref.any>)
+  | LessThan(Ref.t<Ref.any>, Ref.t<Ref.any>)
+  | LessThanEqual(Ref.t<Ref.any>, Ref.t<Ref.any>)
+  | Between(Ref.t<Ref.any>, Ref.t<Ref.any>, Ref.t<Ref.any>)
+  | NotBetween(Ref.t<Ref.any>, Ref.t<Ref.any>, Ref.t<Ref.any>)
+  | In(Ref.t<Ref.any>, array<Ref.t<Ref.any>>)
+  | NotIn(Ref.t<Ref.any>, array<Ref.t<Ref.any>>)
 
 let and_ = ands => And(ands)
 let or_ = ors => Or(ors)
 
-let eq = (left, right) => Equal(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
-let neq = (left, right) => NotEqual(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
-let gt = (left, right) => GreaterThan(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
-let gte = (left, right) => GreaterThanEqual(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
-let lt = (left, right) => LessThan(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
-let lte = (left, right) => LessThanEqual(Ref.Typed.toUntyped(left), Ref.Typed.toUntyped(right))
+let eq = (left, right) => Equal(Ref.toAnyRef(left), Ref.toAnyRef(right))
+let neq = (left, right) => NotEqual(Ref.toAnyRef(left), Ref.toAnyRef(right))
+let gt = (left, right) => GreaterThan(Ref.toAnyRef(left), Ref.toAnyRef(right))
+let gte = (left, right) => GreaterThanEqual(Ref.toAnyRef(left), Ref.toAnyRef(right))
+let lt = (left, right) => LessThan(Ref.toAnyRef(left), Ref.toAnyRef(right))
+let lte = (left, right) => LessThanEqual(Ref.toAnyRef(left), Ref.toAnyRef(right))
 
 let btw = (left, r1, r2) => Between(
-  Ref.Typed.toUntyped(left),
-  Ref.Typed.toUntyped(r1),
-  Ref.Typed.toUntyped(r2),
+  Ref.toAnyRef(left),
+  Ref.toAnyRef(r1),
+  Ref.toAnyRef(r2),
 )
 
 let nbtw = (left, r1, r2) => NotBetween(
-  Ref.Typed.toUntyped(left),
-  Ref.Typed.toUntyped(r1),
-  Ref.Typed.toUntyped(r2),
+  Ref.toAnyRef(left),
+  Ref.toAnyRef(r1),
+  Ref.toAnyRef(r2),
 )
 
 let in_ = (left, rights) => In(
-  Ref.Typed.toUntyped(left),
-  Js.Array2.map(rights, Ref.Typed.toUntyped),
+  Ref.toAnyRef(left),
+  Js.Array2.map(rights, Ref.toAnyRef),
 )
 
 let nin_ = (left, rights) => In(
-  Ref.Typed.toUntyped(left),
-  Js.Array2.map(rights, Ref.Typed.toUntyped),
+  Ref.toAnyRef(left),
+  Js.Array2.map(rights, Ref.toAnyRef),
 )
 
 let leftRightToSQL = (left, op, right, queryToString) => {
-  let ls = Ref.Untyped.toSQL(left, queryToString)
-  let rs = Ref.Untyped.toSQL(right, queryToString)
+  let ls = Ref.toSQL(left, queryToString)
+  let rs = Ref.toSQL(right, queryToString)
 
   `${ls} ${op} ${rs}`
 }
 
 let betweenToSQL = (left, bool, r1, r2, queryToString) => {
-  let ls = Ref.Untyped.toSQL(left, queryToString)
-  let r1s = Ref.Untyped.toSQL(r1, queryToString)
-  let r2s = Ref.Untyped.toSQL(r2, queryToString)
+  let ls = Ref.toSQL(left, queryToString)
+  let r1s = Ref.toSQL(r1, queryToString)
+  let r2s = Ref.toSQL(r2, queryToString)
 
   if bool {
     `${ls} BETWEEN ${r1s} AND ${r2s}`
@@ -83,8 +83,8 @@ and combine = (exprs, bool, queryToString) =>
   `(${Belt.Array.joinWith(exprs, ` ${bool} `, toSQL(_, queryToString))})`
 
 and leftRightsToSQL = (left, op, rights, queryToString) => {
-  let ls = Ref.Untyped.toSQL(left, queryToString)
-  let rs = Belt.Array.joinWith(rights, ", ", Ref.Untyped.toSQL(_, queryToString))
+  let ls = Ref.toSQL(left, queryToString)
+  let rs = Belt.Array.joinWith(rights, ", ", Ref.toSQL(_, queryToString))
 
   `${ls} ${op}(${rs})`
 }

@@ -1,20 +1,20 @@
 type direction = ASC | DESC
 
 type t = {
-  ref: Ref.Untyped.t,
+  ref: Ref.t<Ref.any>,
   direction: direction,
 }
 
 let asc = ref => {
-  {ref: ref->Ref.Typed.toUntyped, direction: ASC}
+  {ref: ref->Ref.toAnyRef, direction: ASC}
 }
 
 let desc = ref => {
-  {ref: ref->Ref.Typed.toUntyped, direction: DESC}
+  {ref: ref->Ref.toAnyRef, direction: DESC}
 }
 
 let toSQL = (orderBy, queryToString) => {
-  let refString = Ref.Untyped.toSQL(orderBy.ref, queryToString)
+  let refString = Ref.toSQL(orderBy.ref, queryToString)
 
   let directionString = switch orderBy.direction {
   | ASC => "ASC"

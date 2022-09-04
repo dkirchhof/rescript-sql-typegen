@@ -1,45 +1,47 @@
 let applyColumnAccessors = fn => fn(Utils.createColumnAccessor())
 
 let column = column => {
-  Ref.Typed.makeColumnRef(column)->Obj.magic
+  Ref.makeColumnRef(column)->Obj.magic
 }
 
 let value = value => {
-  Ref.Typed.ValueRef(ValueRef.make(value))
+  Ref.makeValueRef(value)
 }
 
 let subQuery = query => {
-  Ref.Typed.QueryRef(QueryRef.make(query))
+  Ref.makeQueryRef(query)
 }
 
-let unbox = Ref.Typed.unbox
+let unbox = Ref.unbox
 
 let count = ref => {
-  Ref.Typed.updateAggType(ref, Some(Aggregation.COUNT))->Obj.magic
+  Ref.updateAggType(ref, Some(Aggregation.COUNT))->Obj.magic
 }
 
 let sumI = ref => {
-  Ref.Typed.updateAggType(ref, Some(Aggregation.SUM))
+  Ref.updateAggType(ref, Some(Aggregation.SUM))
 }
 
 let sumF = ref => {
-  Ref.Typed.updateAggType(ref, Some(Aggregation.SUM))
+  Ref.updateAggType(ref, Some(Aggregation.SUM))
 }
 
 let avg = ref => {
-  Ref.Typed.updateAggType(ref, Some(Aggregation.AVG))
+  Ref.updateAggType(ref, Some(Aggregation.AVG))
 }
 
 let min = ref => {
-  Ref.Typed.updateAggType(ref, Some(Aggregation.MIN))
+  Ref.updateAggType(ref, Some(Aggregation.MIN))
 }
 
 let max = ref => {
-  Ref.Typed.updateAggType(ref, Some(Aggregation.MAX))
+  Ref.updateAggType(ref, Some(Aggregation.MAX))
 }
 
 let asc = OrderBy.asc
 let desc = OrderBy.desc
+
+let group = GroupBy.group
 
 let join = (query, index, getCondition) => {
   open Query

@@ -109,7 +109,7 @@ log(
   "get number of albums per artist:",
   ArtistsLeftJoinAlbums.createSelectQuery()
   ->join(0, c => Expr.eq(column(c.album.artistId), column(c.artist.id)))
-  ->groupBy(c => [c.album.artistId->column->GroupBy.group])
+  ->groupBy(c => [c.album.artistId->column->group])
   ->select(c =>
     {
       "result": {
