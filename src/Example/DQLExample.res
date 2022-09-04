@@ -33,12 +33,12 @@ log(
   "get all artist names in alphabetic order:",
   Artists.createSelectQuery()
   ->orderBy(c => [c.artist.name->column->asc])
-  ->select(c => {"artist": {"name": c.artist.name->column}}),
+  ->select(c => {"artist": {"name": c.artist.name->columnU}}),
 )
 
 log(
   "get number of songs:",
-  Songs.createSelectQuery()->select(c => {"song": {"count": c.song.id->column->count}}),
+  Songs.createSelectQuery()->select(c => {"song": {"count": c.song.id->column->countU}}),
 )
 
 log(
@@ -87,7 +87,7 @@ log(
 )
 
 let avgDurationQuery =
-  Songs.createSelectQuery()->select(c => {"song": {"avgDuration": c.song.duration->column->avg}})
+  Songs.createSelectQuery()->select(c => {"song": {"avgDuration": c.song.duration->column->avgU}})
 
 log("get avg song duration:", avgDurationQuery)
 
@@ -113,8 +113,8 @@ log(
   ->select(c =>
     {
       "result": {
-        "artistName": column(c.artist.name)->unbox,
-        "albumCount": column(c.album.id)->count->unbox,
+        "artistName": columnU(c.artist.name)
+        "albumCount": column(c.album.id)->countU
       },
     }
   ),
@@ -129,8 +129,8 @@ log(
   ->select(c =>
     {
       "result": {
-        "artistName": column(c.artist.name)->unbox,
-        "albumCount": column(c.album.id)->count->unbox,
+        "artistName": columnU(c.artist.name)
+        "albumCount": column(c.album.id)->countU
       },
     }
   ),
