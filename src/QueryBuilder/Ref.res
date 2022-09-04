@@ -11,6 +11,8 @@ type t<'a> =
   | ValueRef('a)
   | QueryRef('a)
 
+type anyRef = t<any>
+
 let makeColumnRef = column => {
   open DDL.Column
 

@@ -1,4 +1,4 @@
-type t = Ref.t<Ref.any>
+type t = Ref.anyRef
 
 let group = ref => ref->Ref.toAnyRef
 

@@ -1,3 +1,3 @@
-type t = Ref.t<Ref.any>;
+type t = Ref.anyRef;
 
 let toSQL = Ref.toProjectionSQL

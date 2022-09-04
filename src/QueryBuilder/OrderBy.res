@@ -1,7 +1,7 @@
 type direction = ASC | DESC
 
 type t = {
-  ref: Ref.t<Ref.any>,
+  ref: Ref.anyRef,
   direction: direction,
 }
 
