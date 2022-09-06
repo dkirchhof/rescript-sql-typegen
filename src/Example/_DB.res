@@ -6,7 +6,7 @@ let artistsTable: Table.t = {
   columns: [{name: "id", dt: Integer}, {name: "name", dt: String, unique: true }],
 }
 
-createTableModule(artistsTable)->Js.log
+makeTableModule(artistsTable)->Js.log
 Js.log("")
 
 let albumsTable: Table.t = {
@@ -20,7 +20,7 @@ let albumsTable: Table.t = {
   ],
 }
 
-createTableModule(albumsTable)->Js.log
+makeTableModule(albumsTable)->Js.log
 Js.log("")
 
 let songsTable: Table.t = {
@@ -34,11 +34,11 @@ let songsTable: Table.t = {
   ],
 }
 
-createTableModule(songsTable)->Js.log
+makeTableModule(songsTable)->Js.log
 Js.log("")
 
-/* printSelectQueryModule("Artists", artistsTable, "artist", []) */
-/* Js.log("") */
+makeSelectQueryModule("Artists", artistsTable, "artist", [])->Js.log
+Js.log("")
 
 /* printSelectQueryModule("Albums", albumsTable, "album", []) */
 /* Js.log("") */

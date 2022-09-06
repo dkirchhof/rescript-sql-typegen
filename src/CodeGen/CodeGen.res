@@ -23,10 +23,15 @@ module Column = {
     unique?: bool,
     default?: string,
   }
-  
+
   let booleanToString = bool => bool ? "true" : "false"
-  let optSizeToString = optSize => Belt.Option.mapWithDefault(optSize, "None", s => `Some(${Belt.Int.toString(s)})`)
-  let optBoolToString = optNullable => Belt.Option.mapWithDefault(optNullable, "false", booleanToString)
+
+  let optSizeToString = optSize =>
+    Belt.Option.mapWithDefault(optSize, "None", s => `Some(${Belt.Int.toString(s)})`)
+
+  let optBoolToString = optNullable =>
+    Belt.Option.mapWithDefault(optNullable, "false", booleanToString)
+
   let optDefaultToString = optDefault => Belt.Option.getWithDefault(optDefault, "None")
 
   let toColumnString = column =>
@@ -47,17 +52,24 @@ module Column = {
     ->addS(`        nullable: ${optBoolToString(column.nullable)},`)
     ->addS(`        unique: ${optBoolToString(column.unique)},`)
     ->addS(`        default: ${optDefaultToString(column.default)},`)
-    ->addS(`      },`)->build
+    ->addS(`      },`)
+    ->build
   }
 
   let toProjectionString = (column, alias) =>
-    `"${column.name}": c.${alias}.${column.name}->QB.unbox`
+    `"${column.name}": c.${alias}.${column.name}->QB.columnU`
 }
 
 module Columns = {
   let toColumnStrings = columns => columns->Js.Array2.map(Column.toColumnString)
+
   let toOptColumnStrings = columns => columns->Js.Array2.map(Column.toOptColumnString)
-  let toColumnObjs = (columns, tableName) => columns->Js.Array2.map(Column.toColumnObj(_, tableName))
+
+  let toColumnObjs = (columns, tableName) =>
+    columns->Js.Array2.map(Column.toColumnObj(_, tableName))
+
+  let toProjections = (sourceAlias, columns) =>
+    columns->Js.Array2.map(column => `          ${Column.toProjectionString(column, sourceAlias)},`)
 }
 
 module Table = {
@@ -91,6 +103,28 @@ module Source = {
     | InnerJoin => `Join.make("${source.table.tableName}", "${source.alias}", Inner)`
     | LeftJoin => `Join.make("${source.table.tableName}", "${source.alias}", Left)`
     }
+
+  let toProjections = source => {
+    open StringBuilder
+
+    make()
+    ->addS(`        "${source.alias}": {`)
+    ->addM(Columns.toProjections(source.alias, source.table.columns))
+    ->addS(`        },`)
+    ->build
+  }
+}
+
+module Sources = {
+  let toSelectables = sources =>
+    sources->Js.Array2.map(source => `    ${source->Source.toSelectable},`)
+
+  let toProjectables = sources =>
+    sources->Js.Array2.map(source => `    ${source->Source.toProjectable},`)
+
+  let toJoins = joins => joins->Js.Array2.map(join => `      ${join->Source.toMake},`)
+
+  let toDefaultProjections = sources => sources->Js.Array2.map(Source.toProjections)
 }
 
 let innerJoin = (table, alias): Source.t => {
@@ -105,7 +139,7 @@ let leftJoin = (table, alias): Source.t => {
   sourceType: LeftJoin,
 }
 
-let createTableModule = (table: Table.t) => {
+let makeTableModule = (table: Table.t) => {
   open StringBuilder
 
   make()
@@ -128,64 +162,37 @@ let createTableModule = (table: Table.t) => {
   ->build
 }
 
-let printSelectQueryModule = (moduleName, table: Table.t, alias, joins: array<Source.t>) => {
+let makeSelectQueryModule = (moduleName, table: Table.t, alias, joins: array<Source.t>) => {
   open Source
 
   let from = {table, alias, sourceType: From}
   let sources = Js.Array2.concat([from], joins)
 
-  Js.log(`module ${moduleName} = {`)
+  open StringBuilder
 
-  Js.log(`  type selectables = {`)
-
-  sources->Js.Array2.forEach(source => Js.log(`    ${source->Source.toSelectable},`))
-
-  Js.log(`  }`)
-
-  Js.log(``)
-
-  Js.log(`  type projectables = {`)
-
-  sources->Js.Array2.forEach(source => Js.log(`    ${source->Source.toProjectable},`))
-
-  Js.log(`  }`)
-
-  Js.log(``)
-
-  Js.log(`  let createSelectQuery = (): Query.t<projectables, selectables, _> => {`)
-  Js.log(`    let from = ${from->Source.toMake}`)
-
-  Js.log(``)
-
-  if Js.Array2.length(joins) > 0 {
-    Js.log(`    let joins = [`)
-
-    joins->Js.Array2.forEach(join => Js.log(`      ${join->Source.toMake},`))
-
-    Js.log(`    ]`)
-  } else {
-    Js.log(`    let joins = []`)
-  }
-
-  Js.log(``)
-
-  Js.log(`    Query.makeSelectQuery(from, joins)->QB.select(c =>`)
-  Js.log(`      {`)
-
-  sources->Js.Array2.forEach(source => {
-    Js.log(`        "${source.alias}": {`)
-
-    source.table.columns->Js.Array2.forEach(column =>
-      Js.log(`          ${Column.toProjectionString(column, source.alias)},`)
-    )
-
-    Js.log(`        },`)
-  })
-
-  Js.log(`      }`)
-  Js.log(`    )`)
-
-  Js.log(`  }`)
-
-  Js.log(`}`)
+  make()
+  ->addS(`module ${moduleName} = {`)
+  ->addS(`  type selectables = {`)
+  ->addM(Sources.toSelectables(sources))
+  ->addS(`  }`)
+  ->addE
+  ->addS(`  type projectables = {`)
+  ->addM(Sources.toProjectables(sources))
+  ->addS(`  }`)
+  ->addE
+  ->addS(`  let makeSelectQuery = (): Query.t<projectables, selectables, _> => {`)
+  ->addS(`    let from = ${from->Source.toMake}`)
+  ->addE
+  ->addS(`    let joins = [`)
+  ->addM(Sources.toJoins(joins))
+  ->addS(`    ]`)
+  ->addE
+  ->addS(`    Query.makeSelectQuery(from, joins)->QB.select(c =>`)
+  ->addS(`      {`)
+  ->addM(Sources.toDefaultProjections(sources))
+  ->addS(`      }`)
+  ->addS(`    )`)
+  ->addS(`  }`)
+  ->addS(`}`)
+  ->build
 }

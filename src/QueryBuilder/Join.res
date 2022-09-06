@@ -12,8 +12,6 @@ let make = (tableName, tableAlias, joinType) => {
   condition: None,
 }
 
-let getTableAlias = join => join.table.alias
-
 let toSQL = (join, queryToString) => {
   let joinTypeString = switch join.joinType {
   | Inner => "INNER"

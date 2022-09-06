@@ -31,7 +31,7 @@ let db = SQLite3.createDB("db.db")
 
 log(
   "get all artist names in alphabetic order:",
-  Artists.createSelectQuery()
+  Artists.makeSelectQuery()
   ->orderBy(c => [c.artist.name->column->asc])
   ->select(c => {"artist": {"name": c.artist.name->columnU}}),
 )

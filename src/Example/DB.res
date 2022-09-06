@@ -155,7 +155,7 @@ module Artists = {
 
   type projectables = {artist: ArtistsTable.columns}
 
-  let createSelectQuery = (): Query.t<projectables, selectables, _> => {
+  let makeSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("artists", "artist")
 
     let joins = []
@@ -163,8 +163,8 @@ module Artists = {
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
         "artist": {
-          "id": c.artist.id->QB.column,
-          "name": c.artist.name->QB.column,
+          "id": c.artist.id->QB.columnU,
+          "name": c.artist.name->QB.columnU,
         },
       }
     )
