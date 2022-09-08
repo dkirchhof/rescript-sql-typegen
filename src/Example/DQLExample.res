@@ -38,12 +38,12 @@ log(
 
 log(
   "get number of songs:",
-  Songs.createSelectQuery()->select(c => {"song": {"count": c.song.id->column->countU}}),
+  Songs.makeSelectQuery()->select(c => {"song": {"count": c.song.id->column->countU}}),
 )
 
 log(
   "get albums of year 1982 or 1992 (OR):",
-  Albums.createSelectQuery()->where(c =>
+  Albums.makeSelectQuery()->where(c =>
     Expr.or_([
       Expr.eq(column(c.album.year), value(1982)),
       Expr.eq(column(c.album.year), value(1992)),
@@ -53,32 +53,32 @@ log(
 
 log(
   "get albums of year 1982 or 1992 (IN):",
-  Albums.createSelectQuery()->where(c =>
+  Albums.makeSelectQuery()->where(c =>
     Expr.in_(column(c.album.year), [value(1982), value(1992)])
   ),
 )
 
 log(
   "get all albums with songs (exclude empty albums):",
-  AlbumsInnerJoinSongs.createSelectQuery()->join(0, c =>
+  AlbumsInnerJoinSongs.makeSelectQuery()->join(0, c =>
     Expr.eq(column(c.song.albumId), column(c.album.id))
   ),
 )
 
 log(
   "get all albums which are newer than 'Fear of the Dark' (join):",
-  AlbumsInnerJoinAlbums.createSelectQuery()
+  AlbumsInnerJoinAlbums.makeSelectQuery()
   ->join(0, c => Expr.eq(column(c.a2.name), value("Fear of the Dark")))
   ->where(c => Expr.gt(column(c.a1.year), column(c.a2.year))),
 )
 
 log(
   "get all albums which are newer than 'Fear of the Dark' (subquery):",
-  Albums.createSelectQuery()->where(c =>
+  Albums.makeSelectQuery()->where(c =>
     Expr.gt(
       column(c.album.year),
       subQuery(
-        Albums.createSelectQuery()
+        Albums.makeSelectQuery()
         ->where(c => Expr.eq(column(c.album.name), value("Fear of the Dark")))
         ->select(c => {"result": {"year": column(c.album.year)}}),
       ),
@@ -87,27 +87,27 @@ log(
 )
 
 let avgDurationQuery =
-  Songs.createSelectQuery()->select(c => {"song": {"avgDuration": c.song.duration->column->avgU}})
+  Songs.makeSelectQuery()->select(c => {"song": {"avgDuration": c.song.duration->column->avgU}})
 
 log("get avg song duration:", avgDurationQuery)
 
 log(
   "get all songs which are longer then the avg:",
-  Songs.createSelectQuery()->where(c =>
+  Songs.makeSelectQuery()->where(c =>
     Expr.gt(column(c.song.duration), subQuery(avgDurationQuery))
   ),
 )
 
 log(
   "get songs with duration between 1 and 2 minutes:",
-  Songs.createSelectQuery()->where(c =>
+  Songs.makeSelectQuery()->where(c =>
     Expr.btw(column(c.song.duration), value("1:00"), value("2:00"))
   ),
 )
 
 log(
   "get number of albums per artist:",
-  ArtistsLeftJoinAlbums.createSelectQuery()
+  ArtistsLeftJoinAlbums.makeSelectQuery()
   ->join(0, c => Expr.eq(column(c.album.artistId), column(c.artist.id)))
   ->groupBy(c => [c.album.artistId->column->group])
   ->select(c =>
@@ -122,7 +122,7 @@ log(
 
 log(
   "get number of albums per artist (but only artists with less than 4 albums):",
-  ArtistsLeftJoinAlbums.createSelectQuery()
+  ArtistsLeftJoinAlbums.makeSelectQuery()
   ->join(0, c => Expr.eq(column(c.album.artistId), column(c.artist.id)))
   ->groupBy(c => [c.album.artistId->column->GroupBy.group])
   ->having(c => Expr.lt(c.album.id->column->count, value(4)))
@@ -137,7 +137,7 @@ log(
 )
 
 let getEverything =
-  ArtistsLeftJoinAlbumsLeftJoinSongs.createSelectQuery()
+  ArtistsLeftJoinAlbumsLeftJoinSongs.makeSelectQuery()
   ->join(0, c => Expr.eq(column(c.album.artistId), column(c.artist.id)))
   ->join(1, c => Expr.eq(column(c.song.albumId), column(c.album.id)))
 

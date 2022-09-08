@@ -151,14 +151,19 @@ module SongsTable = {
 }
 
 module Artists = {
-  type selectables = {artist: ArtistsTable.columns}
+  type selectables = {
+    artist: ArtistsTable.columns,
+  }
 
-  type projectables = {artist: ArtistsTable.columns}
+  type projectables = {
+    artist: ArtistsTable.columns,
+  }
 
   let makeSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("artists", "artist")
 
-    let joins = []
+    let joins = [
+    ]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
@@ -172,22 +177,27 @@ module Artists = {
 }
 
 module Albums = {
-  type selectables = {album: AlbumsTable.columns}
+  type selectables = {
+    album: AlbumsTable.columns,
+  }
 
-  type projectables = {album: AlbumsTable.columns}
+  type projectables = {
+    album: AlbumsTable.columns,
+  }
 
-  let createSelectQuery = (): Query.t<projectables, selectables, _> => {
+  let makeSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("albums", "album")
 
-    let joins = []
+    let joins = [
+    ]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
         "album": {
-          "id": c.album.id->QB.column,
-          "artistId": c.album.artistId->QB.column,
-          "name": c.album.name->QB.column,
-          "year": c.album.year->QB.column,
+          "id": c.album.id->QB.columnU,
+          "artistId": c.album.artistId->QB.columnU,
+          "name": c.album.name->QB.columnU,
+          "year": c.album.year->QB.columnU,
         },
       }
     )
@@ -195,22 +205,27 @@ module Albums = {
 }
 
 module Songs = {
-  type selectables = {song: SongsTable.columns}
+  type selectables = {
+    song: SongsTable.columns,
+  }
 
-  type projectables = {song: SongsTable.columns}
+  type projectables = {
+    song: SongsTable.columns,
+  }
 
-  let createSelectQuery = (): Query.t<projectables, selectables, _> => {
+  let makeSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("songs", "song")
 
-    let joins = []
+    let joins = [
+    ]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
         "song": {
-          "id": c.song.id->QB.column,
-          "albumId": c.song.albumId->QB.column,
-          "name": c.song.name->QB.column,
-          "duration": c.song.duration->QB.column,
+          "id": c.song.id->QB.columnU,
+          "albumId": c.song.albumId->QB.columnU,
+          "name": c.song.name->QB.columnU,
+          "duration": c.song.duration->QB.columnU,
         },
       }
     )
@@ -228,24 +243,26 @@ module AlbumsInnerJoinSongs = {
     song: SongsTable.columns,
   }
 
-  let createSelectQuery = (): Query.t<projectables, selectables, _> => {
+  let makeSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("albums", "album")
 
-    let joins = [Join.make("songs", "song", Inner)]
+    let joins = [
+      Join.make("songs", "song", Inner),
+    ]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
         "album": {
-          "id": c.album.id->QB.column,
-          "artistId": c.album.artistId->QB.column,
-          "name": c.album.name->QB.column,
-          "year": c.album.year->QB.column,
+          "id": c.album.id->QB.columnU,
+          "artistId": c.album.artistId->QB.columnU,
+          "name": c.album.name->QB.columnU,
+          "year": c.album.year->QB.columnU,
         },
         "song": {
-          "id": c.song.id->QB.column,
-          "albumId": c.song.albumId->QB.column,
-          "name": c.song.name->QB.column,
-          "duration": c.song.duration->QB.column,
+          "id": c.song.id->QB.columnU,
+          "albumId": c.song.albumId->QB.columnU,
+          "name": c.song.name->QB.columnU,
+          "duration": c.song.duration->QB.columnU,
         },
       }
     )
@@ -263,24 +280,26 @@ module AlbumsInnerJoinAlbums = {
     a2: AlbumsTable.columns,
   }
 
-  let createSelectQuery = (): Query.t<projectables, selectables, _> => {
+  let makeSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("albums", "a1")
 
-    let joins = [Join.make("albums", "a2", Inner)]
+    let joins = [
+      Join.make("albums", "a2", Inner),
+    ]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
         "a1": {
-          "id": c.a1.id->QB.column,
-          "artistId": c.a1.artistId->QB.column,
-          "name": c.a1.name->QB.column,
-          "year": c.a1.year->QB.column,
+          "id": c.a1.id->QB.columnU,
+          "artistId": c.a1.artistId->QB.columnU,
+          "name": c.a1.name->QB.columnU,
+          "year": c.a1.year->QB.columnU,
         },
         "a2": {
-          "id": c.a2.id->QB.column,
-          "artistId": c.a2.artistId->QB.column,
-          "name": c.a2.name->QB.column,
-          "year": c.a2.year->QB.column,
+          "id": c.a2.id->QB.columnU,
+          "artistId": c.a2.artistId->QB.columnU,
+          "name": c.a2.name->QB.columnU,
+          "year": c.a2.year->QB.columnU,
         },
       }
     )
@@ -298,22 +317,24 @@ module ArtistsLeftJoinAlbums = {
     album: AlbumsTable.optionalColumns,
   }
 
-  let createSelectQuery = (): Query.t<projectables, selectables, _> => {
+  let makeSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("artists", "artist")
 
-    let joins = [Join.make("albums", "album", Left)]
+    let joins = [
+      Join.make("albums", "album", Left),
+    ]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
         "artist": {
-          "id": c.artist.id->QB.column,
-          "name": c.artist.name->QB.column,
+          "id": c.artist.id->QB.columnU,
+          "name": c.artist.name->QB.columnU,
         },
         "album": {
-          "id": c.album.id->QB.column,
-          "artistId": c.album.artistId->QB.column,
-          "name": c.album.name->QB.column,
-          "year": c.album.year->QB.column,
+          "id": c.album.id->QB.columnU,
+          "artistId": c.album.artistId->QB.columnU,
+          "name": c.album.name->QB.columnU,
+          "year": c.album.year->QB.columnU,
         },
       }
     )
@@ -333,28 +354,31 @@ module ArtistsLeftJoinAlbumsLeftJoinSongs = {
     song: SongsTable.optionalColumns,
   }
 
-  let createSelectQuery = (): Query.t<projectables, selectables, _> => {
+  let makeSelectQuery = (): Query.t<projectables, selectables, _> => {
     let from = From.make("artists", "artist")
 
-    let joins = [Join.make("albums", "album", Left), Join.make("songs", "song", Left)]
+    let joins = [
+      Join.make("albums", "album", Left),
+      Join.make("songs", "song", Left),
+    ]
 
     Query.makeSelectQuery(from, joins)->QB.select(c =>
       {
         "artist": {
-          "id": c.artist.id->QB.column,
-          "name": c.artist.name->QB.column,
+          "id": c.artist.id->QB.columnU,
+          "name": c.artist.name->QB.columnU,
         },
         "album": {
-          "id": c.album.id->QB.column,
-          "artistId": c.album.artistId->QB.column,
-          "name": c.album.name->QB.column,
-          "year": c.album.year->QB.column,
+          "id": c.album.id->QB.columnU,
+          "artistId": c.album.artistId->QB.columnU,
+          "name": c.album.name->QB.columnU,
+          "year": c.album.year->QB.columnU,
         },
         "song": {
-          "id": c.song.id->QB.column,
-          "albumId": c.song.albumId->QB.column,
-          "name": c.song.name->QB.column,
-          "duration": c.song.duration->QB.column,
+          "id": c.song.id->QB.columnU,
+          "albumId": c.song.albumId->QB.columnU,
+          "name": c.song.name->QB.columnU,
+          "duration": c.song.duration->QB.columnU,
         },
       }
     )

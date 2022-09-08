@@ -3,7 +3,7 @@ open CodeGen
 let artistsTable: Table.t = {
   moduleName: "ArtistsTable",
   tableName: "artists",
-  columns: [{name: "id", dt: Integer}, {name: "name", dt: String, unique: true }],
+  columns: [{name: "id", dt: Integer}, {name: "name", dt: String, unique: true}],
 }
 
 makeTableModule(artistsTable)->Js.log
@@ -40,34 +40,39 @@ Js.log("")
 makeSelectQueryModule("Artists", artistsTable, "artist", [])->Js.log
 Js.log("")
 
-/* printSelectQueryModule("Albums", albumsTable, "album", []) */
-/* Js.log("") */
+makeSelectQueryModule("Albums", albumsTable, "album", [])->Js.log
+Js.log("")
 
-/* printSelectQueryModule("Songs", songsTable, "song", []) */
-/* Js.log("") */
+makeSelectQueryModule("Songs", songsTable, "song", [])->Js.log
+Js.log("")
 
-/* printSelectQueryModule( */
-/*   "AlbumsInnerJoinSongs", */
-/*   albumsTable, */
-/*   "album", */
-/*   [innerJoin(songsTable, "song")], */
-/* ) */
-/* Js.log("") */
+makeSelectQueryModule(
+  "AlbumsInnerJoinSongs",
+  albumsTable,
+  "album",
+  [innerJoin(songsTable, "song")],
+)->Js.log
+Js.log("")
 
-/* printSelectQueryModule("AlbumsInnerJoinAlbums", albumsTable, "a1", [innerJoin(albumsTable, "a2")]) */
-/* Js.log("") */
+makeSelectQueryModule(
+  "AlbumsInnerJoinAlbums",
+  albumsTable,
+  "a1",
+  [innerJoin(albumsTable, "a2")],
+)->Js.log
+Js.log("")
 
-/* printSelectQueryModule( */
-/*   "ArtistsLeftJoinAlbums", */
-/*   artistsTable, */
-/*   "artist", */
-/*   [leftJoin(albumsTable, "album")], */
-/* ) */
-/* Js.log("") */
+makeSelectQueryModule(
+  "ArtistsLeftJoinAlbums",
+  artistsTable,
+  "artist",
+  [leftJoin(albumsTable, "album")],
+)->Js.log
+Js.log("")
 
-/* printSelectQueryModule( */
-/*   "ArtistsLeftJoinAlbumsLeftJoinSongs", */
-/*   artistsTable, */
-/*   "artist", */
-/*   [leftJoin(albumsTable, "album"), leftJoin(songsTable, "song")], */
-/* ) */
+makeSelectQueryModule(
+  "ArtistsLeftJoinAlbumsLeftJoinSongs",
+  artistsTable,
+  "artist",
+  [leftJoin(albumsTable, "album"), leftJoin(songsTable, "song")],
+)->Js.log
