@@ -26,4 +26,4 @@ open DDL
 /* ->toSQL */
 /* ->Js.log */
 
-ArtistsTable.makeCreateQuery()->toSQL->Js.log
+ArtistsTable.Create.makeQuery()->toSQL->Js.log

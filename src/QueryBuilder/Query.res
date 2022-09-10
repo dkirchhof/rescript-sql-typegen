@@ -8,7 +8,7 @@ type t<'projectables, 'selectables, 'projections> = {
   projections: 'projections,
 }
 
-let makeSelectQuery = (from, joins) => {
+let make = (from, joins) => {
   from,
   joins,
   selections: None,
