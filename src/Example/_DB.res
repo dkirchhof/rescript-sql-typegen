@@ -4,6 +4,7 @@ let artistsTable: Table.t = {
   moduleName: "ArtistsTable",
   tableName: "artists",
   columns: [{name: "id", dt: Integer}, {name: "name", dt: String, unique: true}],
+  constraints: [],
 }
 
 makeTableModule(artistsTable)->Js.log
@@ -18,6 +19,7 @@ let albumsTable: Table.t = {
     {name: "name", dt: String},
     {name: "year", dt: Integer},
   ],
+  constraints: [],
 }
 
 makeTableModule(albumsTable)->Js.log
@@ -32,6 +34,7 @@ let songsTable: Table.t = {
     {name: "name", dt: String},
     {name: "duration", dt: String},
   ],
+  constraints: [],
 }
 
 makeTableModule(songsTable)->Js.log

@@ -77,6 +77,7 @@ module Table = {
     moduleName: string,
     tableName: string,
     columns: array<Column.t>,
+    constraints: array<string>,
   }
 }
 
