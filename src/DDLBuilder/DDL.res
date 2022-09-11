@@ -33,14 +33,6 @@ module Constraints = {
   }
 }
 
-module Table = {
-  type t<'columns> = {
-    name: string,
-    columns: 'columns,
-    getConstraints: 'columns => array<Constraint.t>,
-  }
-}
-
 module Column = {
   type t<'t> = {
     table: string,
@@ -82,6 +74,22 @@ module Columns = {
     columns->Obj.magic->Js.Dict.values->Js.Array2.map(column => `  ${column->Column.toSQL}`)
 }
 
+module Table = {
+  type t<'columns> = {
+    name: string,
+    columns: 'columns,
+    getConstraints: 'columns => array<Constraint.t>,
+  }
+}
+
+module Query = {
+  type t<'columns> = {table: Table.t<'columns>}
+
+  let make = table => {
+    table: table,
+  }
+}
+
 let makePrimaryKey1 = (name, column: Column.t<_>) => {
   open Constraint
 
@@ -114,14 +122,6 @@ let makeForeignKey = (name, ownColumn: Column.t<'a>, foreignColumn: Column.t<'a>
     ownColumn: ownColumn.name,
     foreignColumn: {table: foreignColumn.table, name: foreignColumn.name},
   })
-}
-
-module Query = {
-  type t<'columns> = {table: Table.t<'columns>}
-
-  let make = table => {
-    table: table,
-  }
 }
 
 let toSQL = (query: Query.t<_>) => {
