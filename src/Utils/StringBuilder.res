@@ -8,6 +8,15 @@ let addS = (builder, line) => {
   builder
 }
 
+let addSO = (builder, optionalLine) => {
+  switch optionalLine {
+  | Some(line) => Js.Array2.push(builder, line)->ignore
+  | None => ignore()
+  }
+
+  builder
+}
+
 let addM = (builder, lines) => {
   lines->Js.Array2.forEach(line => Js.Array2.push(builder, line)->ignore)
 

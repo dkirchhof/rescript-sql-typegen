@@ -41,143 +41,191 @@ module ArtistsTable = {
   }
 
   module Select = {
-    type projectables = {artist: columns}
-    type selectables = {artist: columns}
+    type t = {
+      id: int,
+      name: string,
+    }
 
-    let makeQuery = (): Query.t<projectables, selectables, _> => {
-      let from = From.make("artists", "artist")
-
-      Query.make(from, [])->QB.select((c: projectables) =>
-        {
-          "artist": {
-            "id": c.artist.id->QB.columnU,
-            "name": c.artist.name->QB.columnU,
-          },
-        }
-      )
+    let makeQuery = () => {
+      DQL.Query.make(table)->DQL.select(c => {
+        id: c.id->QB.column->DQL.u,
+        name: c.name->QB.column->DQL.u,
+      })
     }
   }
 }
 
-/* module AlbumsTable = { */
-/* type columns = { */
-/* id: DDL.Column.t<int>, */
-/* artistId: DDL.Column.t<int>, */
-/* name: DDL.Column.t<string>, */
-/* year: DDL.Column.t<int>, */
-/* } */
+module AlbumsTable = {
+  type columns = {
+    id: DDL.Column.t<int>,
+    artistId: DDL.Column.t<int>,
+    name: DDL.Column.t<string>,
+    year: DDL.Column.t<int>,
+  }
 
-/* type optionalColumns = { */
-/* id: DDL.Column.t<option<int>>, */
-/* artistId: DDL.Column.t<option<int>>, */
-/* name: DDL.Column.t<option<string>>, */
-/* year: DDL.Column.t<option<int>>, */
-/* } */
+  type optionalColumns = {
+    id: DDL.Column.t<option<int>>,
+    artistId: DDL.Column.t<option<int>>,
+    name: DDL.Column.t<option<string>>,
+    year: DDL.Column.t<option<int>>,
+  }
 
-/* let table: DDL.Table.t<columns> = { */
-/* name: "albums", */
-/* columns: { */
-/* id: { */
-/* table: "albums", */
-/* name: "id", */
-/* dt: "INTEGER", */
-/* size: None, */
-/* nullable: false, */
-/* unique: false, */
-/* default: None, */
-/* }, */
-/* artistId: { */
-/* table: "albums", */
-/* name: "artistId", */
-/* dt: "INTEGER", */
-/* size: None, */
-/* nullable: false, */
-/* unique: false, */
-/* default: None, */
-/* }, */
-/* name: { */
-/* table: "albums", */
-/* name: "name", */
-/* dt: "TEXT", */
-/* size: None, */
-/* nullable: false, */
-/* unique: false, */
-/* default: None, */
-/* }, */
-/* year: { */
-/* table: "albums", */
-/* name: "year", */
-/* dt: "INTEGER", */
-/* size: None, */
-/* nullable: false, */
-/* unique: false, */
-/* default: None, */
-/* }, */
-/* }, */
-/* getConstraints: columns => [ */
-/* DDL.makePrimaryKey1("PK", columns.id), */
-/* DDL.makeForeignKey("FK_AlbumArtist", columns.artistId, ArtistsTable.table.columns.id), */
-/* ], */
-/* } */
-/* } */
+  let table: DDL.Table.t<columns> = {
+    name: "albums",
+    columns: {
+      id: {
+        table: "albums",
+        name: "id",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      artistId: {
+        table: "albums",
+        name: "artistId",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      name: {
+        table: "albums",
+        name: "name",
+        dt: "TEXT",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      year: {
+        table: "albums",
+        name: "year",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+    },
+    getConstraints: columns => [
+      DDL.makePrimaryKey1("PK", columns.id),
+      DDL.makeForeignKey("FK_Artist", columns.artistId, ArtistsTable.table.columns.id),
+    ],
+  }
 
-/* module SongsTable = { */
-/* type columns = { */
-/* id: DDL.Column.t<int>, */
-/* albumId: DDL.Column.t<int>, */
-/* name: DDL.Column.t<string>, */
-/* duration: DDL.Column.t<string>, */
-/* } */
+  module Create = {
+    let makeQuery = () => {
+      DDL.Query.make(table)
+    }
+  }
 
-/* type optionalColumns = { */
-/* id: DDL.Column.t<option<int>>, */
-/* albumId: DDL.Column.t<option<int>>, */
-/* name: DDL.Column.t<option<string>>, */
-/* duration: DDL.Column.t<option<string>>, */
-/* } */
+  module Select = {
+    type t = {
+      id: int,
+      artistId: int,
+      name: string,
+      year: int,
+    }
 
-/* let table: DDL.Table.t<columns> = { */
-/* name: "songs", */
-/* columns: { */
-/* id: { */
-/* table: "songs", */
-/* name: "id", */
-/* dt: "INTEGER", */
-/* size: None, */
-/* nullable: false, */
-/* unique: false, */
-/* default: None, */
-/* }, */
-/* albumId: { */
-/* table: "songs", */
-/* name: "albumId", */
-/* dt: "INTEGER", */
-/* size: None, */
-/* nullable: false, */
-/* unique: false, */
-/* default: None, */
-/* }, */
-/* name: { */
-/* table: "songs", */
-/* name: "name", */
-/* dt: "TEXT", */
-/* size: None, */
-/* nullable: false, */
-/* unique: false, */
-/* default: None, */
-/* }, */
-/* duration: { */
-/* table: "songs", */
-/* name: "duration", */
-/* dt: "TEXT", */
-/* size: None, */
-/* nullable: false, */
-/* unique: false, */
-/* default: None, */
-/* }, */
-/* }, */
-/* } */
-/* } */
+    let makeQuery = () => {
+      DQL.Query.make(table)->DQL.select(c => {
+        id: c.id->QB.column->DQL.u,
+        artistId: c.artistId->QB.column->DQL.u,
+        name: c.name->QB.column->DQL.u,
+        year: c.year->QB.column->DQL.u,
+      })
+    }
+  }
+}
+
+module SongsTable = {
+  type columns = {
+    id: DDL.Column.t<int>,
+    albumId: DDL.Column.t<int>,
+    name: DDL.Column.t<string>,
+    duration: DDL.Column.t<string>,
+  }
+
+  type optionalColumns = {
+    id: DDL.Column.t<option<int>>,
+    albumId: DDL.Column.t<option<int>>,
+    name: DDL.Column.t<option<string>>,
+    duration: DDL.Column.t<option<string>>,
+  }
+
+  let table: DDL.Table.t<columns> = {
+    name: "songs",
+    columns: {
+      id: {
+        table: "songs",
+        name: "id",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      albumId: {
+        table: "songs",
+        name: "albumId",
+        dt: "INTEGER",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      name: {
+        table: "songs",
+        name: "name",
+        dt: "TEXT",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+      duration: {
+        table: "songs",
+        name: "duration",
+        dt: "TEXT",
+        size: None,
+        nullable: false,
+        unique: false,
+        default: None,
+      },
+    },
+    getConstraints: columns => [
+      DDL.makePrimaryKey1("PK", columns.id),
+      DDL.makeForeignKey("FK_Album", columns.albumId, AlbumsTable.table.columns.id),
+    ],
+  }
+
+  module Create = {
+    let makeQuery = () => {
+      DDL.Query.make(table)
+    }
+  }
+
+  module Select = {
+    type t = {
+      id: int,
+      albumId: int,
+      name: string,
+      duration: string,
+    }
+
+    let makeQuery = () => {
+      DQL.Query.make(table)->DQL.select(c => {
+        id: c.id->QB.column->DQL.u,
+        albumId: c.albumId->QB.column->DQL.u,
+        name: c.name->QB.column->DQL.u,
+        duration: c.duration->QB.column->DQL.u,
+      })
+    }
+  }
+}
 
 /* module Albums = { */
 /* type selectables = { */
@@ -196,10 +244,10 @@ module ArtistsTable = {
 /* Query.makeSelectQuery(from, joins)->QB.select(c => */
 /* { */
 /* "album": { */
-/* "id": c.album.id->QB.columnU, */
-/* "artistId": c.album.artistId->QB.columnU, */
-/* "name": c.album.name->QB.columnU, */
-/* "year": c.album.year->QB.columnU, */
+/* "id": c.album.id->QB.column->DQL.u, */
+/* "artistId": c.album.artistId->QB.column->DQL.u, */
+/* "name": c.album.name->QB.column->DQL.u, */
+/* "year": c.album.year->QB.column->DQL.u, */
 /* }, */
 /* } */
 /* ) */
@@ -219,10 +267,10 @@ module ArtistsTable = {
 /* Query.makeSelectQuery(from, joins)->QB.select(c => */
 /* { */
 /* "song": { */
-/* "id": c.song.id->QB.columnU, */
-/* "albumId": c.song.albumId->QB.columnU, */
-/* "name": c.song.name->QB.columnU, */
-/* "duration": c.song.duration->QB.columnU, */
+/* "id": c.song.id->QB.column->DQL.u, */
+/* "albumId": c.song.albumId->QB.column->DQL.u, */
+/* "name": c.song.name->QB.column->DQL.u, */
+/* "duration": c.song.duration->QB.column->DQL.u, */
 /* }, */
 /* } */
 /* ) */
@@ -248,16 +296,16 @@ module ArtistsTable = {
 /* Query.makeSelectQuery(from, joins)->QB.select(c => */
 /* { */
 /* "album": { */
-/* "id": c.album.id->QB.columnU, */
-/* "artistId": c.album.artistId->QB.columnU, */
-/* "name": c.album.name->QB.columnU, */
-/* "year": c.album.year->QB.columnU, */
+/* "id": c.album.id->QB.column->DQL.u, */
+/* "artistId": c.album.artistId->QB.column->DQL.u, */
+/* "name": c.album.name->QB.column->DQL.u, */
+/* "year": c.album.year->QB.column->DQL.u, */
 /* }, */
 /* "song": { */
-/* "id": c.song.id->QB.columnU, */
-/* "albumId": c.song.albumId->QB.columnU, */
-/* "name": c.song.name->QB.columnU, */
-/* "duration": c.song.duration->QB.columnU, */
+/* "id": c.song.id->QB.column->DQL.u, */
+/* "albumId": c.song.albumId->QB.column->DQL.u, */
+/* "name": c.song.name->QB.column->DQL.u, */
+/* "duration": c.song.duration->QB.column->DQL.u, */
 /* }, */
 /* } */
 /* ) */
@@ -283,16 +331,16 @@ module ArtistsTable = {
 /* Query.makeSelectQuery(from, joins)->QB.select(c => */
 /* { */
 /* "a1": { */
-/* "id": c.a1.id->QB.columnU, */
-/* "artistId": c.a1.artistId->QB.columnU, */
-/* "name": c.a1.name->QB.columnU, */
-/* "year": c.a1.year->QB.columnU, */
+/* "id": c.a1.id->QB.column->DQL.u, */
+/* "artistId": c.a1.artistId->QB.column->DQL.u, */
+/* "name": c.a1.name->QB.column->DQL.u, */
+/* "year": c.a1.year->QB.column->DQL.u, */
 /* }, */
 /* "a2": { */
-/* "id": c.a2.id->QB.columnU, */
-/* "artistId": c.a2.artistId->QB.columnU, */
-/* "name": c.a2.name->QB.columnU, */
-/* "year": c.a2.year->QB.columnU, */
+/* "id": c.a2.id->QB.column->DQL.u, */
+/* "artistId": c.a2.artistId->QB.column->DQL.u, */
+/* "name": c.a2.name->QB.column->DQL.u, */
+/* "year": c.a2.year->QB.column->DQL.u, */
 /* }, */
 /* } */
 /* ) */
@@ -318,14 +366,14 @@ module ArtistsTable = {
 /* Query.makeSelectQuery(from, joins)->QB.select(c => */
 /* { */
 /* "artist": { */
-/* "id": c.artist.id->QB.columnU, */
-/* "name": c.artist.name->QB.columnU, */
+/* "id": c.artist.id->QB.column->DQL.u, */
+/* "name": c.artist.name->QB.column->DQL.u, */
 /* }, */
 /* "album": { */
-/* "id": c.album.id->QB.columnU, */
-/* "artistId": c.album.artistId->QB.columnU, */
-/* "name": c.album.name->QB.columnU, */
-/* "year": c.album.year->QB.columnU, */
+/* "id": c.album.id->QB.column->DQL.u, */
+/* "artistId": c.album.artistId->QB.column->DQL.u, */
+/* "name": c.album.name->QB.column->DQL.u, */
+/* "year": c.album.year->QB.column->DQL.u, */
 /* }, */
 /* } */
 /* ) */
@@ -353,20 +401,20 @@ module ArtistsTable = {
 /* Query.makeSelectQuery(from, joins)->QB.select(c => */
 /* { */
 /* "artist": { */
-/* "id": c.artist.id->QB.columnU, */
-/* "name": c.artist.name->QB.columnU, */
+/* "id": c.artist.id->QB.column->DQL.u, */
+/* "name": c.artist.name->QB.column->DQL.u, */
 /* }, */
 /* "album": { */
-/* "id": c.album.id->QB.columnU, */
-/* "artistId": c.album.artistId->QB.columnU, */
-/* "name": c.album.name->QB.columnU, */
-/* "year": c.album.year->QB.columnU, */
+/* "id": c.album.id->QB.column->DQL.u, */
+/* "artistId": c.album.artistId->QB.column->DQL.u, */
+/* "name": c.album.name->QB.column->DQL.u, */
+/* "year": c.album.year->QB.column->DQL.u, */
 /* }, */
 /* "song": { */
-/* "id": c.song.id->QB.columnU, */
-/* "albumId": c.song.albumId->QB.columnU, */
-/* "name": c.song.name->QB.columnU, */
-/* "duration": c.song.duration->QB.columnU, */
+/* "id": c.song.id->QB.column->DQL.u, */
+/* "albumId": c.song.albumId->QB.column->DQL.u, */
+/* "name": c.song.name->QB.column->DQL.u, */
+/* "duration": c.song.duration->QB.column->DQL.u, */
 /* }, */
 /* } */
 /* ) */

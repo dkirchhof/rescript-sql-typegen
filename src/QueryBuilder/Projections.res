@@ -8,7 +8,7 @@ let toSQL = (projections, queryToString) => {
       columns
       ->Js.Dict.entries
       ->Js.Array2.map(((name, ref)) =>
-        Projection.toSQL(ref, `${namespace}.${name}`, queryToString)
+        Projection.toSQL(ref, true, `${namespace}.${name}`, queryToString)
       )
       ->Js.Array2.joinWith(", ")
     })

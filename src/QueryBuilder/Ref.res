@@ -37,8 +37,10 @@ let updateAggType = (t, aggType) =>
 external unbox: t<'a> => 'a = "%identity"
 external toAnyRef: t<'a> => t<any> = "%identity"
 
-let columnRefToSQL = options => {
-  let columnString = `${options.tableAlias}.${options.columnName}`
+let columnRefToSQL = (options, withNamespace) => {
+  let columnString = withNamespace
+    ? `${options.tableAlias}.${options.columnName}`
+    : options.columnName
 
   switch options.aggType {
   | Some(COUNT) => `COUNT(${columnString})`
@@ -62,9 +64,18 @@ let valueRefToSQL = value => {
 
 let queryRefToSQL = (options, queryToString) => `(${queryToString(options->Obj.magic)})`
 
-let toProjectionSQL = (projection, alias, queryToString) => {
+let toProjectionSQL = (projection, withNamespace, alias, queryToString) => {
   switch projection {
-  | ColumnRef(options) => `${columnRefToSQL(options)} AS "${alias}"`
+  | ColumnRef(options) => {
+      let columnRefSQL = columnRefToSQL(options, withNamespace)
+
+      if columnRefSQL === alias {
+        columnRefSQL
+      } else {
+        `${columnRefToSQL(options, withNamespace)} AS "${alias}"`
+      }
+    }
+
   | ValueRef(value) => `${valueRefToSQL(value)} AS "${alias}"`
   | QueryRef(query) => `${queryRefToSQL(query, queryToString)} AS "${alias}"`
   }
@@ -72,7 +83,7 @@ let toProjectionSQL = (projection, alias, queryToString) => {
 
 let toSQL = (ref, queryToString) => {
   switch ref {
-  | ColumnRef(options) => columnRefToSQL(options)
+  | ColumnRef(options) => columnRefToSQL(options, false)
   | ValueRef(value) => valueRefToSQL(value)
   | QueryRef(query) => queryRefToSQL(query, queryToString)
   }
