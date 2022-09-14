@@ -3,9 +3,11 @@
         "dev": "rescript build -w",
         "codegen-dry": "node src/Example/_DB.mjs",
         "codegen": "node src/Example/_DB.mjs > src/Example/DB.res",
-        "test": "node --test"
+        "test": "node --test",
+        "lint": "reanalyze -dce"
     },
     "devDependencies": {
+        "reanalyze": "^2.23.0",
         "rescript": "10.0.0",
         "rescript-js": "^1.0.0-beta.2",
         "rescript-test": "^3.4.1"

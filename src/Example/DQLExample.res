@@ -7,7 +7,7 @@ type onlyArtistName = {name: string}
 
 Logger.log(
   "simple projection",
-  ArtistsTable.Select.makeQuery()->select(c => {name: c.name->QB.column->u})->toSQL,
+  ArtistsTable.Select.makeQuery()->select(c => {name: c.name->DQL.column->u})->toSQL,
 )
 
 type artistWithRenamedColumns = {
@@ -18,25 +18,25 @@ type artistWithRenamedColumns = {
 Logger.log(
   "rename columns (record as result)",
   ArtistsTable.Select.makeQuery()
-  ->select(c => {myId: c.id->QB.column->u, myName: c.name->QB.column->u})
+  ->select(c => {myId: c.id->DQL.column->u, myName: c.name->DQL.column->u})
   ->toSQL,
 )
 
 Logger.log(
   "rename columns (obj as result)",
   ArtistsTable.Select.makeQuery()
-  ->select(c => {"myId": c.id->QB.column->u, "myName": c.name->QB.column->u})
+  ->select(c => {"myId": c.id->DQL.column->u, "myName": c.name->DQL.column->u})
   ->toSQL,
 )
 
 Logger.log(
   "change order",
-  ArtistsTable.Select.makeQuery()->orderBy(c => [c.name->QB.column->asc])->toSQL,
+  ArtistsTable.Select.makeQuery()->orderBy(c => [c.name->DQL.column->asc])->toSQL,
 )
 
 Logger.log(
   "simple selection",
-  ArtistsTable.Select.makeQuery()->where(c => Expr.eq(c.id->QB.column, 1->QB.value))->toSQL,
+  ArtistsTable.Select.makeQuery()->where(c => Expr.eq(c.id->DQL.column, 1->DQL.value))->toSQL,
 )
 
 Logger.log(
@@ -46,21 +46,21 @@ Logger.log(
 
 Logger.log(
   "aggregation",
-  ArtistsTable.Select.makeQuery()->select(c => {"maxId": c.id->QB.column->QB.max->u})->toSQL,
+  ArtistsTable.Select.makeQuery()->select(c => {"maxId": c.id->DQL.column->DQL.max->u})->toSQL,
 )
 
 Logger.log(
   "grouping",
   AlbumsTable.Select.makeQuery()
-  ->select(c => {"year": c.year->QB.column->u, "numberOfAlbums": c.id->QB.column->QB.count->u})
-  ->groupBy(c => [c.year->QB.column->group])
-  ->having(c => Expr.gt(c.id->QB.column->QB.count, 1->QB.value))
+  ->select(c => {"year": c.year->DQL.column->u, "numberOfAlbums": c.id->DQL.column->DQL.count->u})
+  ->groupBy(c => [c.year->DQL.column->group])
+  ->having(c => Expr.gt(c.id->DQL.column->DQL.count, 1->DQL.value))
   ->toSQL,
 )
 
 Logger.log(
   "join",
-  ArtistsLeftJoinAlbums.Select.makeQuery(c => Expr.eq(c.album_artistId->QB.column, c.artist_id->QB.column))
+  ArtistsLeftJoinAlbums.Select.makeQuery(c => Expr.eq(c.album_artistId->DQL.column, c.artist_id->DQL.column))
   ->toSQL
 )
 

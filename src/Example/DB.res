@@ -45,8 +45,8 @@ module ArtistsTable = {
       let from = DQL.From.make("artists", None)
 
       DQL.Query.make(from, None, table.columns, table.columns)->DQL.select(c => {
-        id: c.id->QB.column->DQL.u,
-        name: c.name->QB.column->DQL.u,
+        id: c.id->DQL.column->DQL.u,
+        name: c.name->DQL.column->DQL.u,
       })
     }
   }
@@ -124,10 +124,10 @@ module AlbumsTable = {
       let from = DQL.From.make(table.name, None)
 
       DQL.Query.make(from, None, table.columns, table.columns)->DQL.select(c => {
-        id: c.id->QB.column->DQL.u,
-        artistId: c.artistId->QB.column->DQL.u,
-        name: c.name->QB.column->DQL.u,
-        year: c.year->QB.column->DQL.u,
+        id: c.id->DQL.column->DQL.u,
+        artistId: c.artistId->DQL.column->DQL.u,
+        name: c.name->DQL.column->DQL.u,
+        year: c.year->DQL.column->DQL.u,
       })
     }
   }
@@ -205,10 +205,10 @@ module SongsTable = {
       let from = DQL.From.make("songs", None)
 
       DQL.Query.make(from, None, table.columns, table.columns)->DQL.select(c => {
-        id: c.id->QB.column->DQL.u,
-        albumId: c.albumId->QB.column->DQL.u,
-        name: c.name->QB.column->DQL.u,
-        duration: c.duration->QB.column->DQL.u,
+        id: c.id->DQL.column->DQL.u,
+        albumId: c.albumId->DQL.column->DQL.u,
+        name: c.name->DQL.column->DQL.u,
+        duration: c.duration->DQL.column->DQL.u,
       })
     }
   }
@@ -252,12 +252,12 @@ module ArtistsLeftJoinAlbums = {
       let joins = [DQL.Join.make(Inner, AlbumsTable.table.name, "album", joinCondition1)]->Some
 
       DQL.Query.make(from, joins, projectables, selectables)->DQL.select(c => {
-        artist_id: c.artist_id->QB.column->DQL.u,
-        artist_name: c.artist_name->QB.column->DQL.u,
-        album_id: c.album_id->QB.column->DQL.u,
-        album_artistId: c.album_artistId->QB.column->DQL.u,
-        album_name: c.album_name->QB.column->DQL.u,
-        album_year: c.album_year->QB.column->DQL.u,
+        artist_id: c.artist_id->DQL.column->DQL.u,
+        artist_name: c.artist_name->DQL.column->DQL.u,
+        album_id: c.album_id->DQL.column->DQL.u,
+        album_artistId: c.album_artistId->DQL.column->DQL.u,
+        album_name: c.album_name->DQL.column->DQL.u,
+        album_year: c.album_year->DQL.column->DQL.u,
       })
     }
   }
@@ -282,16 +282,16 @@ module ArtistsLeftJoinAlbums = {
 /* Query.makeSelectQuery(from, joins)->QB.select(c => */
 /* { */
 /* "a1": { */
-/* "id": c.a1.id->QB.column->DQL.u, */
-/* "artistId": c.a1.artistId->QB.column->DQL.u, */
-/* "name": c.a1.name->QB.column->DQL.u, */
-/* "year": c.a1.year->QB.column->DQL.u, */
+/* "id": c.a1.id->DQL.column->DQL.u, */
+/* "artistId": c.a1.artistId->DQL.column->DQL.u, */
+/* "name": c.a1.name->DQL.column->DQL.u, */
+/* "year": c.a1.year->DQL.column->DQL.u, */
 /* }, */
 /* "a2": { */
-/* "id": c.a2.id->QB.column->DQL.u, */
-/* "artistId": c.a2.artistId->QB.column->DQL.u, */
-/* "name": c.a2.name->QB.column->DQL.u, */
-/* "year": c.a2.year->QB.column->DQL.u, */
+/* "id": c.a2.id->DQL.column->DQL.u, */
+/* "artistId": c.a2.artistId->DQL.column->DQL.u, */
+/* "name": c.a2.name->DQL.column->DQL.u, */
+/* "year": c.a2.year->DQL.column->DQL.u, */
 /* }, */
 /* } */
 /* ) */
@@ -317,14 +317,14 @@ module ArtistsLeftJoinAlbums = {
 /* Query.makeSelectQuery(from, joins)->QB.select(c => */
 /* { */
 /* "artist": { */
-/* "id": c.artist.id->QB.column->DQL.u, */
-/* "name": c.artist.name->QB.column->DQL.u, */
+/* "id": c.artist.id->DQL.column->DQL.u, */
+/* "name": c.artist.name->DQL.column->DQL.u, */
 /* }, */
 /* "album": { */
-/* "id": c.album.id->QB.column->DQL.u, */
-/* "artistId": c.album.artistId->QB.column->DQL.u, */
-/* "name": c.album.name->QB.column->DQL.u, */
-/* "year": c.album.year->QB.column->DQL.u, */
+/* "id": c.album.id->DQL.column->DQL.u, */
+/* "artistId": c.album.artistId->DQL.column->DQL.u, */
+/* "name": c.album.name->DQL.column->DQL.u, */
+/* "year": c.album.year->DQL.column->DQL.u, */
 /* }, */
 /* } */
 /* ) */
@@ -352,20 +352,20 @@ module ArtistsLeftJoinAlbums = {
 /* Query.makeSelectQuery(from, joins)->QB.select(c => */
 /* { */
 /* "artist": { */
-/* "id": c.artist.id->QB.column->DQL.u, */
-/* "name": c.artist.name->QB.column->DQL.u, */
+/* "id": c.artist.id->DQL.column->DQL.u, */
+/* "name": c.artist.name->DQL.column->DQL.u, */
 /* }, */
 /* "album": { */
-/* "id": c.album.id->QB.column->DQL.u, */
-/* "artistId": c.album.artistId->QB.column->DQL.u, */
-/* "name": c.album.name->QB.column->DQL.u, */
-/* "year": c.album.year->QB.column->DQL.u, */
+/* "id": c.album.id->DQL.column->DQL.u, */
+/* "artistId": c.album.artistId->DQL.column->DQL.u, */
+/* "name": c.album.name->DQL.column->DQL.u, */
+/* "year": c.album.year->DQL.column->DQL.u, */
 /* }, */
 /* "song": { */
-/* "id": c.song.id->QB.column->DQL.u, */
-/* "albumId": c.song.albumId->QB.column->DQL.u, */
-/* "name": c.song.name->QB.column->DQL.u, */
-/* "duration": c.song.duration->QB.column->DQL.u, */
+/* "id": c.song.id->DQL.column->DQL.u, */
+/* "albumId": c.song.albumId->DQL.column->DQL.u, */
+/* "name": c.song.name->DQL.column->DQL.u, */
+/* "duration": c.song.duration->DQL.column->DQL.u, */
 /* }, */
 /* } */
 /* ) */

@@ -235,10 +235,23 @@ let limit = (query: Query.t<'projectables, 'selectables, 'projections>, limit): 
   {...query, limit: Some(limit)}
 }
 
-let u = Ref.unbox
+let column = c => Ref.makeColumnRef(c)
+let value = v => Ref.makeValueRef(v)
+let subQuery = query => Ref.makeQueryRef(query)
+
+let count = ref => Ref.updateAggType(ref, Some(Aggregation.COUNT))->Obj.magic
+let sumI = ref => Ref.updateAggType(ref, Some(Aggregation.SUM))
+let sumF = ref => Ref.updateAggType(ref, Some(Aggregation.SUM))
+let avg = ref => Ref.updateAggType(ref, Some(Aggregation.AVG))
+let min = ref => Ref.updateAggType(ref, Some(Aggregation.MIN))
+let max = ref => Ref.updateAggType(ref, Some(Aggregation.MAX))
+
 let group = GroupBy.make
+
 let asc = OrderBy.asc
 let desc = OrderBy.desc
+
+let u = Ref.unbox
 
 let rec toSQL = (query: Query.t<_, _, _>) => {
   open StringBuilder

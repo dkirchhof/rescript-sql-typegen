@@ -550,6 +550,11 @@ readable-stream@^3.1.1, readable-stream@^3.4.0:
     string_decoder "^1.1.1"
     util-deprecate "^1.0.1"
 
+reanalyze@^2.23.0:
+  version "2.23.0"
+  resolved "https://registry.yarnpkg.com/reanalyze/-/reanalyze-2.23.0.tgz#0e2a3109518ccad0ba04366ec1811db17fa07b7e"
+  integrity sha512-5pkH13pX1PrZFkIfmZUjKtYCqzFY2jTaEjBsqyR9SM3HLexAtkHTa4vLHTwuYk167KuO1uwWyEppo8NJIjfkOw==
+
 requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
