@@ -60,12 +60,8 @@ Logger.log(
 
 Logger.log(
   "join",
-  ArtistsLeftJoinAlbums.Select.makeQuery()
+  ArtistsLeftJoinAlbums.Select.makeQuery(c => Expr.eq(c.album_artistId->QB.column, c.artist_id->QB.column))
   ->toSQL
-  /* ->select(c => {"year": c.year->QB.column->u, "numberOfAlbums": c.id->QB.column->QB.count->u}) */
-  /* ->groupBy(c => [c.year->QB.column->group]) */
-  /* ->having(c => Expr.gt(c.id->QB.column->QB.count, 1->QB.value)) */
-  /* ->toSQL, */
 )
 
 /* open DB */

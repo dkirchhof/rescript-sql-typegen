@@ -243,21 +243,13 @@ module ArtistsLeftJoinAlbums = {
       album_year: option<int>,
     }
 
-    let makeQuery = () => {
+    let makeQuery = (getJoinConditions) => {
+      let from = DQL.From.make(ArtistsTable.table.name, Some("artist"))
       let projectables: projectables = Utils.createColumnAccessor()
       let selectables: selectables = Utils.createColumnAccessor()
 
-      let from = DQL.From.make(ArtistsTable.table.name, Some("artist"))
-
-      let joins =
-        [
-          DQL.Join.make(
-            Inner,
-            AlbumsTable.table.name,
-            "album",
-            Expr.eq(selectables.album_artistId->QB.column, selectables.artist_id->QB.column),
-          ),
-        ]->Some
+      let joinCondition1 = getJoinConditions(selectables)
+      let joins = [DQL.Join.make(Inner, AlbumsTable.table.name, "album", joinCondition1)]->Some
 
       DQL.Query.make(from, joins, projectables, selectables)->DQL.select(c => {
         artist_id: c.artist_id->QB.column->DQL.u,
