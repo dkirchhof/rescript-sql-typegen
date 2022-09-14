@@ -44,7 +44,7 @@ module ArtistsTable = {
     let makeQuery = () => {
       let from = DQL.From.make("artists", None)
 
-      DQL.Query.make(from, table.columns, table.columns)->DQL.select(c => {
+      DQL.Query.make(from, None, table.columns, table.columns)->DQL.select(c => {
         id: c.id->QB.column->DQL.u,
         name: c.name->QB.column->DQL.u,
       })
@@ -123,7 +123,7 @@ module AlbumsTable = {
     let makeQuery = () => {
       let from = DQL.From.make(table.name, None)
 
-      DQL.Query.make(from, table.columns, table.columns)->DQL.select(c => {
+      DQL.Query.make(from, None, table.columns, table.columns)->DQL.select(c => {
         id: c.id->QB.column->DQL.u,
         artistId: c.artistId->QB.column->DQL.u,
         name: c.name->QB.column->DQL.u,
@@ -204,7 +204,7 @@ module SongsTable = {
     let makeQuery = () => {
       let from = DQL.From.make("songs", None)
 
-      DQL.Query.make(from, table.columns, table.columns)->DQL.select(c => {
+      DQL.Query.make(from, None, table.columns, table.columns)->DQL.select(c => {
         id: c.id->QB.column->DQL.u,
         albumId: c.albumId->QB.column->DQL.u,
         name: c.name->QB.column->DQL.u,
@@ -244,12 +244,22 @@ module ArtistsLeftJoinAlbums = {
     }
 
     let makeQuery = () => {
-      let from = DQL.From.make("artists", Some("artist"))
-      /* let joins = [Join.make("songs", "song", Inner)] */
       let projectables: projectables = Utils.createColumnAccessor()
       let selectables: selectables = Utils.createColumnAccessor()
 
-      DQL.Query.make(from, projectables, selectables)->DQL.select(c => {
+      let from = DQL.From.make(ArtistsTable.table.name, Some("artist"))
+
+      let joins =
+        [
+          DQL.Join.make(
+            Inner,
+            AlbumsTable.table.name,
+            "album",
+            Expr.eq(selectables.album_artistId->QB.column, selectables.artist_id->QB.column),
+          ),
+        ]->Some
+
+      DQL.Query.make(from, joins, projectables, selectables)->DQL.select(c => {
         artist_id: c.artist_id->QB.column->DQL.u,
         artist_name: c.artist_name->QB.column->DQL.u,
         album_id: c.album_id->QB.column->DQL.u,

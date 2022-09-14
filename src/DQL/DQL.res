@@ -1,7 +1,3 @@
-module Source = {
-  type t = {name: string, alias: option<string>}
-}
-
 module From = {
   type t = {name: string, alias: option<string>}
 
@@ -12,6 +8,41 @@ module From = {
     | Some(alias) => `FROM ${from.name} AS "${alias}"`
     | None => `FROM ${from.name}`
     }
+  }
+}
+
+module Join = {
+  type joinType = Inner | Left
+
+  type t = {
+    joinType: joinType,
+    tableName: string,
+    tableAlias: string,
+    condition: Expr.t,
+  }
+
+  let make = (joinType, tableName, tableAlias, condition) => {
+    joinType,
+    tableName,
+    tableAlias,
+    condition,
+  }
+
+  let toSQL = (join, queryToSQL) => {
+    let joinTypeString = switch join.joinType {
+    | Inner => "INNER"
+    | Left => "LEFT"
+    }
+
+    let selectionString = `ON ${Expr.toSQL(join.condition, queryToSQL)}`
+
+    `${joinTypeString} JOIN ${join.tableName} AS "${join.tableAlias}" ${selectionString}`
+  }
+}
+
+module Joins = {
+  let toSQL = (optionalJoins, queryToSQL) => {
+    optionalJoins->Belt.Option.map(joins => joins->Js.Array2.map(Join.toSQL(_, queryToSQL)))
   }
 }
 
@@ -112,6 +143,7 @@ module Limit = {
 module Query = {
   type t<'projectables, 'selectables, 'projections> = {
     from: From.t,
+    joins: option<array<Join.t>>,
     projections: Js.Dict.t<Ref.anyRef>,
     selections: option<Expr.t>,
     groupBys: option<array<GroupBy.t>>,
@@ -123,8 +155,9 @@ module Query = {
     _selectabes: 'selectables,
   }
 
-  let make = (from, projectables, selectables) => {
+  let make = (from, joins, projectables, selectables) => {
     from,
+    joins,
     projections: Js.Dict.empty(),
     selections: None,
     groupBys: None,
@@ -213,6 +246,7 @@ let rec toSQL = (query: Query.t<_, _, _>) => {
   make()
   ->addS(Projections.toSQL(query.projections, toSQL))
   ->addS(From.toSQL(query.from))
+  ->addMO(Joins.toSQL(query.joins, toSQL))
   ->addSO(Selections.toSQL(query.selections, toSQL))
   ->addSO(GroupBys.toSQL(query.groupBys, toSQL))
   ->addSO(Havings.toSQL(query.havings, toSQL))
