@@ -4,11 +4,6 @@ module ArtistsTable = {
     name: DDL.Column.t<string>,
   }
 
-  type optionalColumns = {
-    id: DDL.Column.t<option<int>>,
-    name: DDL.Column.t<option<string>>,
-  }
-
   let table: DDL.Table.t<columns> = {
     name: "artists",
     columns: {
@@ -47,7 +42,9 @@ module ArtistsTable = {
     }
 
     let makeQuery = () => {
-      DQL.Query.make(table)->DQL.select(c => {
+      let from = DQL.From.make("artists", None)
+
+      DQL.Query.make(from, table.columns, table.columns)->DQL.select(c => {
         id: c.id->QB.column->DQL.u,
         name: c.name->QB.column->DQL.u,
       })
@@ -61,13 +58,6 @@ module AlbumsTable = {
     artistId: DDL.Column.t<int>,
     name: DDL.Column.t<string>,
     year: DDL.Column.t<int>,
-  }
-
-  type optionalColumns = {
-    id: DDL.Column.t<option<int>>,
-    artistId: DDL.Column.t<option<int>>,
-    name: DDL.Column.t<option<string>>,
-    year: DDL.Column.t<option<int>>,
   }
 
   let table: DDL.Table.t<columns> = {
@@ -131,7 +121,9 @@ module AlbumsTable = {
     }
 
     let makeQuery = () => {
-      DQL.Query.make(table)->DQL.select(c => {
+      let from = DQL.From.make(table.name, None)
+
+      DQL.Query.make(from, table.columns, table.columns)->DQL.select(c => {
         id: c.id->QB.column->DQL.u,
         artistId: c.artistId->QB.column->DQL.u,
         name: c.name->QB.column->DQL.u,
@@ -147,13 +139,6 @@ module SongsTable = {
     albumId: DDL.Column.t<int>,
     name: DDL.Column.t<string>,
     duration: DDL.Column.t<string>,
-  }
-
-  type optionalColumns = {
-    id: DDL.Column.t<option<int>>,
-    albumId: DDL.Column.t<option<int>>,
-    name: DDL.Column.t<option<string>>,
-    duration: DDL.Column.t<option<string>>,
   }
 
   let table: DDL.Table.t<columns> = {
@@ -217,7 +202,9 @@ module SongsTable = {
     }
 
     let makeQuery = () => {
-      DQL.Query.make(table)->DQL.select(c => {
+      let from = DQL.From.make("songs", None)
+
+      DQL.Query.make(from, table.columns, table.columns)->DQL.select(c => {
         id: c.id->QB.column->DQL.u,
         albumId: c.albumId->QB.column->DQL.u,
         name: c.name->QB.column->DQL.u,
@@ -227,90 +214,52 @@ module SongsTable = {
   }
 }
 
-/* module Albums = { */
-/* type selectables = { */
-/* album: AlbumsTable.columns */
-/* } */
+module ArtistsLeftJoinAlbums = {
+  type projectables = {
+    artist_id: DDL.Column.t<int>,
+    artist_name: DDL.Column.t<string>,
+    album_id: DDL.Column.t<option<int>>,
+    album_artistId: DDL.Column.t<option<int>>,
+    album_name: DDL.Column.t<option<string>>,
+    album_year: DDL.Column.t<option<int>>,
+  }
 
-/* type projectables = { */
-/* album: AlbumsTable.columns */
-/* } */
+  type selectables = {
+    artist_id: DDL.Column.t<int>,
+    artist_name: DDL.Column.t<string>,
+    album_id: DDL.Column.t<int>,
+    album_artistId: DDL.Column.t<int>,
+    album_name: DDL.Column.t<string>,
+    album_year: DDL.Column.t<int>,
+  }
 
-/* let makeSelectQuery = (): Query.t<projectables, selectables, _> => { */
-/* let from = From.make("albums", "album") */
+  module Select = {
+    type t = {
+      artist_id: int,
+      artist_name: string,
+      album_id: option<int>,
+      album_artistId: option<int>,
+      album_name: option<string>,
+      album_year: option<int>,
+    }
 
-/* let joins = [] */
+    let makeQuery = () => {
+      let from = DQL.From.make("artists", Some("artist"))
+      /* let joins = [Join.make("songs", "song", Inner)] */
+      let projectables: projectables = Utils.createColumnAccessor()
+      let selectables: selectables = Utils.createColumnAccessor()
 
-/* Query.makeSelectQuery(from, joins)->QB.select(c => */
-/* { */
-/* "album": { */
-/* "id": c.album.id->QB.column->DQL.u, */
-/* "artistId": c.album.artistId->QB.column->DQL.u, */
-/* "name": c.album.name->QB.column->DQL.u, */
-/* "year": c.album.year->QB.column->DQL.u, */
-/* }, */
-/* } */
-/* ) */
-/* } */
-/* } */
-
-/* module Songs = { */
-/* type selectables = {song: SongsTable.columns} */
-
-/* type projectables = {song: SongsTable.columns} */
-
-/* let makeSelectQuery = (): Query.t<projectables, selectables, _> => { */
-/* let from = From.make("songs", "song") */
-
-/* let joins = [] */
-
-/* Query.makeSelectQuery(from, joins)->QB.select(c => */
-/* { */
-/* "song": { */
-/* "id": c.song.id->QB.column->DQL.u, */
-/* "albumId": c.song.albumId->QB.column->DQL.u, */
-/* "name": c.song.name->QB.column->DQL.u, */
-/* "duration": c.song.duration->QB.column->DQL.u, */
-/* }, */
-/* } */
-/* ) */
-/* } */
-/* } */
-
-/* module AlbumsInnerJoinSongs = { */
-/* type selectables = { */
-/* album: AlbumsTable.columns, */
-/* song: SongsTable.columns, */
-/* } */
-
-/* type projectables = { */
-/* album: AlbumsTable.columns, */
-/* song: SongsTable.columns, */
-/* } */
-
-/* let makeSelectQuery = (): Query.t<projectables, selectables, _> => { */
-/* let from = From.make("albums", "album") */
-
-/* let joins = [Join.make("songs", "song", Inner)] */
-
-/* Query.makeSelectQuery(from, joins)->QB.select(c => */
-/* { */
-/* "album": { */
-/* "id": c.album.id->QB.column->DQL.u, */
-/* "artistId": c.album.artistId->QB.column->DQL.u, */
-/* "name": c.album.name->QB.column->DQL.u, */
-/* "year": c.album.year->QB.column->DQL.u, */
-/* }, */
-/* "song": { */
-/* "id": c.song.id->QB.column->DQL.u, */
-/* "albumId": c.song.albumId->QB.column->DQL.u, */
-/* "name": c.song.name->QB.column->DQL.u, */
-/* "duration": c.song.duration->QB.column->DQL.u, */
-/* }, */
-/* } */
-/* ) */
-/* } */
-/* } */
+      DQL.Query.make(from, projectables, selectables)->DQL.select(c => {
+        artist_id: c.artist_id->QB.column->DQL.u,
+        artist_name: c.artist_name->QB.column->DQL.u,
+        album_id: c.album_id->QB.column->DQL.u,
+        album_artistId: c.album_artistId->QB.column->DQL.u,
+        album_name: c.album_name->QB.column->DQL.u,
+        album_year: c.album_year->QB.column->DQL.u,
+      })
+    }
+  }
+}
 
 /* module AlbumsInnerJoinAlbums = { */
 /* type selectables = { */

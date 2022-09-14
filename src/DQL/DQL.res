@@ -1,6 +1,17 @@
+module Source = {
+  type t = {name: string, alias: option<string>}
+}
+
 module From = {
-  let toSQL = (table: DDL.Table.t<_>) => {
-    `FROM ${table.name}`
+  type t = {name: string, alias: option<string>}
+
+  let make = (name, alias) => {name, alias}
+
+  let toSQL = from => {
+    switch from.alias {
+    | Some(alias) => `FROM ${from.name} AS "${alias}"`
+    | None => `FROM ${from.name}`
+    }
   }
 }
 
@@ -10,7 +21,7 @@ module Projections = {
       projections
       ->Js.Dict.entries
       ->Js.Array2.map(((alias, ref)) => {
-        Ref.toProjectionSQL(ref, false, alias, toSQL)
+        Ref.toProjectionSQL(ref, alias, toSQL)
       })
       ->Js.Array2.joinWith(", ")
 
@@ -99,8 +110,8 @@ module Limit = {
 }
 
 module Query = {
-  type t<'columns, 'projections> = {
-    table: DDL.Table.t<'columns>,
+  type t<'projectables, 'selectables, 'projections> = {
+    from: From.t,
     projections: Js.Dict.t<Ref.anyRef>,
     selections: option<Expr.t>,
     groupBys: option<array<GroupBy.t>>,
@@ -108,10 +119,12 @@ module Query = {
     orderBys: option<array<OrderBy.t>>,
     offset: option<int>,
     limit: option<int>,
+    _projectables: 'projectables,
+    _selectabes: 'selectables,
   }
 
-  let make = table => {
-    table,
+  let make = (from, projectables, selectables) => {
+    from,
     projections: Js.Dict.empty(),
     selections: None,
     groupBys: None,
@@ -119,59 +132,73 @@ module Query = {
     orderBys: None,
     offset: None,
     limit: None,
+    _projectables: projectables,
+    _selectabes: selectables,
   }
 }
 
-let select = (query: Query.t<'columns, _>, getProjections: 'columns => 'projections): Query.t<
-  'columns,
-  'projections,
-> => {
-  let projections = getProjections(query.table.columns)->Obj.magic
+let select = (
+  query: Query.t<'projectables, 'selectables, _>,
+  getProjections: 'projectables => 'projections,
+): Query.t<'projectables, 'selectables, 'projections> => {
+  let projections = getProjections(query._projectables)->Obj.magic
 
   {...query, projections}
 }
 
-let where = (query: Query.t<'columns, 'projections>, getSelections): Query.t<
-  'columns,
+let where = (query: Query.t<'projectables, 'selectables, 'projections>, getSelections): Query.t<
+  'projectables,
+  'selectables,
   'projections,
 > => {
-  let selections = getSelections(query.table.columns)
+  let selections = getSelections(query._selectabes)
 
   {...query, selections: Some(selections)}
 }
 
-let groupBy = (query: Query.t<'columns, 'projections>, getGroupBys): Query.t<
-  'columns,
+let groupBy = (query: Query.t<'projectables, 'selectables, 'projections>, getGroupBys): Query.t<
+  'projectables,
+  'selectables,
   'projections,
 > => {
-  let groupBys = getGroupBys(query.table.columns)
+  let groupBys = getGroupBys(query._selectabes)
 
   {...query, groupBys: Some(groupBys)}
 }
 
-let having = (query: Query.t<'column, 'projections>, getHavings): Query.t<
-  'columns,
+let having = (query: Query.t<'projectables, 'selectables, 'projections>, getHavings): Query.t<
+  'projectables,
+  'selectables,
   'projections,
 > => {
-  let havings = getHavings(query.table.columns)
+  let havings = getHavings(query._selectabes)
 
   {...query, havings: Some(havings)}
 }
 
-let orderBy = (query: Query.t<'columns, 'projections>, getOrderBys): Query.t<
-  'columns,
+let orderBy = (query: Query.t<'projectables, 'selectables, 'projections>, getOrderBys): Query.t<
+  'projectables,
+  'selectables,
   'projections,
 > => {
-  let orderBys = getOrderBys(query.table.columns)
+  let orderBys = getOrderBys(query._selectabes)
 
   {...query, orderBys: Some(orderBys)}
 }
 
-let offset = (query: Query.t<'columns, 'projections>, offset): Query.t<'columns, 'projections> => {
+let offset = (query: Query.t<'projectables, 'selectables, 'projections>, offset): Query.t<
+  'projectables,
+  'selectables,
+  'projections,
+> => {
   {...query, offset: Some(offset)}
 }
 
-let limit = (query: Query.t<'columns, 'projections>, limit): Query.t<'columns, 'projections> => {
+let limit = (query: Query.t<'projectables, 'selectables, 'projections>, limit): Query.t<
+  'projectables,
+  'selectables,
+  'projections,
+> => {
   {...query, limit: Some(limit)}
 }
 
@@ -180,12 +207,12 @@ let group = GroupBy.make
 let asc = OrderBy.asc
 let desc = OrderBy.desc
 
-let rec toSQL = (query: Query.t<_, _>) => {
+let rec toSQL = (query: Query.t<_, _, _>) => {
   open StringBuilder
 
   make()
   ->addS(Projections.toSQL(query.projections, toSQL))
-  ->addS(From.toSQL(query.table))
+  ->addS(From.toSQL(query.from))
   ->addSO(Selections.toSQL(query.selections, toSQL))
   ->addSO(GroupBys.toSQL(query.groupBys, toSQL))
   ->addSO(Havings.toSQL(query.havings, toSQL))

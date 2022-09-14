@@ -1,45 +1,36 @@
 let applyColumnAccessors = fn => fn(Utils.createColumnAccessor())
 
 let column = c => Ref.makeColumnRef(c)
-let columnU = c => c->column->Ref.unbox
 
 let value = v => Ref.makeValueRef(v)
-let valueU = v => v->value->Ref.unbox
 
 let subQuery = query => Ref.makeQueryRef(query)
-let subQueryU = q => q->subQuery->Ref.unbox
 
 let unbox = Ref.unbox
 
 let count = ref => {
   Ref.updateAggType(ref, Some(Aggregation.COUNT))->Obj.magic
 }
-let countU = ref => ref->count->Ref.unbox
 
 let sumI = ref => {
   Ref.updateAggType(ref, Some(Aggregation.SUM))
 }
-let sumIU = ref => ref->sumI->Ref.unbox
 
 let sumF = ref => {
   Ref.updateAggType(ref, Some(Aggregation.SUM))
 }
-let sumFU = ref => ref->sumF->Ref.unbox
 
 let avg = ref => {
   Ref.updateAggType(ref, Some(Aggregation.AVG))
 }
-let avgU = ref => ref->avg->Ref.unbox
 
 let min = ref => {
   Ref.updateAggType(ref, Some(Aggregation.MIN))
 }
-let minU = ref => ref->min->Ref.unbox
 
 let max = ref => {
   Ref.updateAggType(ref, Some(Aggregation.MAX))
 }
-let maxU = ref => ref->max->Ref.unbox
 
 let asc = OrderBy.asc
 let desc = OrderBy.desc

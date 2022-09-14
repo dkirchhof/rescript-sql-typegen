@@ -58,6 +58,16 @@ Logger.log(
   ->toSQL,
 )
 
+Logger.log(
+  "join",
+  ArtistsLeftJoinAlbums.Select.makeQuery()
+  ->toSQL
+  /* ->select(c => {"year": c.year->QB.column->u, "numberOfAlbums": c.id->QB.column->QB.count->u}) */
+  /* ->groupBy(c => [c.year->QB.column->group]) */
+  /* ->having(c => Expr.gt(c.id->QB.column->QB.count, 1->QB.value)) */
+  /* ->toSQL, */
+)
+
 /* open DB */
 /* open QB */
 
