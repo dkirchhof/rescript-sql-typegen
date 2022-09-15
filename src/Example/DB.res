@@ -50,6 +50,16 @@ module ArtistsTable = {
       })
     }
   }
+
+  module Insert = {
+    type t = {
+      name: string,
+    }
+
+    let makeQuery = (values: array<t>) => {
+      DML.Insert.Query.make("artists", values)
+    }
+  }
 }
 
 module AlbumsTable = {
