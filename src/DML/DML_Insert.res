@@ -38,3 +38,9 @@ let toSQL = (query: Query.t<_>) => {
 
   make()->addS(`INSERT INTO ${query.table} (${columns}) VALUES`)->addS(rows)->build
 }
+
+let execute = (query, db) => {
+  let sql = toSQL(query)
+
+  db->SQLite3.prepare(sql)->SQLite3.run
+}
