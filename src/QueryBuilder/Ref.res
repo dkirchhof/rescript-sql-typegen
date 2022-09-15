@@ -14,7 +14,7 @@ type t<'a> =
 type anyRef = t<any>
 
 let makeColumnRef = column => {
-  open DDL.Column
+  open DDL.Create.Column
 
   {
     tableAlias: column.table,

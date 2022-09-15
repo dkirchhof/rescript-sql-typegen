@@ -1,10 +1,10 @@
 module ArtistsTable = {
   type columns = {
-    id: DDL.Column.t<int>,
-    name: DDL.Column.t<string>,
+    id: DDL.Create.Column.t<int>,
+    name: DDL.Create.Column.t<string>,
   }
 
-  let table: DDL.Table.t<columns> = {
+  let table: DDL.Create.Table.t<columns> = {
     name: "artists",
     columns: {
       id: {
@@ -26,12 +26,12 @@ module ArtistsTable = {
         default: None,
       },
     },
-    getConstraints: columns => [DDL.makePrimaryKey1("PK", columns.id)],
+    getConstraints: columns => [DDL.Create.makePrimaryKey1("PK", columns.id)],
   }
 
   module Create = {
     let makeQuery = () => {
-      DDL.Query.make(table)
+      DDL.Create.Query.make(table)
     }
   }
 
@@ -64,13 +64,13 @@ module ArtistsTable = {
 
 module AlbumsTable = {
   type columns = {
-    id: DDL.Column.t<int>,
-    artistId: DDL.Column.t<int>,
-    name: DDL.Column.t<string>,
-    year: DDL.Column.t<int>,
+    id: DDL.Create.Column.t<int>,
+    artistId: DDL.Create.Column.t<int>,
+    name: DDL.Create.Column.t<string>,
+    year: DDL.Create.Column.t<int>,
   }
 
-  let table: DDL.Table.t<columns> = {
+  let table: DDL.Create.Table.t<columns> = {
     name: "albums",
     columns: {
       id: {
@@ -111,14 +111,14 @@ module AlbumsTable = {
       },
     },
     getConstraints: columns => [
-      DDL.makePrimaryKey1("PK", columns.id),
-      DDL.makeForeignKey("FK_Artist", columns.artistId, ArtistsTable.table.columns.id),
+      DDL.Create.makePrimaryKey1("PK", columns.id),
+      DDL.Create.makeForeignKey("FK_Artist", columns.artistId, ArtistsTable.table.columns.id),
     ],
   }
 
   module Create = {
     let makeQuery = () => {
-      DDL.Query.make(table)
+      DDL.Create.Query.make(table)
     }
   }
 
@@ -145,13 +145,13 @@ module AlbumsTable = {
 
 module SongsTable = {
   type columns = {
-    id: DDL.Column.t<int>,
-    albumId: DDL.Column.t<int>,
-    name: DDL.Column.t<string>,
-    duration: DDL.Column.t<string>,
+    id: DDL.Create.Column.t<int>,
+    albumId: DDL.Create.Column.t<int>,
+    name: DDL.Create.Column.t<string>,
+    duration: DDL.Create.Column.t<string>,
   }
 
-  let table: DDL.Table.t<columns> = {
+  let table: DDL.Create.Table.t<columns> = {
     name: "songs",
     columns: {
       id: {
@@ -192,14 +192,14 @@ module SongsTable = {
       },
     },
     getConstraints: columns => [
-      DDL.makePrimaryKey1("PK", columns.id),
-      DDL.makeForeignKey("FK_Album", columns.albumId, AlbumsTable.table.columns.id),
+      DDL.Create.makePrimaryKey1("PK", columns.id),
+      DDL.Create.makeForeignKey("FK_Album", columns.albumId, AlbumsTable.table.columns.id),
     ],
   }
 
   module Create = {
     let makeQuery = () => {
-      DDL.Query.make(table)
+      DDL.Create.Query.make(table)
     }
   }
 
@@ -226,21 +226,21 @@ module SongsTable = {
 
 module ArtistsLeftJoinAlbums = {
   type projectables = {
-    artist_id: DDL.Column.t<int>,
-    artist_name: DDL.Column.t<string>,
-    album_id: DDL.Column.t<option<int>>,
-    album_artistId: DDL.Column.t<option<int>>,
-    album_name: DDL.Column.t<option<string>>,
-    album_year: DDL.Column.t<option<int>>,
+    artist_id: DDL.Create.Column.t<int>,
+    artist_name: DDL.Create.Column.t<string>,
+    album_id: DDL.Create.Column.t<option<int>>,
+    album_artistId: DDL.Create.Column.t<option<int>>,
+    album_name: DDL.Create.Column.t<option<string>>,
+    album_year: DDL.Create.Column.t<option<int>>,
   }
 
   type selectables = {
-    artist_id: DDL.Column.t<int>,
-    artist_name: DDL.Column.t<string>,
-    album_id: DDL.Column.t<int>,
-    album_artistId: DDL.Column.t<int>,
-    album_name: DDL.Column.t<string>,
-    album_year: DDL.Column.t<int>,
+    artist_id: DDL.Create.Column.t<int>,
+    artist_name: DDL.Create.Column.t<string>,
+    album_id: DDL.Create.Column.t<int>,
+    album_artistId: DDL.Create.Column.t<int>,
+    album_name: DDL.Create.Column.t<string>,
+    album_year: DDL.Create.Column.t<int>,
   }
 
   module Select = {
