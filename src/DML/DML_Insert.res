@@ -3,7 +3,7 @@ module Row = {
     let str = Js.String.make(value)
 
     if Js.Types.test(value, Js.Types.String) {
-      `'${Js.String2.replaceByRe(str, %re("/'/g"), "''")}'`
+      `'${Sanitize.sanitize(str)}'`
     } else {
       str
     }

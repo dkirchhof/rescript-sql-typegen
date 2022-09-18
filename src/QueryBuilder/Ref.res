@@ -54,7 +54,7 @@ let valueRefToSQL = value => {
   let str = Js.String.make(value)
 
   if Js.Types.test(value, Js.Types.String) {
-    `'${str}'`
+    `'${Sanitize.sanitize(str)}'`
   } else {
     str
   }
