@@ -1,68 +1,88 @@
 open DB
 open DQL
 
-Logger.log("select all from artists", ArtistsTable.Select.makeQuery()->toSQL)
+let selectAllArtists = db => {
+  let query = ArtistsTable.Select.makeQuery()
+
+  Logger.log("default select query", query->toSQL)
+
+  query->execute(db)
+}
 
 type onlyArtistName = {name: string}
 
-Logger.log(
-  "simple projection",
-  ArtistsTable.Select.makeQuery()->select(c => {name: c.name->DQL.column->u})->toSQL,
-)
+let selectArtistNames = db => {
+  let query = ArtistsTable.Select.makeQuery()->select(c => {name: c.name->DQL.column->u})
 
-type artistWithRenamedColumns = {
-  myId: int,
-  myName: string,
+  Logger.log("simple projection", query->toSQL)
+
+  query->execute(db)
 }
 
-Logger.log(
-  "rename columns (record as result)",
-  ArtistsTable.Select.makeQuery()
-  ->select(c => {myId: c.id->DQL.column->u, myName: c.name->DQL.column->u})
-  ->toSQL,
-)
+let selectAllArtistsAndRenameColumns = db => {
+  let query =
+    ArtistsTable.Select.makeQuery()->select(c =>
+      {"myId": c.id->DQL.column->u, "myName": c.name->DQL.column->u}
+    )
 
-Logger.log(
-  "rename columns (obj as result)",
-  ArtistsTable.Select.makeQuery()
-  ->select(c => {"myId": c.id->DQL.column->u, "myName": c.name->DQL.column->u})
-  ->toSQL,
-)
+  Logger.log("rename columns", query->toSQL)
 
-Logger.log(
-  "change order",
-  ArtistsTable.Select.makeQuery()->orderBy(c => [c.name->DQL.column->asc])->toSQL,
-)
+  query->execute(db)
+}
 
-Logger.log(
-  "simple selection",
-  ArtistsTable.Select.makeQuery()->where(c => Expr.eq(c.id->DQL.column, 1->DQL.value))->toSQL,
-)
+let selectAllArtistsInOrder = db => {
+  let query = ArtistsTable.Select.makeQuery()->orderBy(c => [c.name->DQL.column->asc])
 
-Logger.log(
-  "pagination",
-  SongsTable.Select.makeQuery()->offset(10)->limit(10)->toSQL,
-)
+  Logger.log("change order", query->toSQL)
 
-Logger.log(
-  "aggregation",
-  ArtistsTable.Select.makeQuery()->select(c => {"maxId": c.id->DQL.column->DQL.max->u})->toSQL,
-)
+  query->execute(db)
+}
 
-Logger.log(
-  "grouping",
-  AlbumsTable.Select.makeQuery()
-  ->select(c => {"year": c.year->DQL.column->u, "numberOfAlbums": c.id->DQL.column->DQL.count->u})
-  ->groupBy(c => [c.year->DQL.column->group])
-  ->having(c => Expr.gt(c.id->DQL.column->DQL.count, 1->DQL.value))
-  ->toSQL,
-)
+let selectArtistWithId1 = db => {
+  let query = ArtistsTable.Select.makeQuery()->where(c => Expr.eq(c.id->DQL.column, 1->DQL.value))
 
-Logger.log(
-  "join",
-  ArtistsLeftJoinAlbums.Select.makeQuery(c => Expr.eq(c.album_artistId->DQL.column, c.artist_id->DQL.column))
-  ->toSQL
-)
+  Logger.log("simple selection", query->toSQL)
+
+  query->execute(db)
+}
+
+let selectSong11To20 = db => {
+  let query = SongsTable.Select.makeQuery()->offset(10)->limit(10)
+
+  Logger.log("pagination", query->toSQL)
+
+  query->execute(db)
+}
+
+let selectMaxIdOfArtists = db => {
+  let query = ArtistsTable.Select.makeQuery()->select(c => {"maxId": c.id->DQL.column->DQL.max->u})
+
+  Logger.log("aggregation", query->toSQL)
+
+  query->execute(db)
+}
+
+let selectYearsWithMoreThan1Album = db => {
+  let query =
+    AlbumsTable.Select.makeQuery()
+    ->select(c => {"year": c.year->DQL.column->u, "numberOfAlbums": c.id->DQL.column->DQL.count->u})
+    ->groupBy(c => [c.year->DQL.column->group])
+    ->having(c => Expr.gt(c.id->DQL.column->DQL.count, 1->DQL.value))
+
+  Logger.log("grouping", query->toSQL)
+
+  query->execute(db)
+}
+
+let selectArtistsWithAlbums = db => {
+  let query = ArtistsLeftJoinAlbums.Select.makeQuery(c =>
+    Expr.eq(c.album_artistId->DQL.column, c.artist_id->DQL.column)
+  )
+
+  Logger.log("join", query->toSQL)
+
+  query->execute(db)
+}
 
 /* open DB */
 /* open QB */

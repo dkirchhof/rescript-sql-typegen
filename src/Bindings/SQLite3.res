@@ -6,5 +6,5 @@ type result = { changes: int, lastInsertRowId: int }
 
 @send external prepare: (db, string) => statement = "prepare"
 @send external raw: (statement, bool) => statement = "raw"
-@send external all: statement => QueryResult.t<'a> = "all"
+@send external all: statement => array<Js.Dict.t<_>> = "all"
 @send external run: statement => result = "run"

@@ -141,6 +141,18 @@ module AlbumsTable = {
       })
     }
   }
+
+  module Insert = {
+    type t = {
+      artistId: int,
+      name: string,
+      year: int,
+    }
+
+    let makeQuery = (values: array<t>) => {
+      DML.Insert.Query.make("albums", values)
+    }
+  }
 }
 
 module SongsTable = {
@@ -220,6 +232,18 @@ module SongsTable = {
         name: c.name->DQL.column->DQL.u,
         duration: c.duration->DQL.column->DQL.u,
       })
+    }
+  }
+
+  module Insert = {
+    type t = {
+      albumId: int,
+      name: string,
+      duration: string,
+    }
+
+    let makeQuery = (values: array<t>) => {
+      DML.Insert.Query.make("songs", values)
     }
   }
 }

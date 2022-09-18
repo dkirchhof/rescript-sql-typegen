@@ -264,7 +264,20 @@ let rec toSQL = (query: Query.t<_, _, _>) => {
   ->addSO(GroupBys.toSQL(query.groupBys, toSQL))
   ->addSO(Havings.toSQL(query.havings, toSQL))
   ->addSO(OrderBys.toSQL(query.orderBys, toSQL))
-  ->addSO(Offset.toSQL(query.offset))
   ->addSO(Limit.toSQL(query.limit))
+  ->addSO(Offset.toSQL(query.offset))
   ->build
+}
+
+let execute = (query: Query.t<_, _, 'projections>, db) => {
+  let sql = toSQL(query)
+
+  let map = row => {
+    row
+    ->Js.Dict.entries
+    ->Js.Array2.map(((key, value)) => (key, Js.nullToOption(value)))
+    ->Js.Dict.fromArray
+  }
+
+  (db->SQLite3.prepare(sql)->SQLite3.all->Js.Array2.map(map)->Obj.magic :> array<'projections>)
 }

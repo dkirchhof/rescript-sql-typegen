@@ -139,5 +139,5 @@ let toSQL = (query: Query.t<_>) => {
 let execute = (query, db) => {
   let sql = toSQL(query)
 
-  db->SQLite3.prepare(sql)->SQLite3.run
+  db->SQLite3.prepare(sql)->SQLite3.run->ignore
 }
