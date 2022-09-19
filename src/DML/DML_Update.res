@@ -3,7 +3,7 @@ module Values = {
     values
     ->Obj.magic
     ->Js.Dict.entries
-    ->Js.Array2.map(((key, value)) => `${key} = ${Sanitize.valueToSQL(value)}`)
+    ->Js.Array2.map(((key, value)) => `${key} = ${Sanitizer.valueToSQL(value)}`)
     ->Js.Array2.joinWith(", ")
   }
 }

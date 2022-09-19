@@ -50,7 +50,7 @@ let columnRefToSQL = options => {
   }
 }
 
-let valueRefToSQL = Sanitize.valueToSQL
+let valueRefToSQL = Sanitizer.valueToSQL
 
 let queryRefToSQL = (options, queryToString) => `(${queryToString(options->Obj.magic)})`
 

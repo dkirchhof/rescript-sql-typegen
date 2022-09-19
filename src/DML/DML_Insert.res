@@ -1,6 +1,6 @@
 module Row = {
   let toSQL = values => {
-    `(${values->Js.Dict.values->Belt.Array.joinWith(", ", Sanitize.valueToSQL)})`
+    `(${values->Js.Dict.values->Belt.Array.joinWith(", ", Sanitizer.valueToSQL)})`
   }
 }
 
