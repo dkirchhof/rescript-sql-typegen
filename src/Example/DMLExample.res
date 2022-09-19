@@ -8,6 +8,7 @@ let insertArtists = db => {
     {name: "While She Sleeps"},
     {name: "Misfits"},
     {name: "Iron Maiden"},
+    {name: "Test"},
   ])
 
   Logger.log("insert artists", query->toSQL)
@@ -165,15 +166,28 @@ let insertSongs = db => {
   query->execute(db)
 }
 
-let updateArtist1 = db => {
+let updateTestArtist = db => {
   open DML.Update
 
   let query =
-    ArtistsTable.Update.makeQuery({name: "Test"})->where(c =>
-      Expr.eq(c.id->DQL.column, 1->DQL.value)
+    ArtistsTable.Update.makeQuery({name: "TEST"})->where(c =>
+      Expr.eq(c.name->DQL.column, "Test"->DQL.value)
     )
 
   Logger.log("update artist", query->toSQL)
+
+  query->execute(db)
+}
+
+let deleteTESTArtist = db => {
+  open DML.Delete
+
+  let query =
+    ArtistsTable.Delete.makeQuery()->where(c =>
+      Expr.eq(c.name->DQL.column, "TEST"->DQL.value)
+    )
+
+  Logger.log("delete artist", query->toSQL)
 
   query->execute(db)
 }

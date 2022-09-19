@@ -52,9 +52,7 @@ module ArtistsTable = {
   }
 
   module Insert = {
-    type t = {
-      name: string,
-    }
+    type t = {name: string}
 
     let makeQuery = (values: array<t>) => {
       DML.Insert.Query.make(table.name, values)
@@ -69,6 +67,12 @@ module ArtistsTable = {
 
     let makeQuery = (values: t) => {
       DML.Update.Query.make(table.name, table.columns, values)
+    }
+  }
+
+  module Delete = {
+    let makeQuery = () => {
+      DML.Delete.Query.make(table.name, table.columns)
     }
   }
 }
