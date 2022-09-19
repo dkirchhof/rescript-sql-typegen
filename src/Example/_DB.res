@@ -7,7 +7,6 @@ let artistsTable: Table.t = {
     {name: "id", dt: Integer, skipInInsertQuery: true},
     {name: "name", dt: String, unique: true},
   ],
-  constraints: [primaryKey("PK", ["id"])],
 }
 
 makeTableModule(artistsTable)->Js.log
@@ -22,10 +21,6 @@ let albumsTable: Table.t = {
     {name: "name", dt: String},
     {name: "year", dt: Integer},
   ],
-  constraints: [
-    primaryKey("PK", ["id"]),
-    foreignKey("FK_Artist", "artistId", artistsTable.moduleName, "id"),
-  ],
 }
 
 makeTableModule(albumsTable)->Js.log
@@ -39,10 +34,6 @@ let songsTable: Table.t = {
     {name: "albumId", dt: Integer},
     {name: "name", dt: String},
     {name: "duration", dt: String},
-  ],
-  constraints: [
-    primaryKey("PK", ["id"]),
-    foreignKey("FK_Album", "albumId", albumsTable.moduleName, "id"),
   ],
 }
 

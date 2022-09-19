@@ -26,7 +26,6 @@ module ArtistsTable = {
         default: None,
       },
     },
-    getConstraints: columns => [DDL.Create.makePrimaryKey1("PK", columns.id)],
   }
 
   module Create = {
@@ -125,10 +124,6 @@ module AlbumsTable = {
         default: None,
       },
     },
-    getConstraints: columns => [
-      DDL.Create.makePrimaryKey1("PK", columns.id),
-      DDL.Create.makeForeignKey("FK_Artist", columns.artistId, ArtistsTable.table.columns.id),
-    ],
   }
 
   module Create = {
@@ -218,10 +213,6 @@ module SongsTable = {
         default: None,
       },
     },
-    getConstraints: columns => [
-      DDL.Create.makePrimaryKey1("PK", columns.id),
-      DDL.Create.makeForeignKey("FK_Album", columns.albumId, AlbumsTable.table.columns.id),
-    ],
   }
 
   module Create = {

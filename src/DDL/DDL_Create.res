@@ -9,10 +9,23 @@ module Constraint = {
     name: string,
   }
 
+  type referenceOption = RESTRICT | CASCADE | SET_NULL | NO_ACTION | SET_DEFAULT
+
+  let referenceOptionToSQL = referenceOption =>
+    switch referenceOption {
+    | RESTRICT => "RESTRICT"
+    | CASCADE => "CASCADE"
+    | SET_NULL => "SET NULL"
+    | NO_ACTION => "NO ACTION"
+    | SET_DEFAULT => "SET DEFAULT"
+    }
+
   type fkOptions = {
     name: string,
     ownColumn: string,
     foreignColumn: foreignColumn,
+    onUpdate: referenceOption,
+    onDelete: referenceOption,
   }
 
   type t = PrimaryKey(pkOptions) | ForeignKey(fkOptions)
@@ -21,8 +34,17 @@ module Constraint = {
     switch c {
     | PrimaryKey(pkOptions) =>
       `CONSTRAINT ${pkOptions.name} PRIMARY KEY (${pkOptions.columns->Js.Array2.joinWith(", ")})`
-    | ForeignKey(fkOptions) =>
-      `CONSTRAINT ${fkOptions.name} FOREIGN KEY (${fkOptions.ownColumn}) REFERENCES ${fkOptions.foreignColumn.table}(${fkOptions.foreignColumn.name})`
+    | ForeignKey(fkOptions) => {
+        open StringBuilder
+
+        make()
+        ->addS(`CONSTRAINT ${fkOptions.name}`)
+        ->addS(`FOREIGN KEY (${fkOptions.ownColumn})`)
+        ->addS(`REFERENCES ${fkOptions.foreignColumn.table}(${fkOptions.foreignColumn.name})`)
+        ->addS(`ON UPDATE ${fkOptions.onUpdate->referenceOptionToSQL}`)
+        ->addS(`ON DELETE ${fkOptions.onDelete->referenceOptionToSQL}`)
+        ->buildWithSpace
+      }
     }
   }
 }
@@ -78,50 +100,69 @@ module Table = {
   type t<'columns> = {
     name: string,
     columns: 'columns,
-    getConstraints: 'columns => array<Constraint.t>,
   }
 }
 
 module Query = {
-  type t<'columns> = {table: Table.t<'columns>}
+  type t<'columns> = {table: Table.t<'columns>, constraints: array<Constraint.t>}
 
   let make = table => {
-    table: table,
+    table,
+    constraints: [],
   }
 }
 
-let makePrimaryKey1 = (name, column: Column.t<_>) => {
-  open Constraint
+let _addPrimaryKey = (query: Query.t<_>, name, columnNames) => {
+  let constraints = Js.Array2.concat(query.constraints, [PrimaryKey({name, columns: columnNames})])
 
-  PrimaryKey({name, columns: [column.name]})
+  {...query, constraints}
 }
 
-let makePrimaryKey2 = (name, column1: Column.t<_>, column2: Column.t<_>) => {
-  open Constraint
+let addPrimaryKey1 = (query: Query.t<'columns>, name, getColumn: 'columns => Column.t<_>) => {
+  let column = getColumn(query.table.columns)
 
-  PrimaryKey({
-    name,
-    columns: [column1.name, column2.name],
-  })
+  _addPrimaryKey(query, name, [column.name])
 }
 
-let makePrimaryKey3 = (name, column1: Column.t<_>, column2: Column.t<_>, column3: Column.t<_>) => {
-  open Constraint
+let addPrimaryKey2 = (
+  query: Query.t<'columns>,
+  name,
+  getColumn: 'columns => (Column.t<_>, Column.t<_>),
+) => {
+  let (column1, column2) = getColumn(query.table.columns)
 
-  PrimaryKey({
-    name,
-    columns: [column1.name, column2.name, column3.name],
-  })
+  _addPrimaryKey(query, name, [column1.name, column2.name])
 }
 
-let makeForeignKey = (name, ownColumn: Column.t<'a>, foreignColumn: Column.t<'a>) => {
+let addPrimaryKey3 = (
+  query: Query.t<'columns>,
+  name,
+  getColumn: 'columns => (Column.t<_>, Column.t<_>, Column.t<_>),
+) => {
+  let (column1, column2, column3) = getColumn(query.table.columns)
+
+  _addPrimaryKey(query, name, [column1.name, column2.name, column3.name])
+}
+
+let addForeignKey = (
+  query: Query.t<'columns>,
+  name,
+  getOwnColumn: 'columns => Column.t<'a>,
+  foreignColumn: Column.t<'a>,
+  onUpdate,
+  onDelete,
+) => {
   open Constraint
 
-  ForeignKey({
-    name,
-    ownColumn: ownColumn.name,
-    foreignColumn: {table: foreignColumn.table, name: foreignColumn.name},
-  })
+  let ownColumn = getOwnColumn(query.table.columns).name
+  let foreignColumn = {table: foreignColumn.table, name: foreignColumn.name}
+
+  let constraints = Js.Array2.concat(
+    query.constraints,
+    [ForeignKey({name, ownColumn, foreignColumn, onUpdate, onDelete})],
+  )
+
+  {...query, constraints}
 }
 
 let toSQL = (query: Query.t<_>) => {
@@ -130,7 +171,7 @@ let toSQL = (query: Query.t<_>) => {
   let inner =
     make()
     ->addM(Columns.toSQL(query.table.columns))
-    ->addM(query.table.columns->query.table.getConstraints->Constraints.toSQL)
+    ->addM(Constraints.toSQL(query.constraints))
     ->buildWithComma
 
   make()->addS(`CREATE TABLE ${query.table.name} (`)->addS(inner)->addS(`)`)->build

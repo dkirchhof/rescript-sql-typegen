@@ -40,3 +40,4 @@ let addE = builder => {
 
 let build = Js.Array2.joinWith(_, "\n")
 let buildWithComma = Js.Array2.joinWith(_, ",\n")
+let buildWithSpace = Js.Array2.joinWith(_, " ")
