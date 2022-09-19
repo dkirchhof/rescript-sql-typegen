@@ -22,6 +22,7 @@ module Column = {
     nullable?: bool,
     unique?: bool,
     default?: string,
+    skipInInsertQuery?: bool,
   }
 
   let booleanToString = bool => bool ? "true" : "false"
@@ -72,12 +73,18 @@ module Columns = {
     columns->Js.Array2.map(column => `          ${Column.toProjectionString(column, sourceAlias)},`)
 }
 
+module Constraint = {
+  type t =
+    | PrimaryKey({name: string, columns: array<string>})
+    | ForeignKey({name: string, ownColumn: string, foreignTable: string, foreignColumn: string})
+}
+
 module Table = {
   type t = {
     moduleName: string,
     tableName: string,
     columns: array<Column.t>,
-    constraints: array<string>,
+    constraints: array<Constraint.t>,
   }
 }
 
@@ -126,6 +133,14 @@ module Sources = {
   let toJoins = joins => joins->Js.Array2.map(join => `      ${join->Source.toMake},`)
 
   let toDefaultProjections = sources => sources->Js.Array2.map(Source.toProjections)
+}
+
+let primaryKey = (name, columns) => {
+  Constraint.PrimaryKey({name, columns})
+}
+
+let foreignKey = (name, ownColumn, foreignTable, foreignColumn) => {
+  Constraint.ForeignKey({name, ownColumn, foreignTable, foreignColumn})
 }
 
 let innerJoin = (table, alias): Source.t => {

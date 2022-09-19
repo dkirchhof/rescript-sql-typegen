@@ -3,8 +3,11 @@ open CodeGen
 let artistsTable: Table.t = {
   moduleName: "ArtistsTable",
   tableName: "artists",
-  columns: [{name: "id", dt: Integer}, {name: "name", dt: String, unique: true}],
-  constraints: [],
+  columns: [
+    {name: "id", dt: Integer, skipInInsertQuery: true},
+    {name: "name", dt: String, unique: true},
+  ],
+  constraints: [primaryKey("PK", ["id"])],
 }
 
 makeTableModule(artistsTable)->Js.log
@@ -14,12 +17,15 @@ let albumsTable: Table.t = {
   moduleName: "AlbumsTable",
   tableName: "albums",
   columns: [
-    {name: "id", dt: Integer},
+    {name: "id", dt: Integer, skipInInsertQuery: true},
     {name: "artistId", dt: Integer},
     {name: "name", dt: String},
     {name: "year", dt: Integer},
   ],
-  constraints: [],
+  constraints: [
+    primaryKey("PK", ["id"]),
+    foreignKey("FK_Artist", "artistId", artistsTable.moduleName, "id"),
+  ],
 }
 
 makeTableModule(albumsTable)->Js.log
@@ -29,12 +35,15 @@ let songsTable: Table.t = {
   moduleName: "SongsTable",
   tableName: "songs",
   columns: [
-    {name: "id", dt: Integer},
+    {name: "id", dt: Integer, skipInInsertQuery: true},
     {name: "albumId", dt: Integer},
     {name: "name", dt: String},
     {name: "duration", dt: String},
   ],
-  constraints: [],
+  constraints: [
+    primaryKey("PK", ["id"]),
+    foreignKey("FK_Album", "albumId", albumsTable.moduleName, "id"),
+  ],
 }
 
 makeTableModule(songsTable)->Js.log
