@@ -152,7 +152,7 @@ module Query = {
     offset: option<int>,
     limit: option<int>,
     _projectables: 'projectables,
-    _selectabes: 'selectables,
+    _selectables: 'selectables,
   }
 
   let make = (from, joins, projectables, selectables) => {
@@ -166,7 +166,7 @@ module Query = {
     offset: None,
     limit: None,
     _projectables: projectables,
-    _selectabes: selectables,
+    _selectables: selectables,
   }
 }
 
@@ -184,7 +184,7 @@ let where = (query: Query.t<'projectables, 'selectables, 'projections>, getSelec
   'selectables,
   'projections,
 > => {
-  let selections = getSelections(query._selectabes)
+  let selections = getSelections(query._selectables)
 
   {...query, selections: Some(selections)}
 }
@@ -194,7 +194,7 @@ let groupBy = (query: Query.t<'projectables, 'selectables, 'projections>, getGro
   'selectables,
   'projections,
 > => {
-  let groupBys = getGroupBys(query._selectabes)
+  let groupBys = getGroupBys(query._selectables)
 
   {...query, groupBys: Some(groupBys)}
 }
@@ -204,7 +204,7 @@ let having = (query: Query.t<'projectables, 'selectables, 'projections>, getHavi
   'selectables,
   'projections,
 > => {
-  let havings = getHavings(query._selectabes)
+  let havings = getHavings(query._selectables)
 
   {...query, havings: Some(havings)}
 }
@@ -214,7 +214,7 @@ let orderBy = (query: Query.t<'projectables, 'selectables, 'projections>, getOrd
   'selectables,
   'projections,
 > => {
-  let orderBys = getOrderBys(query._selectabes)
+  let orderBys = getOrderBys(query._selectables)
 
   {...query, orderBys: Some(orderBys)}
 }

@@ -1,7 +1,8 @@
 open DB
-open DML.Insert
 
 let insertArtists = db => {
+  open DML.Insert
+
   let query = ArtistsTable.Insert.makeQuery([
     {name: "Architects"},
     {name: "While She Sleeps"},
@@ -15,6 +16,8 @@ let insertArtists = db => {
 }
 
 let insertAlbums = db => {
+  open DML.Insert
+
   let query = AlbumsTable.Insert.makeQuery([
     {artistId: 1, name: "Hollow Crown", year: 2009},
     {artistId: 1, name: "Lost Forever / Lost Together", year: 2014},
@@ -36,6 +39,8 @@ let insertAlbums = db => {
 }
 
 let insertSongs = db => {
+  open DML.Insert
+
   let query = SongsTable.Insert.makeQuery([
     {albumId: 1, name: "Early Grave", duration: "3:32"},
     {albumId: 1, name: "Dethroned", duration: "3:06"},
@@ -156,6 +161,19 @@ let insertSongs = db => {
   ])
 
   Logger.log("insert artists", query->toSQL)
+
+  query->execute(db)
+}
+
+let updateArtist1 = db => {
+  open DML.Update
+
+  let query =
+    ArtistsTable.Update.makeQuery({name: "Test"})->where(c =>
+      Expr.eq(c.id->DQL.column, 1->DQL.value)
+    )
+
+  Logger.log("update artist", query->toSQL)
 
   query->execute(db)
 }

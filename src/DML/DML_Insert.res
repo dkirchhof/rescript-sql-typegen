@@ -1,16 +1,6 @@
 module Row = {
-  let valueToSQL = value => {
-    let str = Js.String.make(value)
-
-    if Js.Types.test(value, Js.Types.String) {
-      `'${Sanitize.sanitize(str)}'`
-    } else {
-      str
-    }
-  }
-
   let toSQL = values => {
-    `(${values->Js.Dict.values->Belt.Array.joinWith(", ", valueToSQL)})`
+    `(${values->Js.Dict.values->Belt.Array.joinWith(", ", Sanitize.valueToSQL)})`
   }
 }
 

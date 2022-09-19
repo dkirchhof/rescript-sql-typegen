@@ -42,7 +42,7 @@ module ArtistsTable = {
     }
 
     let makeQuery = () => {
-      let from = DQL.From.make("artists", None)
+      let from = DQL.From.make(table.name, None)
 
       DQL.Query.make(from, None, table.columns, table.columns)->DQL.select(c => {
         id: c.id->DQL.column->DQL.u,
@@ -57,7 +57,18 @@ module ArtistsTable = {
     }
 
     let makeQuery = (values: array<t>) => {
-      DML.Insert.Query.make("artists", values)
+      DML.Insert.Query.make(table.name, values)
+    }
+  }
+
+  module Update = {
+    type t = {
+      id?: int,
+      name?: string,
+    }
+
+    let makeQuery = (values: t) => {
+      DML.Update.Query.make(table.name, table.columns, values)
     }
   }
 }

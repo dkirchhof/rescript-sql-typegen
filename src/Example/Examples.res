@@ -18,6 +18,9 @@ Js.log("")
 DMLExample.insertSongs(db)->Js.log
 Js.log("")
 
+DMLExample.updateArtist1(db)->Js.log
+Js.log("")
+
 DQLExample.selectAllArtists(db)->Js.log
 Js.log("")
 
