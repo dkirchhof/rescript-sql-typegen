@@ -64,8 +64,8 @@ module ArtistsTable = {
       name?: string,
     }
 
-    let makeQuery = (values: t) => {
-      DML.Update.Query.make(table.name, table.columns, values)
+    let makeQuery = (): DML.Update.Query.t<t, columns> => {
+      DML.Update.Query.make(table.name, table.columns)
     }
   }
 

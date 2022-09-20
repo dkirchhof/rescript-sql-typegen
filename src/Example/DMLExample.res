@@ -170,9 +170,9 @@ let updateTestArtist = db => {
   open DML.Update
 
   let query =
-    ArtistsTable.Update.makeQuery({name: "TEST"})->where(c =>
-      Expr.eq(c.name->DQL.column, "Test"->DQL.value)
-    )
+    ArtistsTable.Update.makeQuery()
+    ->set({name: "TEST"})
+    ->where(c => Expr.eq(c.name->DQL.column, "Test"->DQL.value))
 
   Logger.log("update artist", query->toSQL)
 
@@ -183,9 +183,7 @@ let deleteTESTArtist = db => {
   open DML.Delete
 
   let query =
-    ArtistsTable.Delete.makeQuery()->where(c =>
-      Expr.eq(c.name->DQL.column, "TEST"->DQL.value)
-    )
+    ArtistsTable.Delete.makeQuery()->where(c => Expr.eq(c.name->DQL.column, "TEST"->DQL.value))
 
   Logger.log("delete artist", query->toSQL)
 
