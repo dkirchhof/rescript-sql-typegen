@@ -13,8 +13,8 @@ type t<'a> =
 
 type anyRef = t<any>
 
-let makeColumnRef = (column: DDL.Create.Column.t<'a>): t<'a> => {
-  open DDL.Create.Column
+let makeColumnRef = (column: DDL.Column.t<'a>): t<'a> => {
+  open DDL.Column
 
   {
     tableAlias: column.table,

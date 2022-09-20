@@ -1,10 +1,10 @@
 module ArtistsTable = {
   type columns = {
-    id: DDL.Create.Column.t<int>,
-    name: DDL.Create.Column.t<string>,
+    id: DDL.Column.t<int>,
+    name: DDL.Column.t<string>,
   }
 
-  let table: DDL.Create.Table.t<columns> = {
+  let table: DDL.Table.t<columns> = {
     name: "artists",
     columns: {
       id: {
@@ -78,13 +78,13 @@ module ArtistsTable = {
 
 module AlbumsTable = {
   type columns = {
-    id: DDL.Create.Column.t<int>,
-    artistId: DDL.Create.Column.t<int>,
-    name: DDL.Create.Column.t<string>,
-    year: DDL.Create.Column.t<int>,
+    id: DDL.Column.t<int>,
+    artistId: DDL.Column.t<int>,
+    name: DDL.Column.t<string>,
+    year: DDL.Column.t<int>,
   }
 
-  let table: DDL.Create.Table.t<columns> = {
+  let table: DDL.Table.t<columns> = {
     name: "albums",
     columns: {
       id: {
@@ -167,13 +167,13 @@ module AlbumsTable = {
 
 module SongsTable = {
   type columns = {
-    id: DDL.Create.Column.t<int>,
-    albumId: DDL.Create.Column.t<int>,
-    name: DDL.Create.Column.t<string>,
-    duration: DDL.Create.Column.t<string>,
+    id: DDL.Column.t<int>,
+    albumId: DDL.Column.t<int>,
+    name: DDL.Column.t<string>,
+    duration: DDL.Column.t<string>,
   }
 
-  let table: DDL.Create.Table.t<columns> = {
+  let table: DDL.Table.t<columns> = {
     name: "songs",
     columns: {
       id: {
@@ -256,21 +256,21 @@ module SongsTable = {
 
 module ArtistsLeftJoinAlbums = {
   type projectables = {
-    artist_id: DDL.Create.Column.t<int>,
-    artist_name: DDL.Create.Column.t<string>,
-    album_id: DDL.Create.Column.t<option<int>>,
-    album_artistId: DDL.Create.Column.t<option<int>>,
-    album_name: DDL.Create.Column.t<option<string>>,
-    album_year: DDL.Create.Column.t<option<int>>,
+    artist_id: DDL.Column.t<int>,
+    artist_name: DDL.Column.t<string>,
+    album_id: DDL.Column.t<option<int>>,
+    album_artistId: DDL.Column.t<option<int>>,
+    album_name: DDL.Column.t<option<string>>,
+    album_year: DDL.Column.t<option<int>>,
   }
 
   type selectables = {
-    artist_id: DDL.Create.Column.t<int>,
-    artist_name: DDL.Create.Column.t<string>,
-    album_id: DDL.Create.Column.t<int>,
-    album_artistId: DDL.Create.Column.t<int>,
-    album_name: DDL.Create.Column.t<string>,
-    album_year: DDL.Create.Column.t<int>,
+    artist_id: DDL.Column.t<int>,
+    artist_name: DDL.Column.t<string>,
+    album_id: DDL.Column.t<int>,
+    album_artistId: DDL.Column.t<int>,
+    album_name: DDL.Column.t<string>,
+    album_year: DDL.Column.t<int>,
   }
 
   module Select = {

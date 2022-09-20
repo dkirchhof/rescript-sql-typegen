@@ -56,15 +56,7 @@ module Constraints = {
 }
 
 module Column = {
-  type t<'t> = {
-    table: string,
-    name: string,
-    dt: string,
-    size: option<int>,
-    nullable: bool,
-    unique: bool,
-    default: option<'t>,
-  }
+  open DDL_Column
 
   let dtToSQL = (dt, size) => {
     switch size {
@@ -74,9 +66,7 @@ module Column = {
   }
 
   let defaultValueToSQL = defaultValue => {
-    let str = Js.String.make(defaultValue)
-
-    "DEFAULT " ++ (Js.Types.test(defaultValue, Js.Types.String) ? `'${str}'` : str)
+    `DEFAULT ${Sanitizer.valueToSQL(defaultValue)}`
   }
 
   let toSQL = column =>
@@ -96,15 +86,8 @@ module Columns = {
     columns->Obj.magic->Js.Dict.values->Js.Array2.map(column => `  ${column->Column.toSQL}`)
 }
 
-module Table = {
-  type t<'columns> = {
-    name: string,
-    columns: 'columns,
-  }
-}
-
 module Query = {
-  type t<'columns> = {table: Table.t<'columns>, constraints: array<Constraint.t>}
+  type t<'columns> = {table: DDL_Table.t<'columns>, constraints: array<Constraint.t>}
 
   let make = table => {
     table,
@@ -118,7 +101,7 @@ let _addPrimaryKey = (query: Query.t<_>, name, columnNames) => {
   {...query, constraints}
 }
 
-let addPrimaryKey1 = (query: Query.t<'columns>, name, getColumn: 'columns => Column.t<_>) => {
+let addPrimaryKey1 = (query: Query.t<'columns>, name, getColumn: 'columns => DDL_Column.t<_>) => {
   let column = getColumn(query.table.columns)
 
   _addPrimaryKey(query, name, [column.name])
@@ -127,7 +110,7 @@ let addPrimaryKey1 = (query: Query.t<'columns>, name, getColumn: 'columns => Col
 let addPrimaryKey2 = (
   query: Query.t<'columns>,
   name,
-  getColumn: 'columns => (Column.t<_>, Column.t<_>),
+  getColumn: 'columns => (DDL_Column.t<_>, DDL_Column.t<_>),
 ) => {
   let (column1, column2) = getColumn(query.table.columns)
 
@@ -137,7 +120,7 @@ let addPrimaryKey2 = (
 let addPrimaryKey3 = (
   query: Query.t<'columns>,
   name,
-  getColumn: 'columns => (Column.t<_>, Column.t<_>, Column.t<_>),
+  getColumn: 'columns => (DDL_Column.t<_>, DDL_Column.t<_>, DDL_Column.t<_>),
 ) => {
   let (column1, column2, column3) = getColumn(query.table.columns)
 
@@ -147,8 +130,8 @@ let addPrimaryKey3 = (
 let addForeignKey = (
   query: Query.t<'columns>,
   name,
-  getOwnColumn: 'columns => Column.t<'a>,
-  foreignColumn: Column.t<'a>,
+  getOwnColumn: 'columns => DDL_Column.t<'a>,
+  foreignColumn: DDL_Column.t<'a>,
   onUpdate,
   onDelete,
 ) => {
