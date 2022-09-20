@@ -1,6 +1,6 @@
 module Row = {
-  let toSQL = values => {
-    `(${values->Js.Dict.values->Belt.Array.joinWith(", ", Sanitizer.valueToSQL)})`
+  let toSQL = row => {
+    `(${row->Obj.magic->Js.Dict.values->Belt.Array.joinWith(", ", Sanitizer.valueToSQL)})`
   }
 }
 
@@ -11,22 +11,31 @@ module Values = {
 }
 
 module Query = {
-  type t<'values> = {table: string, values: array<'values>}
+  type t<'values> = {table: string, values: option<array<'values>>}
 
-  let make = (table, values) => {
+  let make = table => {
     table,
-    values: values->Obj.magic,
+    values: None,
   }
+}
+
+let values = (query: Query.t<'values>, values: array<'values>) => {
+  {...query, values: Some(values)}
 }
 
 let toSQL = (query: Query.t<_>) => {
   open StringBuilder
 
-  let columns = query.values[0]->Js.Dict.keys->Js.Array2.joinWith(", ")
+  switch query.values {
+  | None | Some([]) => raise(Errors.MissingValues)
+  | Some(values) => {
+      let columns = values[0]->Obj.magic->Js.Dict.keys->Js.Array2.joinWith(", ")
 
-  let rows = make()->addM(Values.toSQL(query.values))->buildWithComma
+      let rows = make()->addM(Values.toSQL(values))->buildWithComma
 
-  make()->addS(`INSERT INTO ${query.table} (${columns}) VALUES`)->addS(rows)->build
+      make()->addS(`INSERT INTO ${query.table} (${columns}) VALUES`)->addS(rows)->build
+    }
+  }
 }
 
 let execute = (query, db) => {

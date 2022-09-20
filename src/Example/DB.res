@@ -53,8 +53,8 @@ module ArtistsTable = {
   module Insert = {
     type t = {name: string}
 
-    let makeQuery = (values: array<t>) => {
-      DML.Insert.Query.make(table.name, values)
+    let makeQuery = (): DML.Insert.Query.t<t> => {
+      DML.Insert.Query.make(table.name)
     }
   }
 
@@ -159,8 +159,8 @@ module AlbumsTable = {
       year: int,
     }
 
-    let makeQuery = (values: array<t>) => {
-      DML.Insert.Query.make("albums", values)
+    let makeQuery = (): DML.Insert.Query.t<t> => {
+      DML.Insert.Query.make(table.name)
     }
   }
 }
@@ -248,8 +248,8 @@ module SongsTable = {
       duration: string,
     }
 
-    let makeQuery = (values: array<t>) => {
-      DML.Insert.Query.make("songs", values)
+    let makeQuery = (): DML.Insert.Query.t<t> => {
+      DML.Insert.Query.make(table.name)
     }
   }
 }

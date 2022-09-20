@@ -1,14 +1,10 @@
 module Patch = {
-  let toSQL = optionalPatch => {
-    switch optionalPatch {
-    | Some(patch) =>
-      patch
-      ->Obj.magic
-      ->Js.Dict.entries
-      ->Js.Array2.map(((key, value)) => `${key} = ${Sanitizer.valueToSQL(value)}`)
-      ->Js.Array2.joinWith(", ")
-    | None => raise(Errors.MissingPatch)
-    }
+  let toSQL = patch => {
+    patch
+    ->Obj.magic
+    ->Js.Dict.entries
+    ->Js.Array2.map(((key, value)) => `${key} = ${Sanitizer.valueToSQL(value)}`)
+    ->Js.Array2.joinWith(", ")
   }
 }
 
@@ -46,10 +42,14 @@ let where = (query: Query.t<_, _>, getSelections) => {
 let rec toSQL = (query: Query.t<_>) => {
   open StringBuilder
 
-  make()
-  ->addS(`UPDATE ${query.table} SET ${Patch.toSQL(query.patch)}`)
-  ->addSO(Selections.toSQL(query.selections, toSQL))
-  ->build
+  switch query.patch {
+  | Some(patch) =>
+    make()
+    ->addS(`UPDATE ${query.table} SET ${Patch.toSQL(patch)}`)
+    ->addSO(Selections.toSQL(query.selections, toSQL))
+    ->build
+  | None => raise(Errors.MissingPatch)
+  }
 }
 
 let execute = (query, db) => {

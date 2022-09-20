@@ -1,1 +1,2 @@
 exception MissingPatch
+exception MissingValues
