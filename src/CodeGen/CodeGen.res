@@ -57,8 +57,11 @@ module Column = {
     ->build
   }
 
-  let toProjectionString = (column, alias) =>
-    `"${column.name}": c.${alias}.${column.name}->QB.columnU`
+  let toProjectionString = column => `${column.name}: c.${column.name}->DQL.column->DQL.u`
+
+  let toDefaultReturnType = column => `${column.name}: ${ColumnType.toRescriptType(column.dt)}`
+
+  let toOptionalField = column => `${column.name}?: ${ColumnType.toRescriptType(column.dt)}`
 }
 
 module Columns = {
@@ -69,8 +72,20 @@ module Columns = {
   let toColumnObjs = (columns, tableName) =>
     columns->Js.Array2.map(Column.toColumnObj(_, tableName))
 
-  let toProjections = (sourceAlias, columns) =>
-    columns->Js.Array2.map(column => `          ${Column.toProjectionString(column, sourceAlias)},`)
+  /* let toProjections = (sourceAlias, columns) => */
+  /* columns->Js.Array2.map(column => `          ${Column.toProjectionString(column, sourceAlias)},`) */
+
+  let toDefaultReturnType = columns =>
+    columns->Js.Array2.map(column => `      ${Column.toDefaultReturnType(column)},`)
+
+  let toInsertType = (columns: array<Column.t>) =>
+    columns
+    ->Js.Array2.filter(column => column.skipInInsertQuery->Belt.Option.getWithDefault(false)->not)
+    ->Js.Array2.map(column => `      ${Column.toDefaultReturnType(column)},`)
+
+  let toUpdateType = (columns: array<Column.t>) =>
+    columns
+    ->Js.Array2.map(column => `      ${Column.toOptionalField(column)},`)
 }
 
 module Table = {
@@ -110,7 +125,7 @@ module Source = {
 
     make()
     ->addS(`        "${source.alias}": {`)
-    ->addM(Columns.toProjections(source.alias, source.table.columns))
+    /* ->addM(Columns.toProjections(source.alias, source.table.columns)) */
     ->addS(`        },`)
     ->build
   }
@@ -125,7 +140,10 @@ module Sources = {
 
   let toJoins = joins => joins->Js.Array2.map(join => `      ${join->Source.toMake},`)
 
-  let toDefaultProjections = sources => sources->Js.Array2.map(Source.toProjections)
+  /* let toDefaultProjections = sources => sources->Js.Array2.map(Source.toProjections) */
+
+  let toDefaultProjections = columns =>
+    columns->Js.Array2.map(column => `        ${Column.toProjectionString(column)},`)
 }
 
 let innerJoin = (table, alias): Source.t => {
@@ -149,15 +167,57 @@ let makeTableModule = (table: Table.t) => {
   ->addM(Columns.toColumnStrings(table.columns))
   ->addS(`  }`)
   ->addE
-  ->addS(`  type optionalColumns = {`)
-  ->addM(Columns.toOptColumnStrings(table.columns))
-  ->addS(`  }`)
-  ->addE
   ->addS(`  let table: DDL.Table.t<columns> = {`)
   ->addS(`    name: "${table.tableName}",`)
   ->addS(`    columns: {`)
   ->addM(Columns.toColumnObjs(table.columns, table.tableName))
   ->addS(`    },`)
+  ->addS(`  }`)
+  ->addE
+  ->addS(`  module Create = {`)
+  ->addS(`    let makeQuery = () => {`)
+  ->addS(`      DDL.Create.Query.make(table)`)
+  ->addS(`    }`)
+  ->addS(`  }`)
+  ->addE
+  ->addS(`  module Select = {`)
+  ->addS(`    type t = {`)
+  ->addM(Columns.toDefaultReturnType(table.columns))
+  ->addS(`    }`)
+  ->addE
+  ->addS(`    let makeQuery = () => {`)
+  ->addS(`      let from = DQL.From.make(table.name, None)`)
+  ->addE
+  ->addS(`      DQL.Query.make(from, None, table.columns)->DQL.select(c => {`)
+  ->addM(Sources.toDefaultProjections(table.columns))
+  ->addS(`      })`)
+  ->addS(`    }`)
+  ->addS(`  }`)
+  ->addE
+  ->addS(`  module Insert = {`)
+  ->addS(`    type t = {`)
+  ->addM(Columns.toInsertType(table.columns))
+  ->addS(`    }`)
+  ->addE
+  ->addS(`    let makeQuery = (): DML.Insert.Query.t<t> => {`)
+  ->addS(`      DML.Insert.Query.make(table.name)`)
+  ->addS(`    }`)
+  ->addS(`  }`)
+  ->addE
+  ->addS(`  module Update = {`)
+  ->addS(`    type t = {`)
+  ->addM(Columns.toUpdateType(table.columns))
+  ->addS(`    }`)
+  ->addE
+  ->addS(`    let makeQuery = (): DML.Update.Query.t<t, columns> => {`)
+  ->addS(`      DML.Update.Query.make(table.name, table.columns)`)
+  ->addS(`    }`)
+  ->addS(`  }`)
+  ->addE
+  ->addS(`  module Delete = {`)
+  ->addS(`    let makeQuery = () => {`)
+  ->addS(`      DML.Delete.Query.make(table.name, table.columns)`)
+  ->addS(`    }`)
   ->addS(`  }`)
   ->addS(`}`)
   ->build
@@ -190,7 +250,7 @@ let makeSelectQueryModule = (moduleName, table: Table.t, alias, joins: array<Sou
   ->addE
   ->addS(`    Query.makeSelectQuery(from, joins)->QB.select(c =>`)
   ->addS(`      {`)
-  ->addM(Sources.toDefaultProjections(sources))
+  /* ->addM(Sources.toDefaultProjections(sources)) */
   ->addS(`      }`)
   ->addS(`    )`)
   ->addS(`  }`)
