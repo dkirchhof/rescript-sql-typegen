@@ -63,9 +63,8 @@ makeJoinQueryModule(
 )->Js.log
 Js.log("")
 
-/* makeSelectQueryModule( */
-/* "ArtistsLeftJoinAlbumsLeftJoinSongs", */
-/* artistsTable, */
-/* "artist", */
-/* [leftJoin(albumsTable, "album"), leftJoin(songsTable, "song")], */
-/* )->Js.log */
+makeJoinQueryModule(
+  "ArtistsLeftJoinAlbumsLeftJoinSongs",
+  from(artistsTable, "artist"),
+  [leftJoin(albumsTable, "album"), leftJoin(songsTable, "song")],
+)->Js.log
