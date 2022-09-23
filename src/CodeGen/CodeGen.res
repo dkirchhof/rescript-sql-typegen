@@ -72,11 +72,11 @@ module Columns = {
   let toColumnObjs = (columns, tableName) =>
     columns->Js.Array2.map(Column.toColumnObj(_, tableName))
 
-  /* let toProjections = (sourceAlias, columns) => */
-  /* columns->Js.Array2.map(column => `          ${Column.toProjectionString(column, sourceAlias)},`) */
-
   let toDefaultReturnType = columns =>
     columns->Js.Array2.map(column => `      ${Column.toDefaultReturnType(column)},`)
+
+  let toDefaultProjections = columns =>
+    columns->Js.Array2.map(column => `        ${Column.toProjectionString(column)},`)
 
   let toInsertType = (columns: array<Column.t>) =>
     columns
@@ -84,8 +84,7 @@ module Columns = {
     ->Js.Array2.map(column => `      ${Column.toDefaultReturnType(column)},`)
 
   let toUpdateType = (columns: array<Column.t>) =>
-    columns
-    ->Js.Array2.map(column => `      ${Column.toOptionalField(column)},`)
+    columns->Js.Array2.map(column => `      ${Column.toOptionalField(column)},`)
 }
 
 module Table = {
@@ -105,51 +104,99 @@ module Source = {
     alias: string,
   }
 
-  let toSelectable = source => `${source.alias}: ${source.table.moduleName}.columns`
+  let toSelectable = source =>
+    source.table.columns->Js.Array2.map(column => {
+      let columnName = `${source.alias}_${column.name}`
+      let dt = ColumnType.toRescriptType(column.dt)
 
-  let toProjectable = source =>
+      `    ${columnName}: DDL.Column.t<${dt}>,`
+    })
+
+  let toProjectable = source => {
+    source.table.columns->Js.Array2.map(column => {
+      let columnName = `${source.alias}_${column.name}`
+
+      let dt = switch source.sourceType {
+      | From | InnerJoin => ColumnType.toRescriptType(column.dt)
+      | LeftJoin => `option<${ColumnType.toRescriptType(column.dt)}>`
+      }
+
+      `    ${columnName}: DDL.Column.t<${dt}>,`
+    })
+  }
+
+  let toDefaultReturnType = source => {
+    source.table.columns->Js.Array2.map(column => {
+      let columnName = `${source.alias}_${column.name}`
+
+      let dt = switch source.sourceType {
+      | From | InnerJoin => ColumnType.toRescriptType(column.dt)
+      | LeftJoin => `option<${ColumnType.toRescriptType(column.dt)}>`
+      }
+
+      `      ${columnName}: ${dt},`
+    })
+  }
+
+  let toDefaultProjections = source => {
+    source.table.columns->Js.Array2.map(column => {
+      let columnName = `${source.alias}_${column.name}`
+
+      `        ${columnName}: c.${columnName}->DQL.column->DQL.u`
+    })
+  }
+
+  let toMake = (source, index) => {
+    let name = `${source.table.moduleName}.table.name`
+    let joinCondition = `joinCondition${Belt.Int.toString(index)}`
+
     switch source.sourceType {
-    | From | InnerJoin => `${source.alias}: ${source.table.moduleName}.columns`
-    | LeftJoin => `${source.alias}: ${source.table.moduleName}.optionalColumns`
+    | From => `From.make(${name}, Some("${source.alias}"))`
+    | InnerJoin => `DDL.Join.make(Inner, ${name}, "${source.alias}", ${joinCondition})})`
+    | LeftJoin => `DDL.Join.make(Left, ${name}, "${source.alias}", ${joinCondition})})`
     }
-
-  let toMake = source =>
-    switch source.sourceType {
-    | From => `From.make("${source.table.tableName}", "${source.alias}")`
-    | InnerJoin => `Join.make("${source.table.tableName}", "${source.alias}", Inner)`
-    | LeftJoin => `Join.make("${source.table.tableName}", "${source.alias}", Left)`
-    }
-
-  let toProjections = source => {
-    open StringBuilder
-
-    make()
-    ->addS(`        "${source.alias}": {`)
-    /* ->addM(Columns.toProjections(source.alias, source.table.columns)) */
-    ->addS(`        },`)
-    ->build
   }
 }
 
 module Sources = {
-  let toSelectables = sources =>
-    sources->Js.Array2.map(source => `    ${source->Source.toSelectable},`)
+  let toSelectables = sources => sources->Js.Array2.map(Source.toSelectable)->Utils.flatten
 
-  let toProjectables = sources =>
-    sources->Js.Array2.map(source => `    ${source->Source.toProjectable},`)
+  let toProjectables = sources => sources->Js.Array2.map(Source.toProjectable)->Utils.flatten
 
-  let toJoins = joins => joins->Js.Array2.map(join => `      ${join->Source.toMake},`)
+  let toDefaultProjections = sources =>
+    sources->Js.Array2.map(Source.toDefaultProjections)->Utils.flatten
 
-  /* let toDefaultProjections = sources => sources->Js.Array2.map(Source.toProjections) */
+  let toDefaultReturnType = sources =>
+    sources->Js.Array2.map(Source.toDefaultReturnType)->Utils.flatten
+}
 
-  let toDefaultProjections = columns =>
-    columns->Js.Array2.map(column => `        ${Column.toProjectionString(column)},`)
+module Joins = {
+  let toJoinConditions = joins => {
+    switch joins {
+    | [_] => "      let joinCondition0 = getJoinConditions(selectables)"
+    | _ => {
+        let mapWithIndex = (_, index) => `joinCondition${Belt.Int.toString(index)}`
+        let conditions = joins->Js.Array2.mapi(mapWithIndex)
+
+        `      let (${conditions->Js.Array2.joinWith(", ")}) = getJoinConditions(selectables)`
+      }
+    }
+  }
+
+  let toMakeJoins = joins =>
+    joins->Js.Array2.mapi((join, i) => `        ${join->Source.toMake(i)},`)
 }
 
 let innerJoin = (table, alias): Source.t => {
   table,
   alias,
   sourceType: InnerJoin,
+}
+
+let from = (table, alias): Source.t => {
+  table,
+  alias,
+  sourceType: From,
 }
 
 let leftJoin = (table, alias): Source.t => {
@@ -188,8 +235,8 @@ let makeTableModule = (table: Table.t) => {
   ->addS(`    let makeQuery = () => {`)
   ->addS(`      let from = DQL.From.make(table.name, None)`)
   ->addE
-  ->addS(`      DQL.Query.make(from, None, table.columns)->DQL.select(c => {`)
-  ->addM(Sources.toDefaultProjections(table.columns))
+  ->addS(`      DQL.Query.make(from, None, table.columns, table.columns)->DQL.select(c => {`)
+  ->addM(Columns.toDefaultProjections(table.columns))
   ->addS(`      })`)
   ->addS(`    }`)
   ->addS(`  }`)
@@ -223,36 +270,41 @@ let makeTableModule = (table: Table.t) => {
   ->build
 }
 
-let makeSelectQueryModule = (moduleName, table: Table.t, alias, joins: array<Source.t>) => {
-  open Source
-
-  let from = {table, alias, sourceType: From}
-  let sources = Js.Array2.concat([from], joins)
-
+let makeJoinQueryModule = (moduleName, from, joins: array<Source.t>) => {
   open StringBuilder
+
+  let sources = Js.Array2.concat([from], joins)
 
   make()
   ->addS(`module ${moduleName} = {`)
-  ->addS(`  type selectables = {`)
-  ->addM(Sources.toSelectables(sources))
-  ->addS(`  }`)
-  ->addE
   ->addS(`  type projectables = {`)
   ->addM(Sources.toProjectables(sources))
   ->addS(`  }`)
   ->addE
-  ->addS(`  let makeSelectQuery = (): Query.t<projectables, selectables, _> => {`)
-  ->addS(`    let from = ${from->Source.toMake}`)
+  ->addS(`  type selectables = {`)
+  ->addM(Sources.toSelectables(sources))
+  ->addS(`  }`)
   ->addE
-  ->addS(`    let joins = [`)
-  ->addM(Sources.toJoins(joins))
-  ->addS(`    ]`)
+  ->addS(`  module Select = {`)
+  ->addS(`    type t = {`)
+  ->addM(Sources.toDefaultReturnType(sources))
+  ->addS(`    }`)
   ->addE
-  ->addS(`    Query.makeSelectQuery(from, joins)->QB.select(c =>`)
-  ->addS(`      {`)
-  /* ->addM(Sources.toDefaultProjections(sources)) */
-  ->addS(`      }`)
-  ->addS(`    )`)
+  ->addS(`    let makeQuery = getJoinConditions => {`)
+  ->addS(`      let from = ${from->Source.toMake(0)}`)
+  ->addS(`      let projectables: projectables = Utils.createColumnAccessor()`)
+  ->addS(`      let selectables: selectables = Utils.createColumnAccessor()`)
+  ->addE
+  ->addS(Joins.toJoinConditions(joins))
+  ->addE
+  ->addS(`      let joins = [`)
+  ->addM(Joins.toMakeJoins(joins))
+  ->addS(`      ]`)
+  ->addE
+  ->addS(`      DDL.Query.make(from, Some(joins), projectables, selectables)->DQL.select(c => {`)
+  ->addM(Sources.toDefaultProjections(sources))
+  ->addS(`      })`)
+  ->addS(`    }`)
   ->addS(`  }`)
   ->addS(`}`)
   ->build

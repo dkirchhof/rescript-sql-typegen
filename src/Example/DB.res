@@ -289,7 +289,7 @@ module ArtistsLeftJoinAlbums = {
       let selectables: selectables = Utils.createColumnAccessor()
 
       let joinCondition1 = getJoinConditions(selectables)
-      let joins = [DQL.Join.make(Inner, AlbumsTable.table.name, "album", joinCondition1)]->Some
+      let joins = [DQL.Join.make(Left, AlbumsTable.table.name, "album", joinCondition1)]->Some
 
       DQL.Query.make(from, joins, projectables, selectables)->DQL.select(c => {
         artist_id: c.artist_id->DQL.column->DQL.u,
