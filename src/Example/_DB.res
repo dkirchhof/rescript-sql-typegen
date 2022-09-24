@@ -40,22 +40,6 @@ let songsTable: Table.t = {
 makeTableModule(songsTable)->Js.log
 Js.log("")
 
-/* makeJoinQueryModule( */
-/* "AlbumsInnerJoinSongs", */
-/* albumsTable, */
-/* "album", */
-/* [innerJoin(songsTable, "song")], */
-/* )->Js.log */
-/* Js.log("") */
-
-/* makeSelectQueryModule( */
-/* "AlbumsInnerJoinAlbums", */
-/* albumsTable, */
-/* "a1", */
-/* [innerJoin(albumsTable, "a2")], */
-/* )->Js.log */
-/* Js.log("") */
-
 makeJoinQueryModule(
   "ArtistsLeftJoinAlbums",
   from(artistsTable, "artist"),

@@ -227,6 +227,12 @@ let makeTableModule = (table: Table.t) => {
   ->addS(`    }`)
   ->addS(`  }`)
   ->addE
+  ->addS(`  module Drop = {`)
+  ->addS(`    let makeQuery = () => {`)
+  ->addS(`      DDL.Drop.Query.make(table)`)
+  ->addS(`    }`)
+  ->addS(`  }`)
+  ->addE
   ->addS(`  module Select = {`)
   ->addS(`    type t = {`)
   ->addM(Columns.toDefaultReturnType(table.columns))
