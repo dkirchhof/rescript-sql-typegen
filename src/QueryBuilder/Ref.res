@@ -1,9 +1,11 @@
 type any
 
+type aggregationType = COUNT | SUM | AVG | MIN | MAX
+
 type columnOptions = {
   tableAlias: string,
   columnName: string,
-  aggType: option<Aggregation.t>,
+  aggType: option<aggregationType>,
 }
 
 type t<'a> =
