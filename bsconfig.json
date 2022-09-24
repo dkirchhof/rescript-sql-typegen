@@ -6,6 +6,11 @@
       "subdirs": true
     },
     {
+      "dir": "example",
+      "subdirs": true,
+      "type": "dev"
+    },
+    {
       "dir": "test",
       "subdirs": true,
       "type": "dev"
@@ -17,10 +22,8 @@
       "in-source": true
     }
   ],
-  "bs-dependencies": [
-    "js-array2-ex"
-  ],
   "bs-dev-dependencies": [
+    "js-array2-ex",
     "rescript-test"
   ],
   "suffix": ".mjs",

@@ -1,8 +1,8 @@
 {
     "scripts": {
         "dev": "rescript build -w",
-        "codegen-dry": "node src/Example/_DB.mjs",
-        "codegen": "node src/Example/_DB.mjs > src/Example/DB.res",
+        "codegen-dry": "node example/_DB.mjs",
+        "codegen": "node example/_DB.mjs > example/DB.res",
         "test": "node --test",
         "lint": "reanalyze -dce"
     },
