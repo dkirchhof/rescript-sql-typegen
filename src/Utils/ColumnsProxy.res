@@ -1,4 +1,4 @@
-let createColumnAccessor = () => {
+let make = () => {
   %raw(`
     function() {
       return new Proxy({}, {
@@ -13,19 +13,3 @@ let createColumnAccessor = () => {
     }
   `)()
 }
-
-let ensureArray: 'a => array<'a> = input => {
-  %raw(`
-    function(input) {
-      return Array.isArray(input) ? input : [input];
-    }
-  `)(input)
-}
-
-let flatten: array<array<'a>> => array<'a> = arr => {
-  %raw(`
-    function(arr) {
-      return arr.flat();
-    }
-  `)(arr)
-} 

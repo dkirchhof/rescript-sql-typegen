@@ -285,8 +285,8 @@ module ArtistsLeftJoinAlbums = {
 
     let makeQuery = getJoinConditions => {
       let from = DQL.From.make(ArtistsTable.table.name, Some("artist"))
-      let projectables: projectables = Utils.createColumnAccessor()
-      let selectables: selectables = Utils.createColumnAccessor()
+      let projectables: projectables = ColumnsProxy.make()
+      let selectables: selectables = ColumnsProxy.make()
 
       let joinCondition1 = getJoinConditions(selectables)
       let joins = [DQL.Join.make(Left, AlbumsTable.table.name, "album", joinCondition1)]->Some

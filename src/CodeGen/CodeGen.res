@@ -67,8 +67,6 @@ module Column = {
 module Columns = {
   let toColumnStrings = columns => columns->Js.Array2.map(Column.toColumnString)
 
-  let toOptColumnStrings = columns => columns->Js.Array2.map(Column.toOptColumnString)
-
   let toColumnObjs = (columns, tableName) =>
     columns->Js.Array2.map(Column.toColumnObj(_, tableName))
 
@@ -159,15 +157,15 @@ module Source = {
 }
 
 module Sources = {
-  let toSelectables = sources => sources->Js.Array2.map(Source.toSelectable)->Utils.flatten
+  let toSelectables = sources => sources->Js.Array2.map(Source.toSelectable)->Belt.Array.concatMany
 
-  let toProjectables = sources => sources->Js.Array2.map(Source.toProjectable)->Utils.flatten
+  let toProjectables = sources => sources->Js.Array2.map(Source.toProjectable)->Belt.Array.concatMany
 
   let toDefaultProjections = sources =>
-    sources->Js.Array2.map(Source.toDefaultProjections)->Utils.flatten
+    sources->Js.Array2.map(Source.toDefaultProjections)->Belt.Array.concatMany
 
   let toDefaultReturnType = sources =>
-    sources->Js.Array2.map(Source.toDefaultReturnType)->Utils.flatten
+    sources->Js.Array2.map(Source.toDefaultReturnType)->Belt.Array.concatMany
 }
 
 module Joins = {
@@ -298,8 +296,8 @@ let makeJoinQueryModule = (moduleName, from, joins: array<Source.t>) => {
   ->addE
   ->addS(`    let makeQuery = getJoinConditions => {`)
   ->addS(`      let from = ${from->Source.toMake(0)}`)
-  ->addS(`      let projectables: projectables = Utils.createColumnAccessor()`)
-  ->addS(`      let selectables: selectables = Utils.createColumnAccessor()`)
+  ->addS(`      let projectables: projectables = ColumnsProxy.make()`)
+  ->addS(`      let selectables: selectables = ColumnsProxy.make()`)
   ->addE
   ->addS(Joins.toJoinConditions(joins))
   ->addE
