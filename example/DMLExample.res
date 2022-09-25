@@ -1,6 +1,6 @@
 open DB
 
-let insertArtists = db => {
+let insertArtists = (exec, connection) => {
   open DML.Insert
 
   let query =
@@ -14,10 +14,10 @@ let insertArtists = db => {
 
   Logger.log("insert artists", query->toSQL)
 
-  query->execute(db)
+  query->execute(exec, connection)
 }
 
-let insertAlbums = db => {
+let insertAlbums = (exec, connection) => {
   open DML.Insert
 
   let query =
@@ -38,10 +38,10 @@ let insertAlbums = db => {
 
   Logger.log("insert artists", query->toSQL)
 
-  query->execute(db)
+  query->execute(exec, connection)
 }
 
-let insertSongs = db => {
+let insertSongs = (exec, connection) => {
   open DML.Insert
 
   let query =
@@ -166,10 +166,10 @@ let insertSongs = db => {
 
   Logger.log("insert artists", query->toSQL)
 
-  query->execute(db)
+  query->execute(exec, connection)
 }
 
-let updateTestArtist = db => {
+let updateTestArtist = (exec, connection) => {
   open DML.Update
 
   let query =
@@ -179,10 +179,10 @@ let updateTestArtist = db => {
 
   Logger.log("update artist", query->toSQL)
 
-  query->execute(db)
+  query->execute(exec, connection)
 }
 
-let deleteTESTArtist = db => {
+let deleteTESTArtist = (exec, connection) => {
   open DML.Delete
 
   let query =
@@ -190,5 +190,5 @@ let deleteTESTArtist = db => {
 
   Logger.log("delete artist", query->toSQL)
 
-  query->execute(db)
+  query->execute(exec, connection)
 }

@@ -269,15 +269,15 @@ let rec toSQL = (query: Query.t<_, _, _>) => {
   ->build
 }
 
-let execute = (query: Query.t<_, _, 'projections>, db) => {
-  let sql = toSQL(query)
-
+let execute = (query: Query.t<_, _, 'projections>, get, connection) => {
   let map = row => {
     row
     ->Js.Dict.entries
     ->Js.Array2.map(((key, value)) => (key, Js.nullToOption(value)))
     ->Js.Dict.fromArray
+    ->Obj.magic
+    :> 'projections
   }
-
-  (db->SQLite3.prepare(sql)->SQLite3.all->Js.Array2.map(map)->Obj.magic :> array<'projections>)
+  
+  toSQL(query)->get(connection)->Js.Promise.then_(rows => rows->Js.Array2.map(map)->Js.Promise.resolve, _)
 }

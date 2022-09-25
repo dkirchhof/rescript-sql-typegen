@@ -160,8 +160,6 @@ let toSQL = (query: Query.t<_>) => {
   make()->addS(`CREATE TABLE ${query.table.name} (`)->addS(inner)->addS(`)`)->build
 }
 
-let execute = (query, db) => {
-  let sql = toSQL(query)
-
-  db->SQLite3.prepare(sql)->SQLite3.run->ignore
+let execute = (query, execute, connection) => {
+  toSQL(query)->execute(connection)
 }

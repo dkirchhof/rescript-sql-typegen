@@ -1,15 +1,15 @@
 open DB
 open DDL.Create
 
-let createArtistsTable = db => {
+let createArtistsTable = (exec, connection) => {
   let query = ArtistsTable.Create.makeQuery()->addPrimaryKey1("PK", c => c.id)
 
   Logger.log("create artists table", query->toSQL)
 
-  query->execute(db)
+  query->execute(exec, connection)
 }
 
-let createAlbumsTable = db => {
+let createAlbumsTable = (exec, connection) => {
   let query =
     AlbumsTable.Create.makeQuery()
     ->addPrimaryKey1("PK", c => c.id)
@@ -17,10 +17,10 @@ let createAlbumsTable = db => {
 
   Logger.log("create albums table", query->toSQL)
 
-  query->execute(db)
+  query->execute(exec, connection)
 }
 
-let createSongsTable = db => {
+let createSongsTable = (exec, connection) => {
   let query =
     SongsTable.Create.makeQuery()
     ->addPrimaryKey1("PK", c => c.id)
@@ -28,5 +28,5 @@ let createSongsTable = db => {
 
   Logger.log("create songs table", query->toSQL)
 
-  query->execute(db)
+  query->execute(exec, connection)
 }

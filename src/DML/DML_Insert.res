@@ -38,8 +38,6 @@ let toSQL = (query: Query.t<_>) => {
   }
 }
 
-let execute = (query, db) => {
-  let sql = toSQL(query)
-
-  db->SQLite3.prepare(sql)->SQLite3.run
+let execute = (query, execute, connection) => {
+  toSQL(query)->execute(connection)
 }

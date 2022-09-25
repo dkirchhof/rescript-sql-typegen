@@ -1,25 +1,25 @@
 open DB
 open DQL
 
-let selectAllArtists = db => {
+let selectAllArtists = (get, connection) => {
   let query = ArtistsTable.Select.makeQuery()
 
   Logger.log("default select query", query->toSQL)
 
-  query->execute(db)
+  query->execute(get, connection)
 }
 
 type onlyArtistName = {name: string}
 
-let selectArtistNames = db => {
+let selectArtistNames = (get, connection) => {
   let query = ArtistsTable.Select.makeQuery()->select(c => {name: c.name->DQL.column->u})
 
   Logger.log("simple projection", query->toSQL)
 
-  query->execute(db)
+  query->execute(get, connection)
 }
 
-let selectAllArtistsAndRenameColumns = db => {
+let selectAllArtistsAndRenameColumns = (get, connection) => {
   let query =
     ArtistsTable.Select.makeQuery()->select(c =>
       {"myId": c.id->DQL.column->u, "myName": c.name->DQL.column->u}
@@ -27,42 +27,42 @@ let selectAllArtistsAndRenameColumns = db => {
 
   Logger.log("rename columns", query->toSQL)
 
-  query->execute(db)
+  query->execute(get, connection)
 }
 
-let selectAllArtistsInOrder = db => {
+let selectAllArtistsInOrder = (get, connection) => {
   let query = ArtistsTable.Select.makeQuery()->orderBy(c => [c.name->DQL.column->asc])
 
   Logger.log("change order", query->toSQL)
 
-  query->execute(db)
+  query->execute(get, connection)
 }
 
-let selectArtistWithId1 = db => {
+let selectArtistWithId1 = (get, connection) => {
   let query = ArtistsTable.Select.makeQuery()->where(c => Expr.eq(c.id->DQL.column, 1->DQL.value))
 
   Logger.log("simple selection", query->toSQL)
 
-  query->execute(db)
+  query->execute(get, connection)
 }
 
-let selectSong11To20 = db => {
+let selectSong11To20 = (get, connection) => {
   let query = SongsTable.Select.makeQuery()->offset(10)->limit(10)
 
   Logger.log("pagination", query->toSQL)
 
-  query->execute(db)
+  query->execute(get, connection)
 }
 
-let selectMaxIdOfArtists = db => {
+let selectMaxIdOfArtists = (get, connection) => {
   let query = ArtistsTable.Select.makeQuery()->select(c => {"maxId": c.id->DQL.column->DQL.max->u})
 
   Logger.log("aggregation", query->toSQL)
 
-  query->execute(db)
+  query->execute(get, connection)
 }
 
-let selectYearsWithMoreThan1Album = db => {
+let selectYearsWithMoreThan1Album = (get, connection) => {
   let query =
     AlbumsTable.Select.makeQuery()
     ->select(c => {"year": c.year->DQL.column->u, "numberOfAlbums": c.id->DQL.column->DQL.count->u})
@@ -71,27 +71,27 @@ let selectYearsWithMoreThan1Album = db => {
 
   Logger.log("grouping", query->toSQL)
 
-  query->execute(db)
+  query->execute(get, connection)
 }
 
-let selectArtistsWithAlbums = db => {
+let selectArtistsWithAlbums = (get, connection) => {
   let query = ArtistsLeftJoinAlbums.Select.makeQuery(c =>
     Expr.eq(c.album_artistId->DQL.column, c.artist_id->DQL.column)
   )
 
   Logger.log("join", query->toSQL)
 
-  query->execute(db)
+  query->execute(get, connection)
 }
 
 /* open DB */
 /* open QB */
 
-/* let logAndExecute = (title, query, db) => { */
+/* let logAndExecute = (title, query, connection) => { */
 /* Js.log2(`\x1b[1m%s\x1b[0m`, title) */
 /* Js.log(query->toSQL ++ ";") */
 
-/* let result = execute(query, db) */
+/* let result = execute(query, connection) */
 
 /* Js.log(result) */
 /* Js.log("") */
@@ -223,7 +223,7 @@ let selectArtistsWithAlbums = db => {
 
 /* log("get all artists with it's albums with it's songs:", getEverything) */
 
-/* /1* let result = getEverything->execute(db) *1/ */
+/* /1* let result = getEverything->execute(connection) *1/ */
 
 /* /1* open! JsArray2Ex *1/ */
 
