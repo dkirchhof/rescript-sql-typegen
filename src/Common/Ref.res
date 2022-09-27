@@ -58,9 +58,9 @@ let queryRefToSQL = (options, queryToString) => `(${queryToString(options->Obj.m
 
 let toProjectionSQL = (projection, alias, queryToString) => {
   switch projection {
-  | ColumnRef(options) => `${columnRefToSQL(options)} AS "${alias}"`
-  | ValueRef(value) => `${valueRefToSQL(value)} AS "${alias}"`
-  | QueryRef(query) => `${queryRefToSQL(query, queryToString)} AS "${alias}"`
+  | ColumnRef(options) => `${columnRefToSQL(options)} AS ${alias}`
+  | ValueRef(value) => `${valueRefToSQL(value)} AS ${alias}`
+  | QueryRef(query) => `${queryRefToSQL(query, queryToString)} AS ${alias}`
   }
 }
 

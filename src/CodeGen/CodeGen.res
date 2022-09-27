@@ -1,16 +1,18 @@
 module ColumnType = {
-  type t = Integer | String
+  type t = Integer | String | Varchar
 
   let toSQLType = dt =>
     switch dt {
     | Integer => `INTEGER`
     | String => `TEXT`
+    | Varchar => `VARCHAR`
     }
 
   let toRescriptType = dt =>
     switch dt {
     | Integer => `int`
     | String => `string`
+    | Varchar => `string`
     }
 }
 
@@ -22,6 +24,7 @@ module Column = {
     nullable?: bool,
     unique?: bool,
     default?: string,
+    autoIncrement?: bool,
     skipInInsertQuery?: bool,
   }
 
@@ -52,6 +55,7 @@ module Column = {
     ->addS(`        size: ${optSizeToString(column.size)},`)
     ->addS(`        nullable: ${optBoolToString(column.nullable)},`)
     ->addS(`        unique: ${optBoolToString(column.unique)},`)
+    ->addS(`        autoIncrement: ${optBoolToString(column.autoIncrement)},`)
     ->addS(`        default: ${optDefaultToString(column.default)},`)
     ->addS(`      },`)
     ->build
@@ -140,7 +144,7 @@ module Source = {
     source.table.columns->Js.Array2.map(column => {
       let columnName = `${source.alias}_${column.name}`
 
-      `        ${columnName}: c.${columnName}->DQL.column->DQL.u`
+      `        ${columnName}: c.${columnName}->DQL.column->DQL.u,`
     })
   }
 
@@ -149,9 +153,9 @@ module Source = {
     let joinCondition = `joinCondition${Belt.Int.toString(index)}`
 
     switch source.sourceType {
-    | From => `From.make(${name}, Some("${source.alias}"))`
-    | InnerJoin => `DDL.Join.make(Inner, ${name}, "${source.alias}", ${joinCondition})})`
-    | LeftJoin => `DDL.Join.make(Left, ${name}, "${source.alias}", ${joinCondition})})`
+    | From => `DQL.From.make(${name}, Some("${source.alias}"))`
+    | InnerJoin => `DQL.Join.make(Inner, ${name}, "${source.alias}", ${joinCondition})`
+    | LeftJoin => `DQL.Join.make(Left, ${name}, "${source.alias}", ${joinCondition})`
     }
   }
 }
@@ -305,7 +309,7 @@ let makeJoinQueryModule = (moduleName, from, joins: array<Source.t>) => {
   ->addM(Joins.toMakeJoins(joins))
   ->addS(`      ]`)
   ->addE
-  ->addS(`      DDL.Query.make(from, Some(joins), projectables, selectables)->DQL.select(c => {`)
+  ->addS(`      DQL.Query.make(from, Some(joins), projectables, selectables)->DQL.select(c => {`)
   ->addM(Sources.toDefaultProjections(sources))
   ->addS(`      })`)
   ->addS(`    }`)

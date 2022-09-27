@@ -5,7 +5,7 @@ module From = {
 
   let toSQL = from => {
     switch from.alias {
-    | Some(alias) => `FROM ${from.name} AS "${alias}"`
+    | Some(alias) => `FROM ${from.name} AS ${alias}`
     | None => `FROM ${from.name}`
     }
   }
@@ -36,7 +36,7 @@ module Join = {
 
     let selectionString = `ON ${Expr.toSQL(join.condition, queryToSQL)}`
 
-    `${joinTypeString} JOIN ${join.tableName} AS "${join.tableAlias}" ${selectionString}`
+    `${joinTypeString} JOIN ${join.tableName} AS ${join.tableAlias} ${selectionString}`
   }
 }
 

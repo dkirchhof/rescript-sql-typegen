@@ -1,6 +1,6 @@
 type connection
 type statement
-type result = { changes: int, lastInsertRowId: int }
+type result = {changes: int, lastInsertRowId: int}
 
 @new @module("better-sqlite3") external createConnection: string => connection = "default"
 

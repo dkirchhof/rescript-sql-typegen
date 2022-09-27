@@ -4,8 +4,8 @@ let artistsTable: Table.t = {
   moduleName: "ArtistsTable",
   tableName: "artists",
   columns: [
-    {name: "id", dt: Integer, skipInInsertQuery: true},
-    {name: "name", dt: String, unique: true},
+    {name: "id", dt: Integer, autoIncrement: true, skipInInsertQuery: true},
+    {name: "name", dt: Varchar, size: 100, unique: true},
   ],
 }
 
@@ -16,9 +16,9 @@ let albumsTable: Table.t = {
   moduleName: "AlbumsTable",
   tableName: "albums",
   columns: [
-    {name: "id", dt: Integer, skipInInsertQuery: true},
+    {name: "id", dt: Integer, autoIncrement: true, skipInInsertQuery: true},
     {name: "artistId", dt: Integer},
-    {name: "name", dt: String},
+    {name: "name", size: 100, dt: Varchar},
     {name: "year", dt: Integer},
   ],
 }
@@ -30,10 +30,10 @@ let songsTable: Table.t = {
   moduleName: "SongsTable",
   tableName: "songs",
   columns: [
-    {name: "id", dt: Integer, skipInInsertQuery: true},
+    {name: "id", dt: Integer, autoIncrement: true, skipInInsertQuery: true},
     {name: "albumId", dt: Integer},
-    {name: "name", dt: String},
-    {name: "duration", dt: String},
+    {name: "name", size: 100, dt: Varchar},
+    {name: "duration", size: 10, dt: Varchar},
   ],
 }
 

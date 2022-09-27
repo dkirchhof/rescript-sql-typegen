@@ -75,6 +75,7 @@ module Column = {
       dtToSQL(column.dt, column.size),
       column.nullable ? "" : "NOT NULL",
       column.unique ? "UNIQUE" : "",
+      column.autoIncrement ? "AUTO_INCREMENT" : "",
       Belt.Option.mapWithDefault(column.default, "", defaultValueToSQL),
     ]
     ->Js.Array2.filter(s => String.length(s) > 0)

@@ -5,5 +5,6 @@ type t<'t> = {
   size: option<int>,
   nullable: bool,
   unique: bool,
+  autoIncrement: bool,
   default: option<'t>,
 }

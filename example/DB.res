@@ -14,15 +14,17 @@ module ArtistsTable = {
         size: None,
         nullable: false,
         unique: false,
+        autoIncrement: true,
         default: None,
       },
       name: {
         table: "artists",
         name: "name",
-        dt: "TEXT",
-        size: None,
+        dt: "VARCHAR",
+        size: Some(100),
         nullable: false,
         unique: true,
+        autoIncrement: false,
         default: None,
       },
     },
@@ -31,6 +33,12 @@ module ArtistsTable = {
   module Create = {
     let makeQuery = () => {
       DDL.Create.Query.make(table)
+    }
+  }
+
+  module Drop = {
+    let makeQuery = () => {
+      DDL.Drop.Query.make(table)
     }
   }
 
@@ -51,7 +59,9 @@ module ArtistsTable = {
   }
 
   module Insert = {
-    type t = {name: string}
+    type t = {
+      name: string,
+    }
 
     let makeQuery = (): DML.Insert.Query.t<t> => {
       DML.Insert.Query.make(table.name)
@@ -94,6 +104,7 @@ module AlbumsTable = {
         size: None,
         nullable: false,
         unique: false,
+        autoIncrement: true,
         default: None,
       },
       artistId: {
@@ -103,15 +114,17 @@ module AlbumsTable = {
         size: None,
         nullable: false,
         unique: false,
+        autoIncrement: false,
         default: None,
       },
       name: {
         table: "albums",
         name: "name",
-        dt: "TEXT",
-        size: None,
+        dt: "VARCHAR",
+        size: Some(100),
         nullable: false,
         unique: false,
+        autoIncrement: false,
         default: None,
       },
       year: {
@@ -121,6 +134,7 @@ module AlbumsTable = {
         size: None,
         nullable: false,
         unique: false,
+        autoIncrement: false,
         default: None,
       },
     },
@@ -129,6 +143,12 @@ module AlbumsTable = {
   module Create = {
     let makeQuery = () => {
       DDL.Create.Query.make(table)
+    }
+  }
+
+  module Drop = {
+    let makeQuery = () => {
+      DDL.Drop.Query.make(table)
     }
   }
 
@@ -163,6 +183,25 @@ module AlbumsTable = {
       DML.Insert.Query.make(table.name)
     }
   }
+
+  module Update = {
+    type t = {
+      id?: int,
+      artistId?: int,
+      name?: string,
+      year?: int,
+    }
+
+    let makeQuery = (): DML.Update.Query.t<t, columns> => {
+      DML.Update.Query.make(table.name, table.columns)
+    }
+  }
+
+  module Delete = {
+    let makeQuery = () => {
+      DML.Delete.Query.make(table.name, table.columns)
+    }
+  }
 }
 
 module SongsTable = {
@@ -183,6 +222,7 @@ module SongsTable = {
         size: None,
         nullable: false,
         unique: false,
+        autoIncrement: true,
         default: None,
       },
       albumId: {
@@ -192,24 +232,27 @@ module SongsTable = {
         size: None,
         nullable: false,
         unique: false,
+        autoIncrement: false,
         default: None,
       },
       name: {
         table: "songs",
         name: "name",
-        dt: "TEXT",
-        size: None,
+        dt: "VARCHAR",
+        size: Some(100),
         nullable: false,
         unique: false,
+        autoIncrement: false,
         default: None,
       },
       duration: {
         table: "songs",
         name: "duration",
-        dt: "TEXT",
-        size: None,
+        dt: "VARCHAR",
+        size: Some(10),
         nullable: false,
         unique: false,
+        autoIncrement: false,
         default: None,
       },
     },
@@ -218,6 +261,12 @@ module SongsTable = {
   module Create = {
     let makeQuery = () => {
       DDL.Create.Query.make(table)
+    }
+  }
+
+  module Drop = {
+    let makeQuery = () => {
+      DDL.Drop.Query.make(table)
     }
   }
 
@@ -230,7 +279,7 @@ module SongsTable = {
     }
 
     let makeQuery = () => {
-      let from = DQL.From.make("songs", None)
+      let from = DQL.From.make(table.name, None)
 
       DQL.Query.make(from, None, table.columns, table.columns)->DQL.select(c => {
         id: c.id->DQL.column->DQL.u,
@@ -250,6 +299,25 @@ module SongsTable = {
 
     let makeQuery = (): DML.Insert.Query.t<t> => {
       DML.Insert.Query.make(table.name)
+    }
+  }
+
+  module Update = {
+    type t = {
+      id?: int,
+      albumId?: int,
+      name?: string,
+      duration?: string,
+    }
+
+    let makeQuery = (): DML.Update.Query.t<t, columns> => {
+      DML.Update.Query.make(table.name, table.columns)
+    }
+  }
+
+  module Delete = {
+    let makeQuery = () => {
+      DML.Delete.Query.make(table.name, table.columns)
     }
   }
 }
@@ -288,16 +356,88 @@ module ArtistsLeftJoinAlbums = {
       let projectables: projectables = ColumnsProxy.make()
       let selectables: selectables = ColumnsProxy.make()
 
-      let joinCondition1 = getJoinConditions(selectables)
-      let joins = [DQL.Join.make(Left, AlbumsTable.table.name, "album", joinCondition1)]->Some
+      let joinCondition0 = getJoinConditions(selectables)
 
-      DQL.Query.make(from, joins, projectables, selectables)->DQL.select(c => {
+      let joins = [
+        DQL.Join.make(Left, AlbumsTable.table.name, "album", joinCondition0),
+      ]
+
+      DQL.Query.make(from, Some(joins), projectables, selectables)->DQL.select(c => {
         artist_id: c.artist_id->DQL.column->DQL.u,
         artist_name: c.artist_name->DQL.column->DQL.u,
         album_id: c.album_id->DQL.column->DQL.u,
         album_artistId: c.album_artistId->DQL.column->DQL.u,
         album_name: c.album_name->DQL.column->DQL.u,
         album_year: c.album_year->DQL.column->DQL.u,
+      })
+    }
+  }
+}
+
+module ArtistsLeftJoinAlbumsLeftJoinSongs = {
+  type projectables = {
+    artist_id: DDL.Column.t<int>,
+    artist_name: DDL.Column.t<string>,
+    album_id: DDL.Column.t<option<int>>,
+    album_artistId: DDL.Column.t<option<int>>,
+    album_name: DDL.Column.t<option<string>>,
+    album_year: DDL.Column.t<option<int>>,
+    song_id: DDL.Column.t<option<int>>,
+    song_albumId: DDL.Column.t<option<int>>,
+    song_name: DDL.Column.t<option<string>>,
+    song_duration: DDL.Column.t<option<string>>,
+  }
+
+  type selectables = {
+    artist_id: DDL.Column.t<int>,
+    artist_name: DDL.Column.t<string>,
+    album_id: DDL.Column.t<int>,
+    album_artistId: DDL.Column.t<int>,
+    album_name: DDL.Column.t<string>,
+    album_year: DDL.Column.t<int>,
+    song_id: DDL.Column.t<int>,
+    song_albumId: DDL.Column.t<int>,
+    song_name: DDL.Column.t<string>,
+    song_duration: DDL.Column.t<string>,
+  }
+
+  module Select = {
+    type t = {
+      artist_id: int,
+      artist_name: string,
+      album_id: option<int>,
+      album_artistId: option<int>,
+      album_name: option<string>,
+      album_year: option<int>,
+      song_id: option<int>,
+      song_albumId: option<int>,
+      song_name: option<string>,
+      song_duration: option<string>,
+    }
+
+    let makeQuery = getJoinConditions => {
+      let from = DQL.From.make(ArtistsTable.table.name, Some("artist"))
+      let projectables: projectables = ColumnsProxy.make()
+      let selectables: selectables = ColumnsProxy.make()
+
+      let (joinCondition0, joinCondition1) = getJoinConditions(selectables)
+
+      let joins = [
+        DQL.Join.make(Left, AlbumsTable.table.name, "album", joinCondition0),
+        DQL.Join.make(Left, SongsTable.table.name, "song", joinCondition1),
+      ]
+
+      DQL.Query.make(from, Some(joins), projectables, selectables)->DQL.select(c => {
+        artist_id: c.artist_id->DQL.column->DQL.u,
+        artist_name: c.artist_name->DQL.column->DQL.u,
+        album_id: c.album_id->DQL.column->DQL.u,
+        album_artistId: c.album_artistId->DQL.column->DQL.u,
+        album_name: c.album_name->DQL.column->DQL.u,
+        album_year: c.album_year->DQL.column->DQL.u,
+        song_id: c.song_id->DQL.column->DQL.u,
+        song_albumId: c.song_albumId->DQL.column->DQL.u,
+        song_name: c.song_name->DQL.column->DQL.u,
+        song_duration: c.song_duration->DQL.column->DQL.u,
       })
     }
   }

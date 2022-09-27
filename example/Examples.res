@@ -1,8 +1,18 @@
 let example = async () => {
   try {
-    let connection = SQLite3.createConnection(":memory:")
-    let get = SQLite.get
-    let execute = SQLite.execute
+    /* let connection = SQLite3.createConnection(":memory:") */
+    /* let get = SQLite.get */
+    /* let execute = SQLite.execute */
+
+    let connection = await MySQL2.createConnection({
+      host: "localhost",
+      user: "root",
+      password: "password",
+      database: "rescript",
+    })
+
+    let get = MySQLProvider.get
+    let execute = MySQLProvider.execute
 
     (await DDLExample.createArtistsTable(execute, connection))->Js.log
     Js.log("")
@@ -54,20 +64,22 @@ let example = async () => {
 
     (await DQLExample.selectArtistsWithAlbums(get, connection))->Js.log
     Js.log("")
+
+    (await DDLExample.dropSongsTable(execute, connection))->Js.log
+    Js.log("")
+
+    (await DDLExample.dropAlbumsTable(execute, connection))->Js.log
+    Js.log("")
+
+    (await DDLExample.dropArtistsTable(execute, connection))->Js.log
+    Js.log("")
   } catch {
-  | Errors.SyntaxError(error) => Js.log("Error: " ++ error)
+  | Js.Exn.Error(obj) =>
+    obj
+    ->Js.Exn.message
+    ->Belt.Option.getWithDefault("")
+    ->(message => Js.log("DB ERROR: " ++ message))
   }
 }
 
 example()->ignore
-
-/* let test = async () => { */
-/* await MySQL2.createConnection({ */
-/* host: "localhost", */
-/* user: "root", */
-/* password: "password", */
-/* database: "rescript" */
-/* })->Js.log */
-/* } */
-
-/* test()->ignore */
