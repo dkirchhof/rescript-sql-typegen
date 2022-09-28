@@ -38,6 +38,6 @@ let toSQL = (query: Query.t<_>) => {
   }
 }
 
-let execute = (query, execute, connection) => {
-  toSQL(query)->execute(connection)
+let execute = (query, mutate: Provider.mutate<_>, connection) => {
+  toSQL(query)->mutate(connection)
 }

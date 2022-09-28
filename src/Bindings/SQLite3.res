@@ -1,9 +1,11 @@
 type connection
 type statement
-type result = {changes: int, lastInsertRowId: int}
+
+type queryResult<'a> = array<Js.Dict.t<'a>>
+type mutationResult = {changes: int, lastInsertRowId: int}
 
 @new @module("better-sqlite3") external createConnection: string => connection = "default"
 
 @send external prepare: (connection, string) => statement = "prepare"
-@send external all: statement => array<Js.Dict.t<_>> = "all"
-@send external run: statement => result = "run"
+@send external query: statement => queryResult<_> = "all"
+@send external mutate: statement => mutationResult = "run"

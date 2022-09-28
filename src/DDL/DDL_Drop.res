@@ -10,6 +10,6 @@ let toSQL = (query: Query.t<_>) => {
   `DROP TABLE ${query.table.name}`
 }
 
-let execute = (query, execute, connection) => {
-  toSQL(query)->execute(connection)
+let execute = (query, mutate: Provider.mutate<_>, connection) => {
+  toSQL(query)->mutate(connection)
 }

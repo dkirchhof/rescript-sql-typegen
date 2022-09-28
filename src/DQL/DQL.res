@@ -269,15 +269,20 @@ let rec toSQL = (query: Query.t<_, _, _>) => {
   ->build
 }
 
-let execute = (query: Query.t<_, _, 'projections>, get, connection) => {
+let execute = (
+  query: Query.t<_, _, 'projections>,
+  get: Provider.get<_, 'projections>,
+  connection,
+) => {
   let map = row => {
-    row
+    (row
     ->Js.Dict.entries
-    ->Js.Array2.map(((key, value)) => (key, Js.nullToOption(value)))
+    ->Js.Array2.map(((key, value)) => (key, value->Obj.magic->Js.nullToOption))
     ->Js.Dict.fromArray
-    ->Obj.magic
-    :> 'projections
+    ->Obj.magic :> 'projections)
   }
-  
-  toSQL(query)->get(connection)->Js.Promise.then_(rows => rows->Js.Array2.map(map)->Js.Promise.resolve, _)
+
+  toSQL(query)
+  ->get(connection)
+  ->Js.Promise.then_(rows => rows->Js.Array2.map(map)->Js.Promise.resolve, _)
 }

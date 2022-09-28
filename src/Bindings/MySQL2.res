@@ -9,7 +9,9 @@ type connectionOptions = {
 
 type columnDefinition
 
-type resultSetHeader = {
+type queryResult<'a> = (array<Js.Dict.t<'a>>, array<columnDefinition>)
+
+type mutateResult = {
   fieldCount: int,
   affectedRows: int,
   insertId: int,
@@ -18,13 +20,14 @@ type resultSetHeader = {
   warningStatus: int,
 }
 
-type queryResult<'a> = (array<Js.Dict.t<'a>>, array<columnDefinition>)
-
 @module("mysql2/promise")
 external createConnection: connectionOptions => promise<connection> = "createConnection"
 
 @send
-external query: (connection, string) => promise<_> = "query"
+external query: (connection, string) => promise<queryResult<_>> = "query"
+
+@send
+external mutate: (connection, string) => promise<mutateResult> = "query"
 
 @send
 external end: connection => promise<unit> = "end"

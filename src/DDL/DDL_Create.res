@@ -161,6 +161,6 @@ let toSQL = (query: Query.t<_>) => {
   make()->addS(`CREATE TABLE ${query.table.name} (`)->addS(inner)->addS(`)`)->build
 }
 
-let execute = (query, execute, connection) => {
-  toSQL(query)->execute(connection)
+let execute = (query, mutate: Provider.mutate<_>, connection) => {
+  toSQL(query)->mutate(connection)
 }

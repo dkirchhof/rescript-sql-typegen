@@ -1,16 +1,16 @@
 open DB
 
-let createArtistsTable = (exec, connection) => {
+let createArtistsTable = (mutate, connection) => {
   open DDL.Create
 
   let query = ArtistsTable.Create.makeQuery()->addPrimaryKey1("PK", c => c.id)
 
   Logger.log("create artists table", query->toSQL)
 
-  query->execute(exec, connection)
+  query->execute(mutate, connection)
 }
 
-let createAlbumsTable = (exec, connection) => {
+let createAlbumsTable = (mutate, connection) => {
   open DDL.Create
 
   let query =
@@ -20,10 +20,10 @@ let createAlbumsTable = (exec, connection) => {
 
   Logger.log("create albums table", query->toSQL)
 
-  query->execute(exec, connection)
+  query->execute(mutate, connection)
 }
 
-let createSongsTable = (exec, connection) => {
+let createSongsTable = (mutate, connection) => {
   open DDL.Create
 
   let query =
@@ -33,35 +33,35 @@ let createSongsTable = (exec, connection) => {
 
   Logger.log("create songs table", query->toSQL)
 
-  query->execute(exec, connection)
+  query->execute(mutate, connection)
 }
 
-let dropArtistsTable = (exec, connection) => {
+let dropArtistsTable = (mutate, connection) => {
   open DDL.Drop
 
   let query = ArtistsTable.Drop.makeQuery()
 
   Logger.log("drop artists table", query->toSQL)
 
-  query->execute(exec, connection)
+  query->execute(mutate, connection)
 }
 
-let dropAlbumsTable = (exec, connection) => {
+let dropAlbumsTable = (mutate, connection) => {
   open DDL.Drop
 
   let query = AlbumsTable.Drop.makeQuery()
 
   Logger.log("drop albums table", query->toSQL)
 
-  query->execute(exec, connection)
+  query->execute(mutate, connection)
 }
 
-let dropSongsTable = (exec, connection) => {
+let dropSongsTable = (mutate, connection) => {
   open DDL.Drop
 
   let query = SongsTable.Drop.makeQuery()
 
   Logger.log("drop songs table", query->toSQL)
 
-  query->execute(exec, connection)
+  query->execute(mutate, connection)
 }

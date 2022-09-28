@@ -12,30 +12,30 @@ let example = async () => {
     })
 
     let get = MySQLProvider.get
-    let execute = MySQLProvider.execute
+    let mutate = MySQLProvider.mutate
 
-    (await DDLExample.createArtistsTable(execute, connection))->Js.log
+    (await DDLExample.createArtistsTable(mutate, connection))->Js.log
     Js.log("")
 
-    (await DDLExample.createAlbumsTable(execute, connection))->Js.log
+    (await DDLExample.createAlbumsTable(mutate, connection))->Js.log
     Js.log("")
 
-    (await DDLExample.createSongsTable(execute, connection))->Js.log
+    (await DDLExample.createSongsTable(mutate, connection))->Js.log
     Js.log("")
 
-    (await DMLExample.insertArtists(execute, connection))->Js.log
+    (await DMLExample.insertArtists(mutate, connection))->Js.log
     Js.log("")
 
-    (await DMLExample.insertAlbums(execute, connection))->Js.log
+    (await DMLExample.insertAlbums(mutate, connection))->Js.log
     Js.log("")
 
-    (await DMLExample.insertSongs(execute, connection))->Js.log
+    (await DMLExample.insertSongs(mutate, connection))->Js.log
     Js.log("")
 
-    (await DMLExample.updateTestArtist(execute, connection))->Js.log
+    (await DMLExample.updateTestArtist(mutate, connection))->Js.log
     Js.log("")
 
-    (await DMLExample.deleteTESTArtist(execute, connection))->Js.log
+    (await DMLExample.deleteTESTArtist(mutate, connection))->Js.log
     Js.log("")
 
     (await DQLExample.selectAllArtists(get, connection))->Js.log
@@ -65,13 +65,13 @@ let example = async () => {
     (await DQLExample.selectArtistsWithAlbums(get, connection))->Js.log
     Js.log("")
 
-    (await DDLExample.dropSongsTable(execute, connection))->Js.log
+    (await DDLExample.dropSongsTable(mutate, connection))->Js.log
     Js.log("")
 
-    (await DDLExample.dropAlbumsTable(execute, connection))->Js.log
+    (await DDLExample.dropAlbumsTable(mutate, connection))->Js.log
     Js.log("")
 
-    (await DDLExample.dropArtistsTable(execute, connection))->Js.log
+    (await DDLExample.dropArtistsTable(mutate, connection))->Js.log
     Js.log("")
   } catch {
   | Js.Exn.Error(obj) =>
