@@ -1,19 +1,32 @@
 module ColumnType = {
-  type t = Integer | String | Varchar
+  type t = Bool | Integer | Float | String | Varchar | Date | Datetime
 
   let toSQLType = dt =>
     switch dt {
-    | Integer => `INTEGER`
-    | String => `TEXT`
-    | Varchar => `VARCHAR`
+    | Bool => "BOOL"
+    | Integer => "INTEGER"
+    | Float => "FLOAT"
+    | String => "TEXT"
+    | Varchar => "VARCHAR"
+    | Date => "DATE"
+    | Datetime => "DATETIME"
     }
 
-  let toRescriptType = dt =>
-    switch dt {
-    | Integer => `int`
-    | String => `string`
-    | Varchar => `string`
+  let toRescriptType = (dt, optionalNullable) => {
+    let nullable = optionalNullable->Belt.Option.getWithDefault(false)
+
+    let dt = switch dt {
+    | Bool => "bool"
+    | Integer => "int"
+    | Float => "float"
+    | String => "string"
+    | Varchar => "string"
+    | Date => "Js.Date.t"
+    | Datetime => "Js.Date.t"
     }
+
+    nullable ? `option<${dt}>` : dt
+  }
 }
 
 module Column = {
@@ -39,10 +52,7 @@ module Column = {
   let optDefaultToString = optDefault => Belt.Option.getWithDefault(optDefault, "None")
 
   let toColumnString = column =>
-    `    ${column.name}: DDL.Column.t<${column.dt->ColumnType.toRescriptType}>,`
-
-  let toOptColumnString = column =>
-    `    ${column.name}: DDL.Column.t<option<${column.dt->ColumnType.toRescriptType}>>,`
+    `    ${column.name}: DDL.Column.t<${ColumnType.toRescriptType(column.dt, column.nullable)}>,`
 
   let toColumnObj = (column, tableName) => {
     open StringBuilder
@@ -63,13 +73,16 @@ module Column = {
 
   let toProjectionString = column => `${column.name}: c.${column.name}->DQL.column->DQL.u`
 
-  let toDefaultReturnType = column => `${column.name}: ${ColumnType.toRescriptType(column.dt)}`
+  let toDefaultReturnType = column => {
+    `${column.name}: ${ColumnType.toRescriptType(column.dt, column.nullable)}`
+  }
 
-  let toOptionalField = column => `${column.name}?: ${ColumnType.toRescriptType(column.dt)}`
+  let toOptionalField = column =>
+    `${column.name}?: ${ColumnType.toRescriptType(column.dt, column.nullable)}`
 }
 
 module Columns = {
-  let toColumnStrings = columns => columns->Js.Array2.map(Column.toColumnString)
+  let toColumnStrings = columns => columns->Js.Array2.map(column => Column.toColumnString(column))
 
   let toColumnObjs = (columns, tableName) =>
     columns->Js.Array2.map(Column.toColumnObj(_, tableName))
@@ -109,19 +122,20 @@ module Source = {
   let toSelectable = source =>
     source.table.columns->Js.Array2.map(column => {
       let columnName = `${source.alias}_${column.name}`
-      let dt = ColumnType.toRescriptType(column.dt)
+      let dt = ColumnType.toRescriptType(column.dt, column.nullable)
 
       `    ${columnName}: DDL.Column.t<${dt}>,`
     })
 
   let toProjectable = source => {
+    let optional = switch source.sourceType {
+    | LeftJoin => true
+    | _ => false
+    }
+
     source.table.columns->Js.Array2.map(column => {
       let columnName = `${source.alias}_${column.name}`
-
-      let dt = switch source.sourceType {
-      | From | InnerJoin => ColumnType.toRescriptType(column.dt)
-      | LeftJoin => `option<${ColumnType.toRescriptType(column.dt)}>`
-      }
+      let dt = ColumnType.toRescriptType(column.dt, optional ? Some(true) : column.nullable)
 
       `    ${columnName}: DDL.Column.t<${dt}>,`
     })
@@ -132,8 +146,8 @@ module Source = {
       let columnName = `${source.alias}_${column.name}`
 
       let dt = switch source.sourceType {
-      | From | InnerJoin => ColumnType.toRescriptType(column.dt)
-      | LeftJoin => `option<${ColumnType.toRescriptType(column.dt)}>`
+      | From | InnerJoin => ColumnType.toRescriptType(column.dt, column.nullable)
+      | LeftJoin => ColumnType.toRescriptType(column.dt, Some(true))
       }
 
       `      ${columnName}: ${dt},`
@@ -163,7 +177,8 @@ module Source = {
 module Sources = {
   let toSelectables = sources => sources->Js.Array2.map(Source.toSelectable)->Belt.Array.concatMany
 
-  let toProjectables = sources => sources->Js.Array2.map(Source.toProjectable)->Belt.Array.concatMany
+  let toProjectables = sources =>
+    sources->Js.Array2.map(Source.toProjectable)->Belt.Array.concatMany
 
   let toDefaultProjections = sources =>
     sources->Js.Array2.map(Source.toDefaultProjections)->Belt.Array.concatMany
