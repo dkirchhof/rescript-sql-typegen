@@ -1,3 +1,5 @@
+⛔️ DEPRECATED use https://github.com/dkirchhof/rescript-sql instead
+
 Still very experimental. So the codegen and api could be changed completely.
   
 The idea behind this library:
